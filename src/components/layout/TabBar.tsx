@@ -1,11 +1,13 @@
 
 import { useApp } from "@/context/AppContext";
 import { Home, Gamepad2, BookOpen, Users, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 export default function TabBar() {
   const { activeTab, setActiveTab } = useApp();
+  const location = useLocation();
 
   const tabs = [
     {
@@ -39,6 +41,14 @@ export default function TabBar() {
       path: '/profile'
     }
   ];
+
+  // Update active tab based on current path
+  useEffect(() => {
+    const currentTab = tabs.find(tab => tab.path === location.pathname);
+    if (currentTab) {
+      setActiveTab(currentTab.id);
+    }
+  }, [location.pathname, setActiveTab]);
 
   return (
     <div className="tab-navigation">

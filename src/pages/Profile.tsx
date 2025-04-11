@@ -6,12 +6,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApp } from "@/context/AppContext";
-import { badges, reels } from "@/data/mockData";
-import { Award, Coins, Clock, ArrowUpRight, LockIcon } from "lucide-react";
+import { badges, reels, modules } from "@/data/mockData";
+import { Award, Coins, Clock, ArrowUpRight, LockIcon, CheckCircle, TrendingUp, BookOpen, ThumbsUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user } = useApp();
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -21,6 +23,23 @@ export default function Profile() {
   const userLikedContent = reels.filter(reel => user.likedContent.includes(reel.id));
   const userSavedContent = reels.filter(reel => user.savedContent.includes(reel.id));
   
+  // Daily tasks - moved from Home page
+  const dailyTasks = [
+    { id: 'task1', description: 'Complete a learning module', completed: true, points: 15 },
+    { id: 'task2', description: 'Watch 5 financial reels', completed: false, points: 10 },
+    { id: 'task3', description: 'Play the scam detection game', completed: false, points: 20 }
+  ];
+  
+  // Daily tips - moved from Home page
+  const dailyTips = [
+    "Save ₹10 each day in a digital piggy bank. You'll have ₹3,650 by year-end!",
+    "Avoid late fees by setting up automatic bill payments through UPI.",
+    "Before buying something, ask yourself if it's a 'need' or a 'want'."
+  ];
+
+  // Featured modules - take first 2
+  const featuredModules = modules.slice(0, 2);
+
   return (
     <Layout>
       <div className="container px-4 pb-20">
@@ -50,12 +69,40 @@ export default function Profile() {
           </Button>
         </div>
         
+        {/* Daily stats - moved from Home page */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <Card className="text-center">
+            <CardContent className="p-4">
+              <Clock className="h-5 w-5 mx-auto mb-1 text-blue-500" />
+              <p className="text-2xl font-bold">5</p>
+              <p className="text-xs text-muted-foreground">Day streak</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="text-center">
+            <CardContent className="p-4">
+              <CheckCircle className="h-5 w-5 mx-auto mb-1 text-green-500" />
+              <p className="text-2xl font-bold">2/3</p>
+              <p className="text-xs text-muted-foreground">Tasks done</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="text-center">
+            <CardContent className="p-4">
+              <TrendingUp className="h-5 w-5 mx-auto mb-1 text-primary" />
+              <p className="text-2xl font-bold">{user.coins}</p>
+              <p className="text-xs text-muted-foreground">Coins earned</p>
+            </CardContent>
+          </Card>
+        </div>
+        
         {/* Tabs for different sections */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-3">
+          <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="saved">Saved</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
           </TabsList>
           
           {/* Overview tab */}
@@ -217,6 +264,86 @@ export default function Profile() {
                 </div>
               </TabsContent>
             </Tabs>
+          </TabsContent>
+          
+          {/* Tasks tab - moved from Home page */}
+          <TabsContent value="tasks" className="py-4">
+            <Card className="mb-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Your Daily Tasks</CardTitle>
+                <CardDescription>Complete tasks to earn coins</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {dailyTasks.map(task => (
+                  <div key={task.id} className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className={`h-5 w-5 rounded-full border flex items-center justify-center ${
+                        task.completed 
+                          ? "bg-primary border-primary" 
+                          : "border-muted-foreground"
+                      }`}>
+                        {task.completed && (
+                          <CheckCircle className="h-4 w-4 text-primary-foreground" />
+                        )}
+                      </div>
+                      <span className={`ml-3 text-sm ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                        {task.description}
+                      </span>
+                    </div>
+                    <Badge variant="outline">+{task.points} coins</Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Daily Financial Tip</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border-l-4 border-primary pl-3 py-1 italic text-sm">
+                  {dailyTips[0]}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <h3 className="font-medium mb-3 mt-6">Today's Learning Modules</h3>
+            <div className="space-y-3">
+              {featuredModules.map(module => (
+                <Card key={module.id} className="overflow-hidden">
+                  <div className="flex items-center">
+                    <div className="p-4 flex-1">
+                      <div className="flex justify-between mb-1">
+                        <Badge variant="outline">{module.category}</Badge>
+                        <Badge className={
+                          module.difficulty === "beginner" ? "bg-green-500" :
+                          module.difficulty === "intermediate" ? "bg-yellow-500" :
+                          "bg-red-500"
+                        }>
+                          {module.difficulty}
+                        </Badge>
+                      </div>
+                      <h4 className="font-medium">{module.name}</h4>
+                      <p className="text-xs text-muted-foreground mb-2">{module.description}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <BookOpen className="h-3 w-3 mr-1" />
+                          <span>{module.content.length} lessons</span>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-xs"
+                          onClick={() => navigate("/learn")}
+                        >
+                          Start <ArrowUpRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
