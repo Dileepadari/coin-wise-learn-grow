@@ -1,118 +1,152 @@
 
-import Layout from "@/components/layout/Layout";
-import { useApp } from "@/context/AppContext";
 import { useState } from "react";
-import ScamDetector from "@/components/fraud/ScamDetector";
+import Layout from "@/components/layout/Layout";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Clock, RefreshCcw } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, CheckCircle, ShieldAlert, MessageSquare, Trophy } from "lucide-react";
+import { scamExamples } from "@/data/mockData";
+import { useToast } from "@/hooks/use-toast";
+import { useApp } from "@/context/AppContext";
 
 export default function ScamDetectionGame() {
-  const { scamExamples } = useApp();
-  const [gameStarted, setGameStarted] = useState(false);
-  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
+  const { toast } = useToast();
+  const { user } = useApp();
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
-  const [timer, setTimer] = useState(30); // 30 second timer
   const [gameOver, setGameOver] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   
-  const startGame = () => {
-    setGameStarted(true);
-    setCurrentExampleIndex(0);
-    setScore(0);
-    setTimer(30);
-    setGameOver(false);
+  const handleAnswer = (isScam: boolean) => {
+    if (answered) return;
     
-    // Start timer
-    const interval = setInterval(() => {
-      setTimer(prevTimer => {
-        if (prevTimer <= 1) {
-          clearInterval(interval);
-          setGameOver(true);
-          return 0;
-        }
-        return prevTimer - 1;
+    setSelectedAnswer(isScam);
+    setAnswered(true);
+    
+    const currentScam = scamExamples[currentQuestion];
+    const isCorrect = isScam === currentScam.isScam;
+    
+    if (isCorrect) {
+      setScore(score + 10);
+      toast({
+        title: "Correct!",
+        description: currentScam.explanation,
+        variant: "default",
       });
-    }, 1000);
-    
-    // Clean up on unmount
-    return () => clearInterval(interval);
+    } else {
+      toast({
+        title: "Incorrect",
+        description: currentScam.explanation,
+        variant: "destructive",
+      });
+    }
   };
   
-  const handleNextExample = () => {
-    if (currentExampleIndex < scamExamples.length - 1) {
-      setCurrentExampleIndex(prevIndex => prevIndex + 1);
+  const nextQuestion = () => {
+    setAnswered(false);
+    setSelectedAnswer(null);
+    
+    if (currentQuestion < scamExamples.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
     } else {
       setGameOver(true);
     }
   };
   
+  const restartGame = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setGameOver(false);
+    setAnswered(false);
+    setSelectedAnswer(null);
+  };
+  
+  const currentScam = scamExamples[currentQuestion];
+  
   return (
     <Layout>
       <div className="container px-4 pb-20">
         <div className="py-6">
-          <h1 className="text-2xl font-bold">Scam Detection Game</h1>
-          <p className="text-muted-foreground">Test your knowledge and identify scams</p>
+          <h1 className="text-2xl font-bold">Scam Detection Challenge</h1>
+          <p className="text-muted-foreground">Learn to spot financial scams</p>
         </div>
         
-        {!gameStarted && !gameOver ? (
-          <div className="bg-card border rounded-lg p-6 text-center">
-            <div className="mb-6 flex justify-center">
-              <div className="h-24 w-24 bg-amber-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-12 w-12 text-amber-600" />
+        <div className="flex justify-between items-center mb-4">
+          <Badge variant="outline" className="flex gap-1">
+            <Trophy className="h-4 w-4" />
+            Score: {score}
+          </Badge>
+          <Badge variant="outline">
+            Question {currentQuestion + 1}/{scamExamples.length}
+          </Badge>
+        </div>
+        
+        {!gameOver ? (
+          <Card className="mb-6 overflow-hidden">
+            <CardHeader className="bg-muted/50">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg">Is this a scam?</CardTitle>
+                <Badge>{currentScam.tipCategory}</Badge>
               </div>
-            </div>
-            
-            <h2 className="text-xl font-semibold mb-2">Identify the message that can be potentially labelled as scam</h2>
-            <p className="text-muted-foreground mb-6">
-              You'll be shown several messages and you need to identify if they're scams or legitimate.
-            </p>
-            
-            <div className="flex justify-center space-x-3">
-              <Button onClick={startGame} size="lg">
-                START GAME
-              </Button>
-              <Button variant="outline" size="lg">
-                READ MORE
-              </Button>
-            </div>
-          </div>
-        ) : gameOver ? (
-          <div className="bg-card border rounded-lg p-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Game Over!</h2>
-            <p className="text-lg mb-4">Your score: {score} points</p>
-            
-            <div className="max-w-xs mx-auto mb-8">
-              <p className="mb-2 text-muted-foreground">
-                You've completed the scam detection challenge. The more you practice, the better you'll get at spotting scams!
-              </p>
-            </div>
-            
-            <Button onClick={startGame}>
-              <RefreshCcw className="mr-2 h-4 w-4" />
-              Play Again
-            </Button>
-          </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="bg-accent/30 p-4 rounded-md mb-6 flex">
+                <MessageSquare className="h-5 w-5 mr-3 text-primary flex-shrink-0" />
+                <p className="text-sm">{currentScam.message}</p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex gap-3">
+              {!answered ? (
+                <>
+                  <Button 
+                    onClick={() => handleAnswer(true)} 
+                    variant="outline" 
+                    className="flex-1 border-destructive border"
+                  >
+                    <AlertCircle className="h-4 w-4 mr-2 text-destructive" />
+                    It's a Scam
+                  </Button>
+                  <Button 
+                    onClick={() => handleAnswer(false)} 
+                    variant="outline" 
+                    className="flex-1 border-primary border"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                    It's Legitimate
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={nextQuestion} className="w-full">
+                  Next Question
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
         ) : (
-          <div className="space-y-6">
-            <div className="bg-card border rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                  <span className="text-sm font-medium">{timer} sec</span>
-                </div>
-                <div className="text-sm font-medium">
-                  Score: {score}
-                </div>
-              </div>
-              <Progress value={(timer / 30) * 100} className="h-2" />
-            </div>
-            
-            <ScamDetector 
-              example={scamExamples[currentExampleIndex]} 
-              onComplete={handleNextExample}
-            />
-          </div>
+          <Card className="text-center py-8">
+            <CardContent>
+              <ShieldAlert className="h-16 w-16 mx-auto text-primary mb-4" />
+              <h2 className="text-2xl font-bold mb-2">Game Complete!</h2>
+              <p className="mb-4">You scored {score} out of {scamExamples.length * 10} points</p>
+              <Button onClick={restartGame}>Play Again</Button>
+            </CardContent>
+          </Card>
         )}
+        
+        <div className="mt-8 bg-muted/30 p-4 rounded-lg">
+          <h3 className="font-medium mb-2 flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4 text-primary" />
+            Scam Detection Tips
+          </h3>
+          <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+            <li>Be suspicious of unexpected messages claiming you've won money or prizes</li>
+            <li>Banks will never ask for your PIN or full password over message or call</li>
+            <li>Don't click on suspicious links in messages or emails</li>
+            <li>Government jobs are never offered via text messages without a formal process</li>
+            <li>Be cautious of urgent requests demanding immediate action</li>
+          </ul>
+        </div>
       </div>
     </Layout>
   );
