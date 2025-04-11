@@ -29,7 +29,7 @@ export default function Community() {
       id: 'post3',
       userId: 'user4',
       userName: 'Sunita Patel',
-      content: 'Question: What's better - saving in a fixed deposit or trying small investments?',
+      content: "Question: What's better - saving in a fixed deposit or trying small investments?",
       likes: 8,
       timestamp: new Date(2023, 3, 12)
     }
