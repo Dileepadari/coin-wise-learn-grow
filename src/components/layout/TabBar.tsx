@@ -1,6 +1,6 @@
 
 import { useApp } from "@/context/AppContext";
-import { Home, BookOpen, MessageSquare, Users, User } from "lucide-react";
+import { Home, Gamepad2, BookOpen, Users, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -10,9 +10,15 @@ export default function TabBar() {
   const tabs = [
     {
       id: 'home',
-      label: 'Home',
+      label: 'Reels',
       icon: Home,
       path: '/'
+    },
+    {
+      id: 'games',
+      label: 'Games',
+      icon: Gamepad2,
+      path: '/games'
     },
     {
       id: 'learn',
@@ -25,12 +31,6 @@ export default function TabBar() {
       label: 'Community',
       icon: Users,
       path: '/community'
-    },
-    {
-      id: 'messages',
-      label: 'Messages',
-      icon: MessageSquare,
-      path: '/messages'
     },
     {
       id: 'profile',
