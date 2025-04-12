@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -7,7 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Gamepad2, Wallet, TrendingUp, ShieldAlert, Map, User, Trophy, ArrowRight } from "lucide-react";
+import { 
+  Gamepad2, 
+  Wallet, 
+  TrendingUp, 
+  ShieldAlert, 
+  Map, 
+  User, 
+  Trophy, 
+  ArrowRight, 
+  Home as HomeIcon, 
+  Building as BuildingIcon, 
+  Store as StoreIcon, 
+  Briefcase as BriefcaseIcon 
+} from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { motion } from "framer-motion";
 
@@ -133,7 +145,6 @@ export default function Games() {
     });
   };
   
-  // Featured achievements that can be earned in games
   const achievements = [
     {
       title: "Budget Master",
@@ -155,7 +166,6 @@ export default function Games() {
     }
   ];
   
-  // Show a random achievement animation occasionally
   const [showAchievement, setShowAchievement] = useState(false);
   const [currentAchievement, setCurrentAchievement] = useState(achievements[0]);
   
@@ -179,7 +189,6 @@ export default function Games() {
           <p className="text-muted-foreground">Learn finance through interactive gameplay</p>
         </div>
         
-        {/* Achievement notification */}
         {showAchievement && (
           <motion.div
             className="fixed top-24 right-4 bg-black/80 text-white p-4 rounded-lg shadow-lg z-50 flex items-center gap-3"
@@ -270,7 +279,6 @@ export default function Games() {
           ))}
         </Tabs>
         
-        {/* Game Map - only shown in simulation tab */}
         {activeTab === "simulation" && (
           <Card className="mb-6">
             <CardHeader>
@@ -287,49 +295,43 @@ export default function Games() {
                 <div className="absolute bottom-5 left-5 font-bold text-xl">S</div>
                 <div className="absolute top-5 left-5 font-bold text-xl">W</div>
                 
-                {/* City Map with locations */}
                 <div className="w-80 h-80 bg-black/80 rounded-md flex items-center justify-center relative">
-                  {/* Home location */}
                   <motion.div 
                     className="absolute bg-blue-500/70 w-16 h-16 rounded-md flex items-center justify-center flex-col"
                     style={{ top: '20%', left: '30%' }}
                     whileHover={{ scale: 1.1 }}
                   >
-                    <Home className="h-6 w-6 text-white" />
+                    <HomeIcon className="h-6 w-6 text-white" />
                     <span className="text-xs text-white">Home</span>
                   </motion.div>
                   
-                  {/* Bank location */}
                   <motion.div 
                     className="absolute bg-green-500/70 w-16 h-16 rounded-md flex items-center justify-center flex-col"
                     style={{ top: '30%', right: '20%' }}
                     whileHover={{ scale: 1.1 }}
                   >
-                    <Building className="h-6 w-6 text-white" />
+                    <BuildingIcon className="h-6 w-6 text-white" />
                     <span className="text-xs text-white">Bank</span>
                   </motion.div>
                   
-                  {/* Store location */}
                   <motion.div 
                     className="absolute bg-red-500/70 w-16 h-16 rounded-md flex items-center justify-center flex-col"
                     style={{ bottom: '20%', left: '25%' }}
                     whileHover={{ scale: 1.1 }}
                   >
-                    <Store className="h-6 w-6 text-white" />
+                    <StoreIcon className="h-6 w-6 text-white" />
                     <span className="text-xs text-white">Store</span>
                   </motion.div>
                   
-                  {/* Office location */}
                   <motion.div 
                     className="absolute bg-amber-500/70 w-16 h-16 rounded-md flex items-center justify-center flex-col"
                     style={{ bottom: '30%', right: '25%' }}
                     whileHover={{ scale: 1.1 }}
                   >
-                    <Briefcase className="h-6 w-6 text-white" />
+                    <BriefcaseIcon className="h-6 w-6 text-white" />
                     <span className="text-xs text-white">Work</span>
                   </motion.div>
                   
-                  {/* Player marker */}
                   <motion.div 
                     className="absolute bg-primary w-8 h-8 rounded-full border-4 border-white flex items-center justify-center"
                     style={{ top: '50%', left: '50%' }}
@@ -369,7 +371,6 @@ export default function Games() {
           </Card>
         )}
         
-        {/* Game Characters - only shown in simulation tab */}
         {activeTab === "simulation" && (
           <Card>
             <CardHeader>

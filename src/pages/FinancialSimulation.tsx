@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -8,15 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
 import { 
-  Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw, 
-  Home, Briefcase, ShoppingBag, AlertCircle, CheckCircle, TrendingUp,
-  Pencil, BookOpen
+  Map, 
+  UserCircle, 
+  Building, 
+  Store, 
+  ArrowRight, 
+  Coins, 
+  RefreshCw, 
+  Home, 
+  Briefcase, 
+  ShoppingBag, 
+  AlertCircle, 
+  CheckCircle, 
+  TrendingUp,
+  User as UserIcon
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { motion, AnimatePresence } from "framer-motion";
-import GameCharacter from "@/components/game/GameCharacter";
 import CharacterDialog from "@/components/game/CharacterDialog";
-import GameShopDialog from "@/components/game/GameShopDialog";
 
 // Game types
 type GameLocation = 'home' | 'bank' | 'store' | 'work' | 'market';
@@ -462,35 +469,6 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Handle buying items from shop
-  const handleBuyItem = (item: ShopItem) => {
-    if (gameMoney < item.price) {
-      toast("Not enough money!", {
-        description: "You can't afford this item right now.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Deduct cost
-    setGameMoney(prev => prev - item.price);
-    
-    // Add to inventory
-    setInventory(prev => [...prev, item.id]);
-    
-    // Apply effect
-    if (item.effect.startsWith('addSkill:')) {
-      const [_, skillName, amountStr] = item.effect.split(':');
-      const amount = parseInt(amountStr);
-      updateSkill(skillName, amount);
-    }
-    
-    toast(`Purchased ${item.name}!`, {
-      description: item.benefit,
-      icon: "🛍️"
-    });
-  };
-
   // Perform job to earn money
   const handleWorkShift = () => {
     const baseEarnings = 200;
@@ -642,7 +620,7 @@ export default function FinancialSimulation() {
                   </Button>
                   
                   <div className="h-24 flex items-center justify-center">
-                    <UserCircle className="h-16 w-16 text-primary" />
+                    <UserIcon className="h-16 w-16 text-primary" />
                   </div>
                 </div>
               </div>
@@ -883,30 +861,9 @@ export default function FinancialSimulation() {
               </Button>
               <Button onClick={() => {
                 setShowDialog(null);
-                
-                // Chance to gain skill based on character
-                if (Math.random() > 0.5) {
-                  const characterId = characters.find(c => c.name === dialogContent.character)?.id;
-                  if (characterId === 'banker') {
-                    updateSkill("Financial Knowledge", 1);
-                  } else if (characterId === 'boss') {
-                    updateSkill("Negotiation", 1);
-                  } else if (characterId === 'shopkeeper') {
-                    updateSkill("Budgeting", 1);
-                  } else if (characterId === 'investor') {
-                    updateSkill("Investment", 1);
-                  }
-                  
-                  toast("Character interaction complete", {
-                    description: "You gained some valuable financial advice and improved a skill!",
-                    icon: "📈"
-                  });
-                } else {
-                  toast("Character interaction complete", {
-                    description: "You gained some valuable financial advice!",
-                    icon: "💬"
-                  });
-                }
+                toast("Character interaction complete", {
+                  description: "You gained some valuable financial advice!"
+                });
               }}>
                 Ask for Advice
               </Button>

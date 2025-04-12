@@ -1,164 +1,144 @@
 
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { modules } from "@/data/mockData";
-import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import ModuleContentView from "@/components/learning/ModuleContentView";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
+import ModuleContentView from "@/components/learning/ModuleContentView";
+
+// Mock data
+import { learningModules } from "@/data/mockData";
 
 export default function ModuleView() {
-  const { moduleId } = useParams<{ moduleId: string }>();
+  const { moduleId } = useParams();
   const navigate = useNavigate();
-  const { user, updateProgress } = useApp();
-  const [module, setModule] = useState(modules.find(m => m.id === moduleId));
-  const [activeContentIndex, setActiveContentIndex] = useState(0);
+  const { addCoins } = useApp();
   
-  // Get current content item (lesson or quiz)
-  const allContent = [
-    ...(module?.content || []).map(item => ({ ...item, type: 'content' })),
-    ...(module?.quizzes || []).map(item => ({ ...item, type: 'quiz' }))
-  ];
+  const module = learningModules.find(m => m.id === moduleId);
+  const [currentContentIndex, setCurrentContentIndex] = useState(0);
+  const [completedContent, setCompletedContent] = useState<string[]>([]);
   
-  // Get module progress
-  const moduleProgress = user.progress.find(p => p.moduleId === moduleId);
-  const progress = moduleProgress?.progress || 0;
+  if (!module) {
+    return (
+      <Layout>
+        <div className="container px-4 py-8 text-center">
+          <h2 className="text-xl font-bold mb-4">Module not found</h2>
+          <Button onClick={() => navigate("/learn")}>Back to Learning</Button>
+        </div>
+      </Layout>
+    );
+  }
   
-  useEffect(() => {
-    if (!module) {
-      navigate('/learn');
-    }
+  const currentContent = module.content[currentContentIndex] || module.quizzes[currentContentIndex - module.content.length];
+  const isContentCompleted = completedContent.includes(currentContent.id);
+  const progress = Math.round((completedContent.length / (module.content.length + module.quizzes.length)) * 100);
+  
+  const handleContentComplete = (contentId: string) => {
+    if (completedContent.includes(contentId)) return;
     
-    // Update progress when content changes
-    const newProgressPercentage = Math.round(((activeContentIndex + 1) / allContent.length) * 100);
-    if (moduleId && newProgressPercentage > progress) {
-      updateProgress(moduleId, newProgressPercentage);
-    }
-  }, [module, navigate, moduleId, activeContentIndex, progress, allContent.length, updateProgress]);
-  
-  const handleBack = () => {
-    if (module?.category) {
-      navigate(`/learn/chapter/${module.category}`);
-    } else {
-      navigate('/learn');
-    }
+    setCompletedContent(prev => [...prev, contentId]);
+    
+    // Add coins as reward
+    const pointValue = currentContent.points || 5;
+    addCoins(pointValue);
+    
+    toast(
+      <div className="flex items-center gap-2">
+        <CheckCircle className="h-5 w-5 text-green-500" />
+        <div className="font-medium">Content completed!</div>
+      </div>,
+      {
+        description: `You earned ${pointValue} coins for completing this section.`,
+      }
+    );
   };
   
   const handleNext = () => {
-    if (activeContentIndex < allContent.length - 1) {
-      setActiveContentIndex(activeContentIndex + 1);
-      window.scrollTo(0, 0);
+    if (!isContentCompleted) {
+      handleContentComplete(currentContent.id);
+    }
+    
+    if (currentContentIndex < module.content.length + module.quizzes.length - 1) {
+      setCurrentContentIndex(prev => prev + 1);
+    } else {
+      // Module completed
+      toast(
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-5 w-5 text-green-500" />
+          <div className="font-medium">Module Completed!</div>
+        </div>,
+        {
+          description: `You've completed the ${module.name} module and earned ${module.totalPoints} points.`,
+        }
+      );
+      
+      // Navigate back to module list
+      navigate("/learn");
     }
   };
   
   const handlePrevious = () => {
-    if (activeContentIndex > 0) {
-      setActiveContentIndex(activeContentIndex - 1);
-      window.scrollTo(0, 0);
+    if (currentContentIndex > 0) {
+      setCurrentContentIndex(prev => prev - 1);
+    } else {
+      navigate("/learn");
     }
   };
-  
-  if (!module) {
-    return null;
-  }
-  
-  const currentContent = allContent[activeContentIndex];
+
+  // Determine if current content is a quiz or regular content
+  const isQuiz = currentContentIndex >= module.content.length;
+  const contentTitle = isQuiz 
+    ? module.quizzes[currentContentIndex - module.content.length].question 
+    : module.content[currentContentIndex].title;
   
   return (
     <Layout>
       <div className="container px-4 pb-20">
         <div className="py-6">
-          <Button variant="ghost" onClick={handleBack} className="pl-0 flex items-center mb-2">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to {module.category.charAt(0).toUpperCase() + module.category.slice(1)} Chapter
+          <Button 
+            variant="ghost" 
+            className="pl-0 flex items-center mb-4"
+            onClick={() => navigate("/learn")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Modules
           </Button>
           
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">{module.name}</h1>
-            <Badge variant="outline" className="capitalize">
-              {module.difficulty}
-            </Badge>
-          </div>
+          <h1 className="text-2xl font-bold">{module.name}</h1>
           <p className="text-muted-foreground">{module.description}</p>
-        </div>
-        
-        {/* Progress bar */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-1 text-xs text-muted-foreground">
-            <span>Progress: {progress}%</span>
-            <span>{activeContentIndex + 1} of {allContent.length}</span>
-          </div>
-          <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-primary rounded-full"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-        
-        {/* Content navigation */}
-        <div className="flex gap-1 mb-4 overflow-x-auto pb-2">
-          {allContent.map((content, index) => (
-            <Button
-              key={content.id}
-              variant={index === activeContentIndex ? "default" : "outline"}
-              size="sm"
-              className="flex-shrink-0 min-w-[40px] h-8 px-3"
-              onClick={() => setActiveContentIndex(index)}
-            >
-              {index + 1}
-            </Button>
-          ))}
-        </div>
-        
-        {/* Module content */}
-        <Card className="mb-4">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <BookOpen className="h-4 w-4 mr-2" />
-                {currentContent.title || (currentContent.type === 'quiz' ? `Quiz: ${currentContent.question}` : 'Lesson')}
-              </CardTitle>
-              <Badge>
-                {currentContent.type === 'quiz' ? 'Knowledge Check' : currentContent.type.charAt(0).toUpperCase() + currentContent.type.slice(1)}
-              </Badge>
-            </div>
-            <CardDescription>
-              {currentContent.type === 'quiz' ? 'Test your knowledge' : `${(activeContentIndex + 1)} of ${allContent.length}`}
-            </CardDescription>
-          </CardHeader>
           
-          <CardContent>
-            <ModuleContentView 
-              content={currentContent}
-              module={module}
-              onComplete={handleNext}
-            />
-          </CardContent>
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-sm font-medium">Progress: {progress}%</div>
+            <div className="text-sm text-muted-foreground">
+              {completedContent.length}/{module.content.length + module.quizzes.length} completed
+            </div>
+          </div>
+          <Progress value={progress} className="mt-2" />
+        </div>
+        
+        <Card className="mb-6 p-6">
+          <ModuleContentView 
+            content={currentContent} 
+            isCompleted={isContentCompleted}
+            onComplete={() => handleContentComplete(currentContent.id)}
+            moduleCategory={module.category}
+          />
         </Card>
         
-        {/* Navigation buttons */}
         <div className="flex justify-between mt-6">
-          <Button
-            variant="outline"
+          <Button 
+            variant="outline" 
             onClick={handlePrevious}
-            disabled={activeContentIndex === 0}
-            className="flex items-center"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
             Previous
           </Button>
           
-          <Button
-            onClick={handleNext}
-            disabled={activeContentIndex === allContent.length - 1}
-            className="flex items-center"
-          >
-            Next
-            <ArrowRight className="h-4 w-4 ml-1" />
+          <Button onClick={handleNext}>
+            {currentContentIndex < module.content.length + module.quizzes.length - 1 ? 'Next' : 'Finish Module'}
           </Button>
         </div>
       </div>
