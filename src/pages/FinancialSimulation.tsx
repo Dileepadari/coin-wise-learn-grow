@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -80,7 +79,7 @@ export default function FinancialSimulation() {
     if (!gameInitialized) {
       setDialogContent({
         title: 'Welcome to Financial City',
-        description: 'You've just moved to Financial City with ₹1,000 in your pocket. Your goal is to survive, grow your wealth, and learn smart financial habits along the way. Complete tasks, make wise choices, and see how your decisions affect your financial future.',
+        description: "You've just moved to Financial City with ₹1,000 in your pocket. Your goal is to survive, grow your wealth, and learn smart financial habits along the way. Complete tasks, make wise choices, and see how your decisions affect your financial future.",
         character: 'System',
         reward: 0
       });
