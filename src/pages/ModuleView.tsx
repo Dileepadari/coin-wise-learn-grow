@@ -10,15 +10,15 @@ import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import ModuleContentView from "@/components/learning/ModuleContentView";
 
-// Mock data
-import { learningModules } from "@/data/mockData";
+// Import modules instead of learningModules
+import { modules } from "@/data/mockData";
 
 export default function ModuleView() {
   const { moduleId } = useParams();
   const navigate = useNavigate();
   const { addCoins } = useApp();
   
-  const module = learningModules.find(m => m.id === moduleId);
+  const module = modules.find(m => m.id === moduleId);
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
   const [completedContent, setCompletedContent] = useState<string[]>([]);
   
@@ -123,9 +123,9 @@ export default function ModuleView() {
         <Card className="mb-6 p-6">
           <ModuleContentView 
             content={currentContent} 
-            isCompleted={isContentCompleted}
             onComplete={() => handleContentComplete(currentContent.id)}
             moduleCategory={module.category}
+            completed={isContentCompleted}
           />
         </Card>
         
