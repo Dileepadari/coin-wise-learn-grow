@@ -9,21 +9,25 @@ import { toast } from "sonner";
 import { 
   Map, 
   UserCircle, 
-  Building, 
-  Store, 
+  Building as BuildingIcon, 
+  Store as StoreIcon, 
   ArrowRight, 
   Coins, 
   RefreshCw, 
-  Home, 
-  Briefcase, 
+  Home as HomeIcon, 
+  Briefcase as BriefcaseIcon, 
   ShoppingBag, 
   AlertCircle, 
   CheckCircle, 
   TrendingUp,
-  User as UserIcon
+  User as UserIcon,
+  Pencil,
+  BookOpen
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CharacterDialog from "@/components/game/CharacterDialog";
+import { AnimatePresence, motion } from "framer-motion";
+import GameShopDialog from "@/components/game/GameShopDialog";
 
 // Game types
 type GameLocation = 'home' | 'bank' | 'store' | 'work' | 'market';
@@ -110,14 +114,12 @@ export default function FinancialSimulation() {
     { name: "Investment", level: 1, description: "Your knowledge of investment strategies", maxLevel: 10 }
   ]);
   
-  // Budget tracking
   const [budget, setBudget] = useState({
     income: 0,
     expenses: 0,
     savings: 0
   });
   
-  // Shop items by location
   const shopItems: Record<GameLocation, ShopItem[]> = {
     home: [],
     bank: [
@@ -194,7 +196,6 @@ export default function FinancialSimulation() {
     ]
   };
 
-  // Characters in the game
   const characters = [
     { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank', position: { x: 70, y: 50 }, avatar: '👩‍💼' },
     { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work', position: { x: 70, y: 30 }, avatar: '👨‍💼' },
@@ -203,7 +204,6 @@ export default function FinancialSimulation() {
     { id: 'roommate', name: 'Rahul', role: 'Your Roommate', location: 'home', position: { x: 40, y: 50 }, avatar: '👨' }
   ];
   
-  // Character dialog messages
   const characterDialogs: Record<string, string[]> = {
     banker: [
       "Welcome to City Bank! How can I help you today?",
@@ -237,7 +237,6 @@ export default function FinancialSimulation() {
     ]
   };
 
-  // Initialize the game with intro story
   useEffect(() => {
     if (!gameInitialized) {
       setDialogContent({
@@ -251,24 +250,23 @@ export default function FinancialSimulation() {
     }
   }, [gameInitialized]);
 
-  // Location descriptions and actions
   const locations = {
     home: {
       name: 'Home',
       description: 'Your apartment in Financial City',
-      icon: <Home className="h-8 w-8 text-blue-500" />,
+      icon: <HomeIcon className="h-8 w-8 text-blue-500" />,
       actions: ['Check Tasks', 'Rest', 'Budget Planning']
     },
     bank: {
       name: 'City Bank',
       description: 'Manage your accounts and investments',
-      icon: <Building className="h-8 w-8 text-green-500" />,
+      icon: <BuildingIcon className="h-8 w-8 text-green-500" />,
       actions: ['Open Account', 'Check Balance', 'Apply for Loan']
     },
     work: {
       name: 'Office',
       description: 'Your workplace where you earn money',
-      icon: <Briefcase className="h-8 w-8 text-amber-500" />,
+      icon: <BriefcaseIcon className="h-8 w-8 text-amber-500" />,
       actions: ['Start Shift', 'Ask for Raise', 'Learn New Skills']
     },
     store: {
@@ -285,11 +283,9 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Change location in the game
   const handleLocationChange = (location: GameLocation) => {
     setCurrentLocation(location);
     
-    // Random chance to trigger character interaction
     if (Math.random() > 0.7) {
       const locationCharacters = characters.filter(c => c.location === location);
       if (locationCharacters.length > 0) {
@@ -305,7 +301,6 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Handle action buttons for each location
   const handleAction = (action: string) => {
     switch(action) {
       case 'Start Shift':
@@ -315,7 +310,6 @@ export default function FinancialSimulation() {
         setShowDialog('budget');
         break;
       case 'Check Tasks':
-        // This functionality is already visible in the UI
         toast("Your tasks are displayed below", {
           description: "Complete tasks to earn rewards and progress in the game."
         });
@@ -332,7 +326,7 @@ export default function FinancialSimulation() {
         break;
       case 'Ask for Raise':
         const negotiationLevel = skills.find(s => s.name === "Negotiation")?.level || 1;
-        const successChance = negotiationLevel * 10; // 10% per level
+        const successChance = negotiationLevel * 10;
         
         if (Math.random() * 100 < successChance) {
           const raiseAmount = Math.floor(Math.random() * 50) + (negotiationLevel * 20);
@@ -355,7 +349,6 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Handle character interactions
   const handleCharacterInteraction = (characterId: string) => {
     const character = characters.find(c => c.id === characterId);
     if (!character) return;
@@ -375,7 +368,6 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Handle task selection
   const handleTaskSelect = (task: GameTask) => {
     if (currentLocation !== task.locationRequired) {
       toast(`You need to go to ${locations[task.locationRequired].name} to complete this task.`, {
@@ -386,7 +378,6 @@ export default function FinancialSimulation() {
 
     setActiveTask(task);
 
-    // If task requires money, check if player has enough
     if (task.requiredMoney && gameMoney < task.requiredMoney) {
       setDialogContent({
         title: 'Insufficient Funds',
@@ -398,17 +389,14 @@ export default function FinancialSimulation() {
       return;
     }
 
-    // Task completion logic
     if (task.requiredMoney) {
       setGameMoney(prev => prev - task.requiredMoney);
     }
 
-    // Mark task as completed
     setTasks(prev => prev.map(t => 
       t.id === task.id ? { ...t, completed: true } : t
     ));
 
-    // Increase relevant skills based on task
     if (task.title.includes("Budget") || task.title.includes("Groceries")) {
       updateSkill("Budgeting", 1);
     } else if (task.title.includes("Savings") || task.title.includes("Account")) {
@@ -424,7 +412,6 @@ export default function FinancialSimulation() {
     setShowDialog('task-complete');
   };
 
-  // Update a skill by a certain amount
   const updateSkill = (skillName: string, amount: number) => {
     setSkills(prev => prev.map(skill => {
       if (skill.name === skillName) {
@@ -435,16 +422,11 @@ export default function FinancialSimulation() {
     }));
   };
 
-  // Complete a task and get rewards
   const handleCompleteTask = () => {
     if (activeTask) {
-      // Add coins to user account
       addCoins(activeTask.reward);
-      
-      // Close dialog
       setShowDialog(null);
       
-      // Add new tasks randomly
       if (Math.random() > 0.5) {
         const newTaskId = `task${tasks.length + 1}`;
         const newLocations: GameLocation[] = ['bank', 'store', 'work', 'market'];
@@ -469,7 +451,6 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Perform job to earn money
   const handleWorkShift = () => {
     const baseEarnings = 200;
     const skillMultiplier = skills.find(s => s.name === "Financial Knowledge")?.level || 1;
@@ -482,7 +463,6 @@ export default function FinancialSimulation() {
       icon: <Coins className="h-4 w-4 text-green-500" />
     });
     
-    // Small chance to improve skills through work
     if (Math.random() > 0.8) {
       updateSkill("Financial Knowledge", 1);
       toast("Your financial knowledge improved through work experience!", {
@@ -491,20 +471,17 @@ export default function FinancialSimulation() {
     }
   };
 
-  // Advance to next day
   const handleNextDay = () => {
     setGameDay(prev => prev + 1);
     
-    // Reset daily tasks
     setTasks(prev => prev.map(task => 
       task.completed ? task : { ...task, completed: false }
     ));
     
-    // Apply passive income from investments if any
     const hasInvestments = inventory.some(i => i === 'savings_account' || i === 'stock_tips');
     if (hasInvestments) {
       const investmentSkill = skills.find(s => s.name === "Investment")?.level || 1;
-      const interestRate = 0.03 + (investmentSkill * 0.005); // 3% base + 0.5% per investment level
+      const interestRate = 0.03 + (investmentSkill * 0.005);
       const interestAmount = Math.floor(gameMoney * interestRate);
       
       if (interestAmount > 0) {
@@ -520,6 +497,27 @@ export default function FinancialSimulation() {
       description: "A new day with new opportunities.",
       icon: "🌅"
     });
+  };
+
+  const handleBuyItem = (item: ShopItem) => {
+    if (gameMoney >= item.price) {
+      setGameMoney(prev => prev - item.price);
+      setInventory(prev => [...prev, item.id]);
+      
+      if (item.effect.startsWith('addSkill:')) {
+        const [_, skillName, amountStr] = item.effect.split(':');
+        const amount = parseInt(amountStr);
+        updateSkill(skillName, amount);
+      }
+      
+      toast(`You purchased ${item.name}!`, {
+        description: `${item.benefit} has been added to your inventory.`
+      });
+    } else {
+      toast("Not enough money!", {
+        description: `You need ₹${item.price - gameMoney} more.`
+      });
+    }
   };
 
   return (
@@ -539,7 +537,6 @@ export default function FinancialSimulation() {
           </div>
         </div>
         
-        {/* Game World Map */}
         <Card className="mb-6 overflow-hidden">
           <CardHeader className="bg-muted/30">
             <div className="flex items-center justify-between">
@@ -554,7 +551,7 @@ export default function FinancialSimulation() {
                   className="flex items-center gap-1"
                   onClick={() => setShowShop(true)}
                 >
-                  <Store className="h-4 w-4" />
+                  <StoreIcon className="h-4 w-4" />
                   Shop
                 </Button>
                 <Button 
@@ -571,7 +568,6 @@ export default function FinancialSimulation() {
           </CardHeader>
           <CardContent className="p-6">
             <div className="bg-muted aspect-video rounded-lg relative overflow-hidden">
-              {/* Game Map UI */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
                   <Button 
@@ -579,7 +575,7 @@ export default function FinancialSimulation() {
                     className="h-24 flex-col gap-1"
                     onClick={() => handleLocationChange('home')}
                   >
-                    <Home className="h-8 w-8" />
+                    <HomeIcon className="h-8 w-8" />
                     <span>Home</span>
                   </Button>
                   
@@ -588,7 +584,7 @@ export default function FinancialSimulation() {
                     className="h-24 flex-col gap-1"
                     onClick={() => handleLocationChange('bank')}
                   >
-                    <Building className="h-8 w-8" />
+                    <BuildingIcon className="h-8 w-8" />
                     <span>Bank</span>
                   </Button>
                   
@@ -597,7 +593,7 @@ export default function FinancialSimulation() {
                     className="h-24 flex-col gap-1"
                     onClick={() => handleLocationChange('store')}
                   >
-                    <Store className="h-8 w-8" />
+                    <StoreIcon className="h-8 w-8" />
                     <span>Store</span>
                   </Button>
                   
@@ -606,7 +602,7 @@ export default function FinancialSimulation() {
                     className="h-24 flex-col gap-1"
                     onClick={() => handleLocationChange('work')}
                   >
-                    <Briefcase className="h-8 w-8" />
+                    <BriefcaseIcon className="h-8 w-8" />
                     <span>Work</span>
                   </Button>
                   
@@ -625,24 +621,33 @@ export default function FinancialSimulation() {
                 </div>
               </div>
               
-              {/* Game Characters */}
               <AnimatePresence>
                 {characters
                   .filter(c => c.location === currentLocation)
                   .map(character => (
-                    <GameCharacter
+                    <motion.div
                       key={character.id}
-                      name={character.name}
-                      role={character.role}
-                      position={character.position}
-                      avatar={character.avatar}
-                      onInteract={() => handleCharacterInteraction(character.id)}
-                    />
+                      className="absolute"
+                      style={{ 
+                        top: `${character.position.y}%`, 
+                        left: `${character.position.x}%` 
+                      }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                      onClick={() => handleCharacterInteraction(character.id)}
+                    >
+                      <div className="cursor-pointer flex flex-col items-center">
+                        <div className="text-3xl">{character.avatar}</div>
+                        <div className="text-xs font-medium mt-1">{character.name}</div>
+                        <div className="text-xs text-muted-foreground">{character.role}</div>
+                      </div>
+                    </motion.div>
                   ))}
               </AnimatePresence>
             </div>
             
-            {/* Current location info */}
             <div className="mt-4 p-4 border rounded-md">
               <div className="flex items-center mb-2">
                 {locations[currentLocation].icon}
@@ -665,11 +670,10 @@ export default function FinancialSimulation() {
           </CardContent>
         </Card>
         
-        {/* Player Stats */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <User className="h-5 w-5 mr-2" />
+              <UserIcon className="h-5 w-5 mr-2" />
               Your Skills
             </CardTitle>
           </CardHeader>
@@ -696,7 +700,6 @@ export default function FinancialSimulation() {
           </CardContent>
         </Card>
         
-        {/* Tasks */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -762,7 +765,6 @@ export default function FinancialSimulation() {
           </CardContent>
         </Card>
 
-        {/* Task Complete Dialog */}
         <Dialog open={showDialog === 'task-complete'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -789,7 +791,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Task Failed Dialog */}
         <Dialog open={showDialog === 'task-failed'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -815,7 +816,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Story Dialog */}
         <Dialog open={showDialog === 'story'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -838,7 +838,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Character Dialog */}
         <Dialog open={showDialog === 'character'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -871,7 +870,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Skills Dialog */}
         <Dialog open={showDialog === 'skills'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -903,13 +901,11 @@ export default function FinancialSimulation() {
                           setGameMoney(prev => prev - cost);
                           updateSkill(skill.name, 1);
                           toast(`${skill.name} improved to level ${skill.level + 1}!`, {
-                            description: "Your knowledge is growing.",
-                            icon: "📚"
+                            description: "Your knowledge is growing."
                           });
                         } else {
                           toast("Not enough money!", {
-                            description: `You need ₹${cost} to improve this skill.`,
-                            variant: "destructive"
+                            description: `You need ₹${cost} to improve this skill.`
                           });
                         }
                       }}
@@ -929,7 +925,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Budget Dialog */}
         <Dialog open={showDialog === 'budget'} onOpenChange={() => setShowDialog(null)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -977,17 +972,14 @@ export default function FinancialSimulation() {
                 Close
               </Button>
               <Button onClick={() => {
-                // Set aside some money for savings
                 const savingsAmount = Math.min(gameMoney * 0.2, gameMoney);
                 setGameMoney(prev => prev - savingsAmount);
                 setBudget(prev => ({...prev, savings: prev.savings + savingsAmount}));
                 
                 toast("Savings updated!", {
-                  description: `You set aside ₹${savingsAmount} for your future.`,
-                  icon: "💰"
+                  description: `You set aside ₹${savingsAmount} for your future.`
                 });
                 
-                // Improve budgeting skill
                 updateSkill("Budgeting", 1);
                 
                 setShowDialog(null);
@@ -998,7 +990,6 @@ export default function FinancialSimulation() {
           </DialogContent>
         </Dialog>
         
-        {/* Shop Dialog */}
         <GameShopDialog 
           isOpen={showShop} 
           onClose={() => setShowShop(false)}
