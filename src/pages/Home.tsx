@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import QuizPrompt from "@/components/quiz/QuizPrompt";
 import GameSuggestion from "@/components/game/GameSuggestion";
 import ModuleSuggestion from "@/components/learning/ModuleSuggestion";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Reel } from "@/types";
 
 export default function Home() {

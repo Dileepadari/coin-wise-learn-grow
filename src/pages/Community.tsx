@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { ThumbsUp, MessageSquare, Share2, MoreVertical, Edit, Trash2, X } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 export default function Community() {
   const { user } = useApp();

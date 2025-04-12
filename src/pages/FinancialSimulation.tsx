@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/context/AppContext";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw } from "lucide-react";
 
 export default function FinancialSimulation() {

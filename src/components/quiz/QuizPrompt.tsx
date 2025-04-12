@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
@@ -6,7 +5,7 @@ import { X, Award } from "lucide-react";
 import { scamExamples } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
-import { toast } from "../ui/sonner";
+import { toast } from "sonner";
 
 interface QuizPromptProps {
   onDismiss: () => void;
@@ -17,7 +16,6 @@ export default function QuizPrompt({ onDismiss, category }: QuizPromptProps) {
   const navigate = useNavigate();
   const { addCoins } = useApp();
   
-  // Get a relevant quiz based on category
   const quizContent = {
     fraud: {
       question: "Identify the message that can be potentially labelled as a scam",
@@ -74,7 +72,6 @@ export default function QuizPrompt({ onDismiss, category }: QuizPromptProps) {
   const quiz = quizContent[category as keyof typeof quizContent] || quizContent.basics;
   
   const handleStartQuiz = () => {
-    // Navigate to full quiz game or show celebration
     toast("Quiz completed! +10 coins", {
       icon: "🎉",
       description: "Great job learning about finance!"

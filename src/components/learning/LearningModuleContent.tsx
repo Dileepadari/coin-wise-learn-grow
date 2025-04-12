@@ -4,7 +4,8 @@ import { LearningModule } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/AppContext";
 import { CheckCircle, Play, Lightbulb, Award, ArrowRight, Share2 } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface LearningModuleContentProps {

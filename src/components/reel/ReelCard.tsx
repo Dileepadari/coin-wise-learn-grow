@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { ThumbsUp, Bookmark, ThumbsDown, Volume2, VolumeX, Globe, BrainCircuit, Share2 } from "lucide-react";
@@ -6,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { Reel } from "@/types";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import { useToast } from "../ui/use-toast";
-import { toast } from "../ui/sonner";
+import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface ReelCardProps {
   reel: Reel;

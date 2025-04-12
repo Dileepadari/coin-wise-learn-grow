@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Gamepad2, Wallet, TrendingUp, ShieldAlert, Map, User } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
