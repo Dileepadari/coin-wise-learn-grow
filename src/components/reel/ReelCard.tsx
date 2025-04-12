@@ -1,23 +1,25 @@
 
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { ThumbsUp, Bookmark, ThumbsDown, Volume2, VolumeX, Globe, BrainCircuit } from "lucide-react";
+import { ThumbsUp, Bookmark, ThumbsDown, Volume2, VolumeX, Globe, BrainCircuit, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Reel } from "@/types";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
+import { toast } from "../ui/sonner";
 
 interface ReelCardProps {
   reel: Reel;
   height?: string;
+  onCelebrate?: (message: string) => void;
 }
 
-export default function ReelCard({ reel, height = "h-[70vh]" }: ReelCardProps) {
+export default function ReelCard({ reel, height = "h-[70vh]", onCelebrate }: ReelCardProps) {
   const { user, likeContent, saveContent } = useApp();
   const [isMuted, setIsMuted] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   
   const isLiked = user.likedContent.includes(reel.id);
   const isSaved = user.savedContent.includes(reel.id);
@@ -25,11 +27,19 @@ export default function ReelCard({ reel, height = "h-[70vh]" }: ReelCardProps) {
   const toggleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     likeContent(reel.id);
+    
+    if (!isLiked) {
+      if (onCelebrate) onCelebrate("You liked this content! +2 coins");
+    }
   };
 
   const toggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     saveContent(reel.id);
+    
+    if (!isSaved) {
+      if (onCelebrate) onCelebrate("Content saved! You can access it anytime");
+    }
   };
 
   const toggleMute = (e: React.MouseEvent) => {
@@ -55,12 +65,32 @@ export default function ReelCard({ reel, height = "h-[70vh]" }: ReelCardProps) {
     // Simulate AI processing
     setTimeout(() => {
       setIsAiLoading(false);
-      toast({
+      const summaries = {
+        savings: "Saving small amounts regularly builds financial security. Even ₹10 daily adds up significantly over time.",
+        fraud: "Always verify suspicious messages and never click on unknown links to avoid scams.",
+        investment: "Starting with small, consistent investments can lead to better long-term financial growth.",
+        basics: "Effective budgeting helps manage money wisely. The 50-30-20 rule is a good starting point."
+      };
+      
+      const summary = summaries[reel.category as keyof typeof summaries] || 
+        "This content provides essential financial knowledge to help build better money habits.";
+      
+      uiToast({
         title: "AI Summary",
-        description: `Key Point: ${reel.title} - ${reel.content.split('.')[0]}.`,
+        description: summary,
         duration: 5000,
       });
+      
+      if (onCelebrate) onCelebrate("You earned 5 coins for using AI summary!");
     }, 1500);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast("Shared successfully!", {
+      icon: "✅",
+      description: "Content shared with your contacts"
+    });
   };
 
   return (
@@ -84,7 +114,7 @@ export default function ReelCard({ reel, height = "h-[70vh]" }: ReelCardProps) {
             </div>
           </div>
           
-          <p className="text-sm">{reel.content}</p>
+          <p className="text-sm mb-4">{reel.content}</p>
           
           <div className="flex flex-wrap gap-2 mt-4">
             {reel.moduleId && (
@@ -104,6 +134,16 @@ export default function ReelCard({ reel, height = "h-[70vh]" }: ReelCardProps) {
             >
               <BrainCircuit className="h-4 w-4" />
               {isAiLoading ? "Summarizing..." : "AI Summary"}
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20 flex items-center gap-1"
+              onClick={handleShare}
+            >
+              <Share2 className="h-4 w-4" />
+              Share
             </Button>
           </div>
         </div>

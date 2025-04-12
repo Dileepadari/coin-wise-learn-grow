@@ -1,10 +1,15 @@
 
-import Layout from "@/components/layout/Layout";
 import { useState } from "react";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ThumbsUp, MessageSquare, Share2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { ThumbsUp, MessageSquare, Share2, MoreVertical, Edit, Trash2, X } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/sonner";
 
 export default function Community() {
   const { user } = useApp();
@@ -36,6 +41,10 @@ export default function Community() {
   ]);
   
   const [newPost, setNewPost] = useState("");
+  const [editingPost, setEditingPost] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
   
   const handlePostSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +61,11 @@ export default function Community() {
     
     setPosts([post, ...posts]);
     setNewPost("");
+    
+    toast("Post shared successfully!", {
+      icon: "✅",
+      description: "Your community will see your post"
+    });
   };
   
   const formatTimestamp = (timestamp: Date) => {
@@ -73,6 +87,62 @@ export default function Community() {
     setPosts(posts.map(post => 
       post.id === postId ? { ...post, likes: post.likes + 1 } : post
     ));
+    
+    toast("Post liked!", {
+      icon: "👍"
+    });
+  };
+  
+  const handleStartEdit = (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      setEditingPost(postId);
+      setEditText(post.content);
+    }
+  };
+  
+  const handleSaveEdit = () => {
+    if (!editingPost) return;
+    
+    setPosts(posts.map(post => 
+      post.id === editingPost ? { ...post, content: editText } : post
+    ));
+    
+    setEditingPost(null);
+    setEditText("");
+    
+    toast("Post updated!", {
+      icon: "✅"
+    });
+  };
+  
+  const handleCancelEdit = () => {
+    setEditingPost(null);
+    setEditText("");
+  };
+  
+  const handleConfirmDelete = (postId: string) => {
+    setPostToDelete(postId);
+    setShowDeleteConfirm(true);
+  };
+  
+  const handleDeletePost = () => {
+    if (!postToDelete) return;
+    
+    setPosts(posts.filter(post => post.id !== postToDelete));
+    setShowDeleteConfirm(false);
+    setPostToDelete(null);
+    
+    toast("Post deleted", {
+      icon: "🗑️"
+    });
+  };
+  
+  const handleShare = (postId: string) => {
+    toast("Post shared!", {
+      icon: "✅",
+      description: "Your contacts will receive this post"
+    });
   };
   
   return (
@@ -85,7 +155,7 @@ export default function Community() {
         
         <div className="mb-6">
           <form onSubmit={handlePostSubmit} className="space-y-3">
-            <textarea
+            <Textarea
               className="w-full p-3 border rounded-lg resize-none min-h-[100px]"
               placeholder="Share your financial journey or ask a question..."
               value={newPost}
@@ -112,12 +182,56 @@ export default function Community() {
                 <div className="flex-1">
                   <div className="flex justify-between items-center mb-1">
                     <h3 className="font-medium">{post.userName}</h3>
-                    <span className="text-xs text-muted-foreground">
-                      {formatTimestamp(post.timestamp)}
-                    </span>
+                    
+                    <div className="flex items-center">
+                      <span className="text-xs text-muted-foreground mr-2">
+                        {formatTimestamp(post.timestamp)}
+                      </span>
+                      
+                      {post.userId === user.id && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleStartEdit(post.id)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Post
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleConfirmDelete(post.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Post
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </div>
                   
-                  <p className="text-sm mb-3">{post.content}</p>
+                  {editingPost === post.id ? (
+                    <div className="mb-3">
+                      <Textarea
+                        className="w-full p-2 border rounded-md resize-none mb-2"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                      />
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                          Cancel
+                        </Button>
+                        <Button size="sm" onClick={handleSaveEdit}>
+                          Save
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm mb-3">{post.content}</p>
+                  )}
                   
                   <div className="flex items-center space-x-4 text-muted-foreground text-sm">
                     <button 
@@ -130,10 +244,13 @@ export default function Community() {
                     
                     <button className="flex items-center space-x-1 hover:text-primary">
                       <MessageSquare className="h-4 w-4" />
-                      <span>Reply</span>
+                      <span>Comment</span>
                     </button>
                     
-                    <button className="flex items-center space-x-1 hover:text-primary">
+                    <button 
+                      className="flex items-center space-x-1 hover:text-primary"
+                      onClick={() => handleShare(post.id)}
+                    >
                       <Share2 className="h-4 w-4" />
                       <span>Share</span>
                     </button>
@@ -143,6 +260,27 @@ export default function Community() {
             </div>
           ))}
         </div>
+        
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Post</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this post? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDeletePost}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );

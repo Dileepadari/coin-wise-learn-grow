@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { useApp } from "@/context/AppContext";
 import { reels } from "@/data/mockData";
@@ -7,18 +7,53 @@ import ReelCard from "@/components/reel/ReelCard";
 import { ChevronUp, ChevronDown, BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import QuizPrompt from "@/components/quiz/QuizPrompt";
+import GameSuggestion from "@/components/game/GameSuggestion";
+import ModuleSuggestion from "@/components/learning/ModuleSuggestion";
+import { toast } from "@/components/ui/sonner";
+import { Reel } from "@/types";
 
 export default function Home() {
   const { user } = useApp();
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
+  const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
+  const [currentReel, setCurrentReel] = useState<Reel | null>(null);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    // Set current reel when index changes
+    setCurrentReel(reels[currentReelIndex]);
+
+    // Random chance to show a prompt after viewing a reel
+    if (Math.random() > 0.7) { // 30% chance of showing a prompt
+      const promptType = ['quiz', 'game', 'module'][Math.floor(Math.random() * 3)] as 'quiz' | 'game' | 'module';
+      setTimeout(() => {
+        setShowPrompt(promptType);
+      }, 2000);
+    } else {
+      setShowPrompt(null);
+    }
+  }, [currentReelIndex]);
 
   const handlePreviousReel = () => {
     setCurrentReelIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    setShowPrompt(null);
   };
 
   const handleNextReel = () => {
     setCurrentReelIndex((prev) => (prev < reels.length - 1 ? prev + 1 : prev));
+    setShowPrompt(null);
+  };
+
+  const handleDismissPrompt = () => {
+    setShowPrompt(null);
+  };
+
+  const handleCelebrate = (message: string) => {
+    toast(message, {
+      icon: "🎉",
+      className: "bg-primary text-primary-foreground",
+    });
   };
 
   return (
@@ -32,7 +67,7 @@ export default function Home() {
           >
             {reels.map((reel, index) => (
               <div key={reel.id} className="h-full w-full">
-                <ReelCard reel={reel} height="h-full" />
+                <ReelCard reel={reel} height="h-full" onCelebrate={handleCelebrate} />
               </div>
             ))}
           </div>
@@ -66,6 +101,19 @@ export default function Home() {
             {currentReelIndex + 1}/{reels.length}
           </div>
         </div>
+
+        {/* Conditional prompts */}
+        {showPrompt === 'quiz' && (
+          <QuizPrompt onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />
+        )}
+
+        {showPrompt === 'game' && (
+          <GameSuggestion onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />
+        )}
+
+        {showPrompt === 'module' && (
+          <ModuleSuggestion onDismiss={handleDismissPrompt} moduleId={currentReel?.moduleId} category={currentReel?.category || 'basics'} />
+        )}
       </div>
     </Layout>
   );

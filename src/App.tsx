@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Games from "./pages/Games";
 import ScamDetectionGame from "./pages/ScamDetectionGame";
+import FinancialSimulation from "./pages/FinancialSimulation";
 import Community from "./pages/Community";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/games" element={<Games />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/scam-game" element={<ScamDetectionGame />} />
+            <Route path="/financial-sim" element={<FinancialSimulation />} />
             <Route path="/community" element={<Community />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
