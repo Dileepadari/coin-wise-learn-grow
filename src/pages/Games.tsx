@@ -92,10 +92,8 @@ export default function Games() {
         icon: "🎮"
       });
     } else {
-      toast({
-        title: "Coming Soon",
-        description: "This game is still under development. Check back later!",
-        variant: "default"
+      toast("Coming Soon", {
+        description: "This game is still under development. Check back later!"
       });
     }
   };

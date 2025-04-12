@@ -1,293 +1,545 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
-import { Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw } from "lucide-react";
+import { Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw, Home, Briefcase, ShoppingBag, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+// Game types
+type GameLocation = 'home' | 'bank' | 'store' | 'work' | 'market';
+type GameTask = {
+  id: string;
+  title: string;
+  description: string;
+  reward: number;
+  requiredMoney?: number;
+  locationRequired: GameLocation;
+  completed: boolean;
+};
+
+type DialogType = 'task-complete' | 'task-failed' | 'story' | 'character' | 'shop' | null;
 
 export default function FinancialSimulation() {
+  const navigate = useNavigate();
   const { user, addCoins } = useApp();
-  const [scenario, setScenario] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(5000);
-  const [day, setDay] = useState<number>(1);
-  const [location, setLocation] = useState<'home' | 'bank' | 'market' | 'mall'>('home');
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-
-  const scenarios = [
+  const [currentLocation, setCurrentLocation] = useState<GameLocation>('home');
+  const [gameMoney, setGameMoney] = useState(1000);
+  const [gameDay, setGameDay] = useState(1);
+  const [activeTask, setActiveTask] = useState<GameTask | null>(null);
+  const [tasks, setTasks] = useState<GameTask[]>([
     {
-      id: 1,
-      title: "Monthly Salary",
-      description: "You just received your salary for this month. Your mom asked you to get groceries. How would you manage your money?",
-      options: [
-        {
-          text: "Save 20% first, then buy groceries",
-          outcome: "You saved ₹1,000 and still had enough for groceries. Good financial discipline!",
-          balanceChange: 0,
-          reward: 20
-        },
-        {
-          text: "Buy groceries first, save whatever is left",
-          outcome: "You spent on groceries but saved less than planned. Try to save first next time!",
-          balanceChange: -200,
-          reward: 5
-        },
-        {
-          text: "Buy groceries and some treats for yourself",
-          outcome: "You enjoyed the treats but didn't save anything. Think long-term!",
-          balanceChange: -500,
-          reward: 0
-        }
-      ]
+      id: 'task1',
+      title: 'Open a Savings Account',
+      description: 'Visit the bank and open a savings account to keep your money safe.',
+      reward: 50,
+      locationRequired: 'bank',
+      completed: false
     },
     {
-      id: 2,
-      title: "Unexpected Expense",
-      description: "Your phone broke and needs repair. It will cost ₹2,000. What will you do?",
-      options: [
-        {
-          text: "Use your emergency fund",
-          outcome: "Good job having an emergency fund! This is exactly what it's for.",
-          balanceChange: -2000,
-          reward: 30
-        },
-        {
-          text: "Borrow money from a friend",
-          outcome: "You got your phone fixed but now you're in debt. Remember to repay quickly!",
-          balanceChange: -2000,
-          reward: 10
-        },
-        {
-          text: "Use credit card and pay minimum due",
-          outcome: "Using credit card for emergencies works, but paying only minimum will cost you in interest.",
-          balanceChange: -500,
-          reward: 5
-        }
-      ]
+      id: 'task2',
+      title: 'Buy Groceries',
+      description: 'Your family needs groceries. Buy them wisely and stay within budget.',
+      reward: 30,
+      requiredMoney: 200,
+      locationRequired: 'store',
+      completed: false
     },
     {
-      id: 3,
-      title: "Investment Opportunity",
-      description: "A friend tells you about an investment opportunity that promises 50% returns in 1 month. What do you do?",
-      options: [
-        {
-          text: "Research thoroughly before investing",
-          outcome: "You found it was a scam! Your research saved you from losing money.",
-          balanceChange: 0,
-          reward: 50
-        },
-        {
-          text: "Invest a small amount to test",
-          outcome: "It turned out to be a scam. You lost some money but learned an important lesson.",
-          balanceChange: -1000,
-          reward: 10
-        },
-        {
-          text: "Invest a large amount for big returns",
-          outcome: "It was a scam! You lost a significant amount. Be careful of schemes promising unrealistic returns.",
-          balanceChange: -3000,
-          reward: 0
-        }
-      ]
+      id: 'task3',
+      title: 'Complete Your Work Shift',
+      description: 'Go to work and complete your daily tasks to earn money.',
+      reward: 20,
+      locationRequired: 'work',
+      completed: false
     }
+  ]);
+  const [showDialog, setShowDialog] = useState<DialogType>(null);
+  const [dialogContent, setDialogContent] = useState({
+    title: '',
+    description: '',
+    character: '',
+    reward: 0
+  });
+  const [showStory, setShowStory] = useState(true);
+  const [gameInitialized, setGameInitialized] = useState(false);
+
+  // Characters in the game
+  const characters = [
+    { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank' },
+    { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work' },
+    { id: 'shopkeeper', name: 'Amit', role: 'Store Owner', location: 'store' }
   ];
 
-  const currentScenario = scenarios[scenario];
-
+  // Initialize the game with intro story
   useEffect(() => {
-    // Show welcome message
-    toast("Welcome to Financial Simulation!", {
-      description: "Make financial decisions and see their impact in this virtual world"
-    });
-  }, []);
-
-  const handleOptionSelect = (optionIndex: number) => {
-    const option = currentScenario.options[optionIndex];
-    
-    // Update balance
-    setBalance(prev => prev + option.balanceChange);
-    
-    // Show outcome
-    toast(option.outcome, {
-      icon: option.balanceChange >= 0 ? "✅" : "ℹ️",
-      description: option.balanceChange > 0 ? `+₹${option.balanceChange}` : 
-                  option.balanceChange < 0 ? `-₹${Math.abs(option.balanceChange)}` : ""
-    });
-    
-    // Award coins
-    if (option.reward > 0) {
-      setTimeout(() => {
-        addCoins(option.reward);
-        setShowCelebration(true);
-        toast(`+${option.reward} coins!`, { 
-          icon: "🪙",
-          className: "bg-amber-500 text-white" 
-        });
-        
-        setTimeout(() => {
-          setShowCelebration(false);
-        }, 2000);
-      }, 1000);
+    if (!gameInitialized) {
+      setDialogContent({
+        title: 'Welcome to Financial City',
+        description: 'You've just moved to Financial City with ₹1,000 in your pocket. Your goal is to survive, grow your wealth, and learn smart financial habits along the way. Complete tasks, make wise choices, and see how your decisions affect your financial future.',
+        character: 'System',
+        reward: 0
+      });
+      setShowDialog('story');
+      setGameInitialized(true);
     }
+  }, [gameInitialized]);
+
+  // Location descriptions and actions
+  const locations = {
+    home: {
+      name: 'Home',
+      description: 'Your apartment in Financial City',
+      icon: <Home className="h-8 w-8 text-blue-500" />,
+      actions: ['Check Tasks', 'Rest', 'Budget Planning']
+    },
+    bank: {
+      name: 'City Bank',
+      description: 'Manage your accounts and investments',
+      icon: <Building className="h-8 w-8 text-green-500" />,
+      actions: ['Open Account', 'Check Balance', 'Apply for Loan']
+    },
+    work: {
+      name: 'Office',
+      description: 'Your workplace where you earn money',
+      icon: <Briefcase className="h-8 w-8 text-amber-500" />,
+      actions: ['Start Shift', 'Ask for Raise', 'Learn New Skills']
+    },
+    store: {
+      name: 'Grocery Store',
+      description: 'Buy essentials and groceries',
+      icon: <ShoppingBag className="h-8 w-8 text-red-500" />,
+      actions: ['Buy Groceries', 'Compare Prices', 'Use Coupons']
+    },
+    market: {
+      name: 'Financial Market',
+      description: 'Trade stocks and investments',
+      icon: <TrendingUp className="h-8 w-8 text-purple-500" />,
+      actions: ['Buy Stocks', 'Sell Stocks', 'Research Market']
+    }
+  };
+
+  // Change location in the game
+  const handleLocationChange = (location: GameLocation) => {
+    setCurrentLocation(location);
     
-    // Move to next scenario or finish game
-    setTimeout(() => {
-      if (scenario < scenarios.length - 1) {
-        setScenario(scenario + 1);
-        setDay(day + 1);
-      } else {
-        setGameCompleted(true);
-        toast("Game completed!", {
-          icon: "🎉",
-          description: "You've learned valuable financial lessons"
+    // Random chance to trigger character interaction
+    if (Math.random() > 0.7) {
+      const locationCharacters = characters.filter(c => c.location === location);
+      if (locationCharacters.length > 0) {
+        const character = locationCharacters[0];
+        setDialogContent({
+          title: `Meeting with ${character.name}`,
+          description: `"Hello there! I'm ${character.name}, the ${character.role}. What can I help you with today?"`,
+          character: character.name,
+          reward: 0
+        });
+        setShowDialog('character');
+      }
+    }
+  };
+
+  // Handle task selection
+  const handleTaskSelect = (task: GameTask) => {
+    if (currentLocation !== task.locationRequired) {
+      toast(`You need to go to ${locations[task.locationRequired].name} to complete this task.`, {
+        icon: <AlertCircle className="h-4 w-4 text-amber-500" />
+      });
+      return;
+    }
+
+    setActiveTask(task);
+
+    // If task requires money, check if player has enough
+    if (task.requiredMoney && gameMoney < task.requiredMoney) {
+      setDialogContent({
+        title: 'Insufficient Funds',
+        description: `You need ₹${task.requiredMoney} to complete this task, but you only have ₹${gameMoney}.`,
+        character: 'System',
+        reward: 0
+      });
+      setShowDialog('task-failed');
+      return;
+    }
+
+    // Task completion logic
+    if (task.requiredMoney) {
+      setGameMoney(prev => prev - task.requiredMoney);
+    }
+
+    // Mark task as completed
+    setTasks(prev => prev.map(t => 
+      t.id === task.id ? { ...t, completed: true } : t
+    ));
+
+    setDialogContent({
+      title: 'Task Completed!',
+      description: `You have successfully completed "${task.title}". You've earned ${task.reward} coins and learned valuable financial skills.`,
+      character: 'System',
+      reward: task.reward
+    });
+    setShowDialog('task-complete');
+  };
+
+  // Complete a task and get rewards
+  const handleCompleteTask = () => {
+    if (activeTask) {
+      // Add coins to user account
+      addCoins(activeTask.reward);
+      
+      // Close dialog
+      setShowDialog(null);
+      
+      // Add new tasks randomly
+      if (Math.random() > 0.5) {
+        const newTaskId = `task${tasks.length + 1}`;
+        const newLocations: GameLocation[] = ['bank', 'store', 'work', 'market'];
+        const randomLocation = newLocations[Math.floor(Math.random() * newLocations.length)];
+        
+        const newTask: GameTask = {
+          id: newTaskId,
+          title: `New Financial Challenge ${tasks.length + 1}`,
+          description: `A new challenge has appeared. Go to ${locations[randomLocation].name} to complete it.`,
+          reward: Math.floor(Math.random() * 50) + 20,
+          locationRequired: randomLocation,
+          completed: false
+        };
+        
+        setTasks(prev => [...prev, newTask]);
+        
+        toast("New task available!", {
+          description: "Check your task list for a new financial challenge.",
+          icon: "📝"
         });
       }
-    }, 2000);
+    }
   };
 
-  const handleLocationChange = (loc: 'home' | 'bank' | 'market' | 'mall') => {
-    setLocation(loc);
+  // Perform job to earn money
+  const handleWorkShift = () => {
+    const earnings = Math.floor(Math.random() * 300) + 200;
+    setGameMoney(prev => prev + earnings);
     
-    const messages = {
-      home: "Welcome home! This is where you can rest and plan your finances.",
-      bank: "Welcome to the bank! Here you can manage your savings and investments.",
-      market: "The market has all essential items you need for daily life.",
-      mall: "The mall has many tempting items! Be careful with your spending."
-    };
-    
-    toast(messages[loc]);
+    toast(`You earned ₹${earnings} from your work shift!`, {
+      icon: <Coins className="h-4 w-4 text-green-500" />
+    });
   };
 
-  const handleRestartGame = () => {
-    setScenario(0);
-    setBalance(5000);
-    setDay(1);
-    setLocation('home');
-    setGameCompleted(false);
+  // Advance to next day
+  const handleNextDay = () => {
+    setGameDay(prev => prev + 1);
+    
+    // Reset daily tasks
+    setTasks(prev => prev.map(task => 
+      task.completed ? task : { ...task, completed: false }
+    ));
+    
+    toast(`Day ${gameDay + 1} begins!`, {
+      description: "A new day with new opportunities.",
+      icon: "🌅"
+    });
   };
 
   return (
     <Layout>
       <div className="container px-4 pb-20">
-        <div className="py-3">
-          <h1 className="text-2xl font-bold">Financial Life Simulator</h1>
-          <div className="flex justify-between items-center">
-            <p className="text-muted-foreground">Day {day} - Make wise financial decisions</p>
-            <Badge variant="outline" className="bg-primary/10">
-              Balance: ₹{balance.toLocaleString()}
+        <div className="py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Financial City</h1>
+            <p className="text-muted-foreground">Your financial life simulator</p>
+          </div>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Coins className="h-4 w-4 text-amber-500" />
+              ₹{gameMoney}
             </Badge>
+            <Badge variant="outline">Day {gameDay}</Badge>
           </div>
         </div>
-
-        {/* Map and location selection */}
-        <Card className="mb-4">
-          <CardContent className="p-4">
-            <h3 className="font-medium mb-2 flex items-center">
-              <Map className="h-4 w-4 mr-2" />
-              Location
-            </h3>
-            
-            <div className="grid grid-cols-4 gap-2 mb-4">
+        
+        {/* Game World Map */}
+        <Card className="mb-6 overflow-hidden">
+          <CardHeader className="bg-muted/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Map className="h-5 w-5 mr-2 text-primary" />
+                <CardTitle>Financial City Map</CardTitle>
+              </div>
               <Button 
-                variant={location === 'home' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleLocationChange('home')}
+                size="sm" 
+                variant="outline" 
+                className="flex items-center gap-1"
+                onClick={handleNextDay}
               >
-                <UserCircle className="h-4 w-4 mr-1" />
-                Home
-              </Button>
-              
-              <Button 
-                variant={location === 'bank' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleLocationChange('bank')}
-              >
-                <Building className="h-4 w-4 mr-1" />
-                Bank
-              </Button>
-              
-              <Button 
-                variant={location === 'market' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleLocationChange('market')}
-              >
-                <Store className="h-4 w-4 mr-1" />
-                Market
-              </Button>
-              
-              <Button 
-                variant={location === 'mall' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => handleLocationChange('mall')}
-              >
-                <Store className="h-4 w-4 mr-1" />
-                Mall
+                <RefreshCw className="h-4 w-4" />
+                Next Day
               </Button>
             </div>
-            
-            <div className="h-40 bg-muted/30 rounded-md flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-3xl mb-1">
-                  {location === 'home' && '🏠'}
-                  {location === 'bank' && '🏦'}
-                  {location === 'market' && '🛒'}
-                  {location === 'mall' && '🏬'}
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="bg-muted aspect-video rounded-lg relative overflow-hidden">
+              {/* Game Map UI */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
+                  <Button 
+                    variant={currentLocation === 'home' ? "default" : "outline"}
+                    className="h-24 flex-col gap-1"
+                    onClick={() => handleLocationChange('home')}
+                  >
+                    <Home className="h-8 w-8" />
+                    <span>Home</span>
+                  </Button>
+                  
+                  <Button 
+                    variant={currentLocation === 'bank' ? "default" : "outline"}
+                    className="h-24 flex-col gap-1"
+                    onClick={() => handleLocationChange('bank')}
+                  >
+                    <Building className="h-8 w-8" />
+                    <span>Bank</span>
+                  </Button>
+                  
+                  <Button 
+                    variant={currentLocation === 'store' ? "default" : "outline"}
+                    className="h-24 flex-col gap-1"
+                    onClick={() => handleLocationChange('store')}
+                  >
+                    <Store className="h-8 w-8" />
+                    <span>Store</span>
+                  </Button>
+                  
+                  <Button 
+                    variant={currentLocation === 'work' ? "default" : "outline"}
+                    className="h-24 flex-col gap-1"
+                    onClick={() => handleLocationChange('work')}
+                  >
+                    <Briefcase className="h-8 w-8" />
+                    <span>Work</span>
+                  </Button>
+                  
+                  <Button 
+                    variant={currentLocation === 'market' ? "default" : "outline"}
+                    className="h-24 flex-col gap-1"
+                    onClick={() => handleLocationChange('market')}
+                  >
+                    <TrendingUp className="h-8 w-8" />
+                    <span>Market</span>
+                  </Button>
+                  
+                  <div className="h-24 flex items-center justify-center">
+                    <UserCircle className="h-16 w-16 text-primary" />
+                  </div>
                 </div>
-                <p>You are at the {location}</p>
+              </div>
+            </div>
+            
+            {/* Current location info */}
+            <div className="mt-4 p-4 border rounded-md">
+              <div className="flex items-center mb-2">
+                {locations[currentLocation].icon}
+                <h2 className="text-xl font-bold ml-2">{locations[currentLocation].name}</h2>
+              </div>
+              <p className="text-muted-foreground mb-4">{locations[currentLocation].description}</p>
+              
+              <div className="grid grid-cols-3 gap-2">
+                {locations[currentLocation].actions.map((action, index) => (
+                  <Button 
+                    key={index} 
+                    variant="outline"
+                    onClick={() => {
+                      if (action === 'Start Shift') {
+                        handleWorkShift();
+                      } else {
+                        toast(`Action: ${action}`, {
+                          description: "This feature will be available in the next update!",
+                        });
+                      }
+                    }}
+                  >
+                    {action}
+                  </Button>
+                ))}
               </div>
             </div>
           </CardContent>
         </Card>
         
-        {/* Current Scenario */}
-        {!gameCompleted ? (
-          <Card className={`mb-4 ${showCelebration ? 'animate-pulse border-amber-400' : ''}`}>
-            <CardContent className="p-4">
-              <h3 className="font-medium mb-1">{currentScenario.title}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{currentScenario.description}</p>
-              
-              <div className="space-y-2">
-                {currentScenario.options.map((option, index) => (
-                  <Button 
-                    key={index}
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto py-3 px-4"
-                    onClick={() => handleOptionSelect(index)}
+        {/* Tasks */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <UserCircle className="h-5 w-5 mr-2" />
+              Current Tasks
+            </CardTitle>
+            <CardDescription>Complete tasks to earn rewards</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {tasks.filter(task => !task.completed).map(task => (
+                <div 
+                  key={task.id} 
+                  className={`p-3 border rounded-md flex justify-between items-center
+                    ${currentLocation === task.locationRequired ? 'border-primary' : ''}`}
+                >
+                  <div>
+                    <h4 className="font-medium">{task.title}</h4>
+                    <p className="text-xs text-muted-foreground">{task.description}</p>
+                    <div className="flex items-center mt-1">
+                      <Badge variant="outline" className="mr-2 text-xs">
+                        Location: {locations[task.locationRequired].name}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs flex items-center">
+                        <Coins className="h-3 w-3 mr-1 text-amber-500" />
+                        {task.reward} reward
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <Button
+                    size="sm"
+                    disabled={currentLocation !== task.locationRequired}
+                    onClick={() => handleTaskSelect(task)}
                   >
-                    <span>{option.text}</span>
-                    <ArrowRight className="h-4 w-4 ml-auto" />
+                    Complete
                   </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="mb-4">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold mb-2">Game Completed!</h3>
-              <p className="mb-4">Final Balance: ₹{balance.toLocaleString()}</p>
+                </div>
+              ))}
               
-              <div className="bg-muted/30 p-3 rounded-md mb-4 text-left">
-                <h4 className="font-medium mb-2">What you learned:</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                  <li>The importance of saving before spending</li>
-                  <li>How to handle unexpected expenses</li>
-                  <li>Identifying potential financial scams</li>
-                  <li>Making thoughtful financial decisions</li>
-                </ul>
-              </div>
+              {tasks.filter(task => !task.completed).length === 0 && (
+                <div className="text-center p-4">
+                  <p className="text-muted-foreground">All tasks completed! Check back tomorrow for new tasks.</p>
+                </div>
+              )}
+            </div>
+            
+            {tasks.some(task => task.completed) && (
+              <>
+                <h4 className="font-medium mt-6 mb-2">Completed Tasks</h4>
+                <div className="space-y-2">
+                  {tasks.filter(task => task.completed).map(task => (
+                    <div key={task.id} className="p-2 rounded-md bg-muted/30 flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                      <span className="text-sm">{task.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Task Complete Dialog */}
+        <Dialog open={showDialog === 'task-complete'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                {dialogContent.title}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p>{dialogContent.description}</p>
               
-              <Button className="w-full" onClick={handleRestartGame}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Play Again
+              <div className="mt-4 p-4 bg-green-50 rounded-md text-center animate-pulse">
+                <Coins className="h-8 w-8 text-amber-500 mx-auto mb-2" />
+                <p className="text-green-700 font-medium">+{dialogContent.reward} coins added to your account!</p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button onClick={handleCompleteTask}>
+                Continue
               </Button>
-            </CardContent>
-          </Card>
-        )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Task Failed Dialog */}
+        <Dialog open={showDialog === 'task-failed'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                {dialogContent.title}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p>{dialogContent.description}</p>
+              
+              <div className="mt-4 p-4 bg-red-50 rounded-md">
+                <p className="text-red-700 text-sm">Tip: You might need to work more to earn money before attempting this task.</p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button onClick={() => setShowDialog(null)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Story Dialog */}
+        <Dialog open={showDialog === 'story'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{dialogContent.title}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p>{dialogContent.description}</p>
+              
+              <div className="mt-4 p-4 bg-blue-50 rounded-md">
+                <p className="text-blue-700 text-sm">Your financial journey begins! Make smart choices and see how far you can go.</p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button onClick={() => setShowDialog(null)}>
+                Start Game
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Character Dialog */}
+        <Dialog open={showDialog === 'character'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{dialogContent.title}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4 flex items-start space-x-4">
+              <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center text-xl">
+                👤
+              </div>
+              <div>
+                <h3 className="font-medium">{dialogContent.character}</h3>
+                <p className="mt-2">{dialogContent.description}</p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDialog(null)}>
+                Close
+              </Button>
+              <Button onClick={() => {
+                setShowDialog(null);
+                toast("Character interaction complete", {
+                  description: "You gained some valuable financial advice!"
+                });
+              }}>
+                Ask for Advice
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );

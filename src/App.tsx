@@ -9,10 +9,13 @@ import { AppProvider } from "./context/AppContext";
 // Pages
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
+import ChapterView from "./pages/ChapterView";
+import ModuleView from "./pages/ModuleView";
 import Games from "./pages/Games";
 import ScamDetectionGame from "./pages/ScamDetectionGame";
 import FinancialSimulation from "./pages/FinancialSimulation";
 import Community from "./pages/Community";
+import CreatePost from "./pages/CreatePost";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Login from "./pages/auth/Login";
@@ -39,9 +42,12 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
             <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/chapter/:category" element={<ChapterView />} />
+            <Route path="/learn/module/:moduleId" element={<ModuleView />} />
             <Route path="/scam-game" element={<ScamDetectionGame />} />
             <Route path="/financial-sim" element={<FinancialSimulation />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/create-post" element={<CreatePost />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
             

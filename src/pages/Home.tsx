@@ -4,7 +4,7 @@ import Layout from "@/components/layout/Layout";
 import { useApp } from "@/context/AppContext";
 import { reels } from "@/data/mockData";
 import ReelCard from "@/components/reel/ReelCard";
-import { ChevronUp, ChevronDown, BrainCircuit } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import QuizPrompt from "@/components/quiz/QuizPrompt";
@@ -18,18 +18,22 @@ export default function Home() {
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
   const [currentReel, setCurrentReel] = useState<Reel | null>(null);
+  const [reelViewCount, setReelViewCount] = useState(0);
   const isMobile = useIsMobile();
 
   useEffect(() => {
     // Set current reel when index changes
     setCurrentReel(reels[currentReelIndex]);
+    
+    // Increment view count
+    setReelViewCount(prev => prev + 1);
 
-    // Random chance to show a prompt after viewing a reel
-    if (Math.random() > 0.7) { // 30% chance of showing a prompt
+    // Logic to show random prompts
+    if (reelViewCount > 0 && reelViewCount % 2 === 0) { // Show suggestion every 2 reels
       const promptType = ['quiz', 'game', 'module'][Math.floor(Math.random() * 3)] as 'quiz' | 'game' | 'module';
       setTimeout(() => {
         setShowPrompt(promptType);
-      }, 2000);
+      }, 1000);
     } else {
       setShowPrompt(null);
     }

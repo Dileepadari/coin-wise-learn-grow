@@ -1,16 +1,18 @@
+
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { ThumbsUp, MessageSquare, Share2, MoreVertical, Edit, Trash2, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { ThumbsUp, Share2, MoreVertical, Edit, Trash2, X, Plus } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Community() {
+  const navigate = useNavigate();
   const { user } = useApp();
   const [posts, setPosts] = useState([
     {
@@ -39,32 +41,13 @@ export default function Community() {
     }
   ]);
   
-  const [newPost, setNewPost] = useState("");
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   
-  const handlePostSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPost.trim()) return;
-    
-    const post = {
-      id: `post-${Date.now()}`,
-      userId: user.id,
-      userName: `${user.firstName} ${user.lastName}`,
-      content: newPost,
-      likes: 0,
-      timestamp: new Date()
-    };
-    
-    setPosts([post, ...posts]);
-    setNewPost("");
-    
-    toast("Post shared successfully!", {
-      icon: "✅",
-      description: "Your community will see your post"
-    });
+  const handleCreatePost = () => {
+    navigate("/create-post");
   };
   
   const formatTimestamp = (timestamp: Date) => {
@@ -147,25 +130,15 @@ export default function Community() {
   return (
     <Layout>
       <div className="container px-4 pb-20">
-        <div className="py-6">
-          <h1 className="text-2xl font-bold">Community</h1>
-          <p className="text-muted-foreground">Connect and share with others</p>
-        </div>
-        
-        <div className="mb-6">
-          <form onSubmit={handlePostSubmit} className="space-y-3">
-            <Textarea
-              className="w-full p-3 border rounded-lg resize-none min-h-[100px]"
-              placeholder="Share your financial journey or ask a question..."
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-            />
-            <div className="flex justify-end">
-              <Button type="submit" disabled={!newPost.trim()}>
-                Post
-              </Button>
-            </div>
-          </form>
+        <div className="py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Community</h1>
+            <p className="text-muted-foreground">Connect and share with others</p>
+          </div>
+          <Button onClick={handleCreatePost} className="flex items-center gap-1">
+            <Plus className="h-4 w-4" />
+            New Post
+          </Button>
         </div>
         
         <div className="space-y-4">
@@ -239,11 +212,6 @@ export default function Community() {
                     >
                       <ThumbsUp className="h-4 w-4" />
                       <span>{post.likes}</span>
-                    </button>
-                    
-                    <button className="flex items-center space-x-1 hover:text-primary">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>Comment</span>
                     </button>
                     
                     <button 

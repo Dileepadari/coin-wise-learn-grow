@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { ThumbsUp, Bookmark, ThumbsDown, Volume2, VolumeX, Globe, BrainCircuit, Share2 } from "lucide-react";
