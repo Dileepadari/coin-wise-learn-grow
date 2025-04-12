@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -6,8 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
-import { Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw, Home, Briefcase, ShoppingBag, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
+import { 
+  Map, UserCircle, Building, Store, ArrowRight, Coins, RefreshCw, 
+  Home, Briefcase, ShoppingBag, AlertCircle, CheckCircle, TrendingUp,
+  Pencil, BookOpen
+} from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
+import GameCharacter from "@/components/game/GameCharacter";
+import CharacterDialog from "@/components/game/CharacterDialog";
+import GameShopDialog from "@/components/game/GameShopDialog";
 
 // Game types
 type GameLocation = 'home' | 'bank' | 'store' | 'work' | 'market';
@@ -21,7 +30,25 @@ type GameTask = {
   completed: boolean;
 };
 
-type DialogType = 'task-complete' | 'task-failed' | 'story' | 'character' | 'shop' | null;
+type DialogType = 'task-complete' | 'task-failed' | 'story' | 'character' | 'shop' | 'budget' | 'skills' | null;
+
+// Skills and Items
+interface SkillLevel {
+  name: string;
+  level: number;
+  description: string;
+  maxLevel: number;
+}
+
+interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  benefit: string;
+  effect: string;
+}
 
 export default function FinancialSimulation() {
   const navigate = useNavigate();
@@ -66,13 +93,142 @@ export default function FinancialSimulation() {
   });
   const [showStory, setShowStory] = useState(true);
   const [gameInitialized, setGameInitialized] = useState(false);
+  const [activeCharacterId, setActiveCharacterId] = useState<string | null>(null);
+  const [showShop, setShowShop] = useState(false);
+  const [inventory, setInventory] = useState<string[]>([]);
+  const [skills, setSkills] = useState<SkillLevel[]>([
+    { name: "Financial Knowledge", level: 1, description: "Your understanding of financial concepts", maxLevel: 10 },
+    { name: "Negotiation", level: 1, description: "Your ability to negotiate better deals", maxLevel: 10 },
+    { name: "Budgeting", level: 1, description: "Your skill at creating and following budgets", maxLevel: 10 },
+    { name: "Investment", level: 1, description: "Your knowledge of investment strategies", maxLevel: 10 }
+  ]);
+  
+  // Budget tracking
+  const [budget, setBudget] = useState({
+    income: 0,
+    expenses: 0,
+    savings: 0
+  });
+  
+  // Shop items by location
+  const shopItems: Record<GameLocation, ShopItem[]> = {
+    home: [],
+    bank: [
+      { 
+        id: 'savings_account', 
+        name: 'Savings Account', 
+        description: 'Open a savings account with 3% interest', 
+        price: 100, 
+        benefit: '+3% interest on savings', 
+        effect: 'addInterest' 
+      },
+      { 
+        id: 'investment_guide', 
+        name: 'Investment Guide', 
+        description: 'A comprehensive guide to smart investing', 
+        price: 150, 
+        benefit: '+1 Investment skill', 
+        effect: 'addSkill:Investment:1' 
+      }
+    ],
+    store: [
+      { 
+        id: 'budget_app', 
+        name: 'Budget App', 
+        description: 'A mobile app to help track expenses', 
+        price: 50, 
+        benefit: '+1 Budgeting skill', 
+        effect: 'addSkill:Budgeting:1' 
+      },
+      { 
+        id: 'coupon_book', 
+        name: 'Coupon Book', 
+        description: 'A book of coupons for the grocery store', 
+        price: 30, 
+        benefit: '10% off at the store', 
+        effect: 'discount:store:10' 
+      }
+    ],
+    work: [
+      { 
+        id: 'online_course', 
+        name: 'Online Course', 
+        description: 'Take an online course to improve your skills', 
+        price: 200, 
+        benefit: '+2 Financial Knowledge', 
+        effect: 'addSkill:Financial Knowledge:2' 
+      },
+      { 
+        id: 'negotiation_book', 
+        name: 'Negotiation Book', 
+        description: 'Learn the art of negotiation', 
+        price: 80, 
+        benefit: '+1 Negotiation skill', 
+        effect: 'addSkill:Negotiation:1' 
+      }
+    ],
+    market: [
+      { 
+        id: 'stock_tips', 
+        name: 'Stock Tips', 
+        description: 'Inside information on promising stocks', 
+        price: 300, 
+        benefit: 'Unlock investment opportunities', 
+        effect: 'unlockInvestment' 
+      },
+      { 
+        id: 'market_analysis', 
+        name: 'Market Analysis', 
+        description: 'Professional analysis of market trends', 
+        price: 250, 
+        benefit: '+2 Investment skill', 
+        effect: 'addSkill:Investment:2' 
+      }
+    ]
+  };
 
   // Characters in the game
   const characters = [
-    { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank' },
-    { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work' },
-    { id: 'shopkeeper', name: 'Amit', role: 'Store Owner', location: 'store' }
+    { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank', position: { x: 70, y: 50 }, avatar: '👩‍💼' },
+    { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work', position: { x: 70, y: 30 }, avatar: '👨‍💼' },
+    { id: 'shopkeeper', name: 'Amit', role: 'Store Owner', location: 'store', position: { x: 75, y: 40 }, avatar: '👨‍🏫' },
+    { id: 'investor', name: 'Priya', role: 'Investment Advisor', location: 'market', position: { x: 65, y: 60 }, avatar: '👩‍💻' },
+    { id: 'roommate', name: 'Rahul', role: 'Your Roommate', location: 'home', position: { x: 40, y: 50 }, avatar: '👨' }
   ];
+  
+  // Character dialog messages
+  const characterDialogs: Record<string, string[]> = {
+    banker: [
+      "Welcome to City Bank! How can I help you today?",
+      "We have special rates on savings accounts this month.",
+      "Financial planning is crucial for your future success.",
+      "Have you considered setting up an automatic savings plan?"
+    ],
+    boss: [
+      "Good to see you at work. Ready for today's tasks?",
+      "If you keep performing well, we might discuss a raise.",
+      "Time is money - use it wisely!",
+      "Your financial knowledge is improving. Keep it up!"
+    ],
+    shopkeeper: [
+      "Welcome to my store! Take a look around.",
+      "I have some special deals today if you're interested.",
+      "Always compare prices before making big purchases.",
+      "A good budget helps you avoid overspending on groceries."
+    ],
+    investor: [
+      "The market is looking interesting today.",
+      "Diversification is key to a successful investment strategy.",
+      "Start investing early, even if it's small amounts.",
+      "Risk and reward are always related in investments."
+    ],
+    roommate: [
+      "Hey, how's it going? Ready to tackle some financial challenges?",
+      "I heard about a great budgeting app that might help us.",
+      "We should plan our shared expenses better this month.",
+      "Don't forget to pay your share of the rent!"
+    ]
+  };
 
   // Initialize the game with intro story
   useEffect(() => {
@@ -142,6 +298,76 @@ export default function FinancialSimulation() {
     }
   };
 
+  // Handle action buttons for each location
+  const handleAction = (action: string) => {
+    switch(action) {
+      case 'Start Shift':
+        handleWorkShift();
+        break;
+      case 'Budget Planning':
+        setShowDialog('budget');
+        break;
+      case 'Check Tasks':
+        // This functionality is already visible in the UI
+        toast("Your tasks are displayed below", {
+          description: "Complete tasks to earn rewards and progress in the game."
+        });
+        break;
+      case 'Open Account':
+      case 'Buy Groceries':
+      case 'Compare Prices':
+      case 'Use Coupons':
+      case 'Research Market':
+        setShowShop(true);
+        break;
+      case 'Learn New Skills':
+        setShowDialog('skills');
+        break;
+      case 'Ask for Raise':
+        const negotiationLevel = skills.find(s => s.name === "Negotiation")?.level || 1;
+        const successChance = negotiationLevel * 10; // 10% per level
+        
+        if (Math.random() * 100 < successChance) {
+          const raiseAmount = Math.floor(Math.random() * 50) + (negotiationLevel * 20);
+          setGameMoney(prev => prev + raiseAmount);
+          toast(`Success! You got a raise of ₹${raiseAmount}`, {
+            description: "Your negotiation skills paid off!",
+            icon: "🎉"
+          });
+        } else {
+          toast("Your request for a raise was denied", {
+            description: "Try improving your negotiation skills first.",
+            icon: "😔"
+          });
+        }
+        break;
+      default:
+        toast(`Action: ${action}`, {
+          description: "This feature will be available in the next update!"
+        });
+    }
+  };
+
+  // Handle character interactions
+  const handleCharacterInteraction = (characterId: string) => {
+    const character = characters.find(c => c.id === characterId);
+    if (!character) return;
+    
+    const dialogMessages = characterDialogs[characterId] || [];
+    if (dialogMessages.length > 0) {
+      const randomMessage = dialogMessages[Math.floor(Math.random() * dialogMessages.length)];
+      
+      setDialogContent({
+        title: `${character.name} says:`,
+        description: randomMessage,
+        character: character.name,
+        reward: 0
+      });
+      
+      setShowDialog('character');
+    }
+  };
+
   // Handle task selection
   const handleTaskSelect = (task: GameTask) => {
     if (currentLocation !== task.locationRequired) {
@@ -175,6 +401,13 @@ export default function FinancialSimulation() {
       t.id === task.id ? { ...t, completed: true } : t
     ));
 
+    // Increase relevant skills based on task
+    if (task.title.includes("Budget") || task.title.includes("Groceries")) {
+      updateSkill("Budgeting", 1);
+    } else if (task.title.includes("Savings") || task.title.includes("Account")) {
+      updateSkill("Financial Knowledge", 1);
+    }
+
     setDialogContent({
       title: 'Task Completed!',
       description: `You have successfully completed "${task.title}". You've earned ${task.reward} coins and learned valuable financial skills.`,
@@ -182,6 +415,17 @@ export default function FinancialSimulation() {
       reward: task.reward
     });
     setShowDialog('task-complete');
+  };
+
+  // Update a skill by a certain amount
+  const updateSkill = (skillName: string, amount: number) => {
+    setSkills(prev => prev.map(skill => {
+      if (skill.name === skillName) {
+        const newLevel = Math.min(skill.level + amount, skill.maxLevel);
+        return { ...skill, level: newLevel };
+      }
+      return skill;
+    }));
   };
 
   // Complete a task and get rewards
@@ -218,14 +462,55 @@ export default function FinancialSimulation() {
     }
   };
 
+  // Handle buying items from shop
+  const handleBuyItem = (item: ShopItem) => {
+    if (gameMoney < item.price) {
+      toast("Not enough money!", {
+        description: "You can't afford this item right now.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Deduct cost
+    setGameMoney(prev => prev - item.price);
+    
+    // Add to inventory
+    setInventory(prev => [...prev, item.id]);
+    
+    // Apply effect
+    if (item.effect.startsWith('addSkill:')) {
+      const [_, skillName, amountStr] = item.effect.split(':');
+      const amount = parseInt(amountStr);
+      updateSkill(skillName, amount);
+    }
+    
+    toast(`Purchased ${item.name}!`, {
+      description: item.benefit,
+      icon: "🛍️"
+    });
+  };
+
   // Perform job to earn money
   const handleWorkShift = () => {
-    const earnings = Math.floor(Math.random() * 300) + 200;
+    const baseEarnings = 200;
+    const skillMultiplier = skills.find(s => s.name === "Financial Knowledge")?.level || 1;
+    const earnings = Math.floor(Math.random() * 300) + baseEarnings + (skillMultiplier * 10);
+    
     setGameMoney(prev => prev + earnings);
+    setBudget(prev => ({...prev, income: prev.income + earnings}));
     
     toast(`You earned ₹${earnings} from your work shift!`, {
       icon: <Coins className="h-4 w-4 text-green-500" />
     });
+    
+    // Small chance to improve skills through work
+    if (Math.random() > 0.8) {
+      updateSkill("Financial Knowledge", 1);
+      toast("Your financial knowledge improved through work experience!", {
+        icon: "📈"
+      });
+    }
   };
 
   // Advance to next day
@@ -236,6 +521,22 @@ export default function FinancialSimulation() {
     setTasks(prev => prev.map(task => 
       task.completed ? task : { ...task, completed: false }
     ));
+    
+    // Apply passive income from investments if any
+    const hasInvestments = inventory.some(i => i === 'savings_account' || i === 'stock_tips');
+    if (hasInvestments) {
+      const investmentSkill = skills.find(s => s.name === "Investment")?.level || 1;
+      const interestRate = 0.03 + (investmentSkill * 0.005); // 3% base + 0.5% per investment level
+      const interestAmount = Math.floor(gameMoney * interestRate);
+      
+      if (interestAmount > 0) {
+        setGameMoney(prev => prev + interestAmount);
+        toast(`You earned ₹${interestAmount} in interest!`, {
+          description: "Your investments are growing.",
+          icon: "💰"
+        });
+      }
+    }
     
     toast(`Day ${gameDay + 1} begins!`, {
       description: "A new day with new opportunities.",
@@ -268,15 +569,26 @@ export default function FinancialSimulation() {
                 <Map className="h-5 w-5 mr-2 text-primary" />
                 <CardTitle>Financial City Map</CardTitle>
               </div>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex items-center gap-1"
-                onClick={handleNextDay}
-              >
-                <RefreshCw className="h-4 w-4" />
-                Next Day
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex items-center gap-1"
+                  onClick={() => setShowShop(true)}
+                >
+                  <Store className="h-4 w-4" />
+                  Shop
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex items-center gap-1"
+                  onClick={handleNextDay}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Next Day
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-6">
@@ -334,6 +646,22 @@ export default function FinancialSimulation() {
                   </div>
                 </div>
               </div>
+              
+              {/* Game Characters */}
+              <AnimatePresence>
+                {characters
+                  .filter(c => c.location === currentLocation)
+                  .map(character => (
+                    <GameCharacter
+                      key={character.id}
+                      name={character.name}
+                      role={character.role}
+                      position={character.position}
+                      avatar={character.avatar}
+                      onInteract={() => handleCharacterInteraction(character.id)}
+                    />
+                  ))}
+              </AnimatePresence>
             </div>
             
             {/* Current location info */}
@@ -349,15 +677,7 @@ export default function FinancialSimulation() {
                   <Button 
                     key={index} 
                     variant="outline"
-                    onClick={() => {
-                      if (action === 'Start Shift') {
-                        handleWorkShift();
-                      } else {
-                        toast(`Action: ${action}`, {
-                          description: "This feature will be available in the next update!",
-                        });
-                      }
-                    }}
+                    onClick={() => handleAction(action)}
                   >
                     {action}
                   </Button>
@@ -367,11 +687,42 @@ export default function FinancialSimulation() {
           </CardContent>
         </Card>
         
+        {/* Player Stats */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <User className="h-5 w-5 mr-2" />
+              Your Skills
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              {skills.map(skill => (
+                <div key={skill.name} className="bg-muted/30 p-3 rounded-md">
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="font-medium text-sm">{skill.name}</div>
+                    <div className="text-xs bg-background px-2 py-1 rounded-full">
+                      Level {skill.level}/{skill.maxLevel}
+                    </div>
+                  </div>
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-primary h-full rounded-full"
+                      style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{skill.description}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        
         {/* Tasks */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <UserCircle className="h-5 w-5 mr-2" />
+              <Pencil className="h-5 w-5 mr-2" />
               Current Tasks
             </CardTitle>
             <CardDescription>Complete tasks to earn rewards</CardDescription>
@@ -379,10 +730,12 @@ export default function FinancialSimulation() {
           <CardContent>
             <div className="space-y-3">
               {tasks.filter(task => !task.completed).map(task => (
-                <div 
+                <motion.div 
                   key={task.id} 
                   className={`p-3 border rounded-md flex justify-between items-center
                     ${currentLocation === task.locationRequired ? 'border-primary' : ''}`}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <div>
                     <h4 className="font-medium">{task.title}</h4>
@@ -405,7 +758,7 @@ export default function FinancialSimulation() {
                   >
                     Complete
                   </Button>
-                </div>
+                </motion.div>
               ))}
               
               {tasks.filter(task => !task.completed).length === 0 && (
@@ -530,15 +883,172 @@ export default function FinancialSimulation() {
               </Button>
               <Button onClick={() => {
                 setShowDialog(null);
-                toast("Character interaction complete", {
-                  description: "You gained some valuable financial advice!"
-                });
+                
+                // Chance to gain skill based on character
+                if (Math.random() > 0.5) {
+                  const characterId = characters.find(c => c.name === dialogContent.character)?.id;
+                  if (characterId === 'banker') {
+                    updateSkill("Financial Knowledge", 1);
+                  } else if (characterId === 'boss') {
+                    updateSkill("Negotiation", 1);
+                  } else if (characterId === 'shopkeeper') {
+                    updateSkill("Budgeting", 1);
+                  } else if (characterId === 'investor') {
+                    updateSkill("Investment", 1);
+                  }
+                  
+                  toast("Character interaction complete", {
+                    description: "You gained some valuable financial advice and improved a skill!",
+                    icon: "📈"
+                  });
+                } else {
+                  toast("Character interaction complete", {
+                    description: "You gained some valuable financial advice!",
+                    icon: "💬"
+                  });
+                }
               }}>
                 Ask for Advice
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        
+        {/* Skills Dialog */}
+        <Dialog open={showDialog === 'skills'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <BookOpen className="h-5 w-5 mr-2" />
+                Learning New Skills
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p>Taking time to learn can improve your financial skills and help you earn more money.</p>
+              
+              <div className="mt-4 space-y-4">
+                {skills.map(skill => (
+                  <div key={skill.name} className="border p-3 rounded-md">
+                    <div className="flex justify-between">
+                      <div className="font-medium">{skill.name}</div>
+                      <div className="text-xs bg-muted px-2 py-1 rounded">
+                        Level {skill.level}/{skill.maxLevel}
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground my-2">{skill.description}</p>
+                    <Button 
+                      size="sm" 
+                      disabled={skill.level >= skill.maxLevel}
+                      onClick={() => {
+                        const cost = skill.level * 50;
+                        if (gameMoney >= cost) {
+                          setGameMoney(prev => prev - cost);
+                          updateSkill(skill.name, 1);
+                          toast(`${skill.name} improved to level ${skill.level + 1}!`, {
+                            description: "Your knowledge is growing.",
+                            icon: "📚"
+                          });
+                        } else {
+                          toast("Not enough money!", {
+                            description: `You need ₹${cost} to improve this skill.`,
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                    >
+                      Learn (₹{skill.level * 50})
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button onClick={() => setShowDialog(null)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Budget Dialog */}
+        <Dialog open={showDialog === 'budget'} onOpenChange={() => setShowDialog(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center">
+                <Coins className="h-5 w-5 mr-2" />
+                Budget Planning
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p>Create and manage your budget to track income and expenses.</p>
+              
+              <div className="mt-4 space-y-3">
+                <div className="bg-green-50 p-3 rounded-md">
+                  <div className="text-sm text-green-700 font-medium">Income</div>
+                  <div className="text-lg">₹{budget.income}</div>
+                </div>
+                
+                <div className="bg-red-50 p-3 rounded-md">
+                  <div className="text-sm text-red-700 font-medium">Expenses</div>
+                  <div className="text-lg">₹{budget.expenses}</div>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded-md">
+                  <div className="text-sm text-blue-700 font-medium">Savings</div>
+                  <div className="text-lg">₹{budget.savings}</div>
+                </div>
+                
+                <div className="bg-amber-50 p-3 rounded-md">
+                  <div className="text-sm text-amber-700 font-medium">Current Balance</div>
+                  <div className="text-lg">₹{gameMoney}</div>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 border rounded-md">
+                <h4 className="font-medium mb-2">Budgeting Tip:</h4>
+                <p className="text-sm text-muted-foreground">
+                  Try to save at least 20% of your income for emergencies and future investments.
+                </p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDialog(null)}>
+                Close
+              </Button>
+              <Button onClick={() => {
+                // Set aside some money for savings
+                const savingsAmount = Math.min(gameMoney * 0.2, gameMoney);
+                setGameMoney(prev => prev - savingsAmount);
+                setBudget(prev => ({...prev, savings: prev.savings + savingsAmount}));
+                
+                toast("Savings updated!", {
+                  description: `You set aside ₹${savingsAmount} for your future.`,
+                  icon: "💰"
+                });
+                
+                // Improve budgeting skill
+                updateSkill("Budgeting", 1);
+                
+                setShowDialog(null);
+              }}>
+                Save 20% of Money
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Shop Dialog */}
+        <GameShopDialog 
+          isOpen={showShop} 
+          onClose={() => setShowShop(false)}
+          items={shopItems[currentLocation]}
+          playerMoney={gameMoney}
+          onBuyItem={handleBuyItem}
+        />
       </div>
     </Layout>
   );
