@@ -22,6 +22,9 @@ import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import NotFound from "./pages/NotFound";
+import Notifications from "./pages/Notifications";
+import Search from "./pages/Search";
+import ConnectRequests from "./pages/ConnectRequests";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +53,9 @@ const App = () => (
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/connect-requests" element={<ConnectRequests />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

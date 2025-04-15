@@ -1,29 +1,32 @@
 
 import { useState } from "react";
-import { LearningModule } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/AppContext";
-import { CheckCircle, Play, ArrowRight, Share2 } from "lucide-react";
+import { CheckCircle, Play, ArrowRight, Share2, Gamepad2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { LearningContent, Quiz } from "@/types";
 
 interface ModuleContentViewProps {
-  content: any;
-  module: LearningModule;
+  content: LearningContent | Quiz;
   onComplete: () => void;
+  moduleCategory: 'basics' | 'savings' | 'investment' | 'fraud' | 'borrowing';
+  completed: boolean;
 }
 
-export default function ModuleContentView({ content, module, onComplete }: ModuleContentViewProps) {
+export default function ModuleContentView({ content, onComplete, moduleCategory, completed }: ModuleContentViewProps) {
   const { addCoins } = useApp();
+  const navigate = useNavigate();
   const [showCelebration, setShowCelebration] = useState(false);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
-  const [hasEarned, setHasEarned] = useState(false);
+  const [hasEarned, setHasEarned] = useState(completed);
   const [videoWatched, setVideoWatched] = useState(false);
+  const [contentProgress, setContentProgress] = useState(33); // Start at 33% for video content
   
   const handleShare = () => {
     toast("Content shared!", {
-      icon: "✅",
       description: "Your friends will receive your recommendation"
     });
   };
@@ -33,12 +36,11 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
     
     // Award coins and show celebration
     setShowCelebration(true);
-    const earnedCoins = content.type === 'quiz' ? 10 : 5;
+    const earnedCoins = 'correctAnswer' in content ? 10 : 5;
     addCoins(earnedCoins);
     setHasEarned(true);
     
     toast(`+${earnedCoins} coins!`, {
-      icon: "🪙",
       description: "Keep learning to earn more!"
     });
     
@@ -48,21 +50,27 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
     }, 1500);
   };
   
+  const handleNavigateToGame = () => {
+    if (moduleCategory === 'fraud') {
+      navigate('/scam-game');
+    } else {
+      navigate('/financial-sim');
+    }
+  };
+  
   const handleQuizAnswer = (selectedAnswerIndex: number) => {
     if (quizAnswer !== null) return;
     
     setQuizAnswer(selectedAnswerIndex);
     
-    if (content.type === 'quiz' && selectedAnswerIndex === content.correctAnswer) {
+    if ('correctAnswer' in content && selectedAnswerIndex === content.correctAnswer) {
       toast("Correct answer! +10 coins", {
-        icon: "✅",
         description: content.explanation || "Great job!"
       });
       
       setTimeout(handleComplete, 1500);
-    } else if (content.type === 'quiz') {
+    } else if ('correctAnswer' in content) {
       toast("Try again!", {
-        icon: "❌",
         description: "That's not the correct answer."
       });
     }
@@ -79,8 +87,8 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
     // Mark as watched after 3 seconds (simulating video watching)
     setTimeout(() => {
       setVideoWatched(true);
+      setContentProgress(66); // Move to 66% after video
       toast("Video completed!", {
-        icon: "📹",
         description: "You've learned valuable information!"
       });
     }, 3000);
@@ -88,8 +96,46 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
   
   return (
     <div className={`space-y-4 ${showCelebration ? 'animate-pulse' : ''}`}>
+      {/* Progress indicator */}
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium">Learning progress</span>
+          <span className="text-sm text-muted-foreground">{contentProgress}%</span>
+        </div>
+        <div className="h-2 bg-gray-100 rounded-full">
+          <div 
+            className="h-full bg-primary rounded-full transition-all duration-500"
+            style={{ width: `${contentProgress}%` }}
+          ></div>
+        </div>
+      </div>
+      
+      {/* Content type indicator */}
+      <div className="flex items-center space-x-4 mb-4">
+        <div className={`flex items-center ${contentProgress >= 33 ? 'text-primary' : 'text-muted-foreground'}`}>
+          <div className={`h-6 w-6 rounded-full flex items-center justify-center ${contentProgress >= 33 ? 'bg-primary text-white' : 'bg-muted'}`}>
+            <Play className="h-3 w-3" />
+          </div>
+          <span className="text-sm ml-2">Video</span>
+        </div>
+        <div className="h-0.5 flex-1 bg-gray-200"></div>
+        <div className={`flex items-center ${contentProgress >= 66 ? 'text-primary' : 'text-muted-foreground'}`}>
+          <div className={`h-6 w-6 rounded-full flex items-center justify-center ${contentProgress >= 66 ? 'bg-primary text-white' : 'bg-muted'}`}>
+            <Gamepad2 className="h-3 w-3" />
+          </div>
+          <span className="text-sm ml-2">Game</span>
+        </div>
+        <div className="h-0.5 flex-1 bg-gray-200"></div>
+        <div className={`flex items-center ${contentProgress >= 100 ? 'text-primary' : 'text-muted-foreground'}`}>
+          <div className={`h-6 w-6 rounded-full flex items-center justify-center ${contentProgress >= 100 ? 'bg-primary text-white' : 'bg-muted'}`}>
+            <CheckCircle className="h-3 w-3" />
+          </div>
+          <span className="text-sm ml-2">Quiz</span>
+        </div>
+      </div>
+      
       {/* Content display based on type */}
-      {content.type === 'quiz' ? (
+      {'question' in content ? (
         <div>
           <h3 className="text-lg font-medium mb-4">{content.question}</h3>
           
@@ -139,8 +185,20 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
           
           {videoWatched && !hasEarned && (
             <div className="p-3 bg-green-50 rounded-md text-center animate-pulse mb-4">
-              <p className="text-green-700">Video completed! Click continue to earn coins.</p>
+              <p className="text-green-700">Video completed! Try the game or quiz to test your knowledge.</p>
             </div>
+          )}
+          
+          {/* Game option */}
+          {videoWatched && (
+            <Button 
+              onClick={handleNavigateToGame}
+              className="w-full mb-4"
+              variant="outline"
+            >
+              <Gamepad2 className="mr-2 h-4 w-4" />
+              Practice with a game
+            </Button>
           )}
         </div>
       ) : (
@@ -176,7 +234,7 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
       {/* Action buttons */}
       <div className="flex justify-between pt-6 border-t">
         <Badge variant="outline" className="flex items-center">
-          {content.points || 5} points
+          {'points' in content ? content.points : 5} points
         </Badge>
         
         <div className="space-x-2">
@@ -195,7 +253,7 @@ export default function ModuleContentView({ content, module, onComplete }: Modul
             onClick={handleComplete}
             className={cn(
               "flex items-center gap-1",
-              content.type === 'quiz' ? 'hidden' : '',
+              'question' in content ? 'hidden' : '',
               hasEarned ? 'bg-green-600 hover:bg-green-700' : ''
             )}
             disabled={content.type === 'reel' && !videoWatched}

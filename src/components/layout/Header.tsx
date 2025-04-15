@@ -55,6 +55,16 @@ export default function Header() {
               <div>
                 <h3 className="font-medium mb-2">Settings</h3>
                 <div className="space-y-1">
+                  <Link to="/connect-requests" onClick={() => setSidebarOpen(false)}>
+                    <div className="flex items-center py-2 px-3 rounded-md hover:bg-accent">
+                      <span>Connection Requests</span>
+                    </div>
+                  </Link>
+                  <Link to="/notifications" onClick={() => setSidebarOpen(false)}>
+                    <div className="flex items-center py-2 px-3 rounded-md hover:bg-accent">
+                      <span>Notifications</span>
+                    </div>
+                  </Link>
                   <Link to="/settings/password" onClick={() => setSidebarOpen(false)}>
                     <div className="flex items-center py-2 px-3 rounded-md hover:bg-accent">
                       <span>Change Password</span>
