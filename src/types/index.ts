@@ -1,4 +1,3 @@
-
 // Add LanguageKeys export to fix the TypeScript error
 export type LanguageKeys = 'english' | 'hindi' | 'telugu';
 
@@ -41,7 +40,7 @@ export interface Badge {
 export interface LearningContent {
   id: string;
   title: string;
-  type: 'text' | 'video' | 'infographic';
+  type: ContentType;
   content: string;
   mediaUrl?: string;
   points: number;
@@ -100,6 +99,17 @@ export interface ScamExample {
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'achievement' | 'social' | 'reminder' | 'system';
+  timestamp: Date;
+  read: boolean;
+  actionLink?: string;
+}
+
 export interface AppContextType {
   user: User;
   allBadges: Badge[];
@@ -119,4 +129,25 @@ export interface AppContextType {
   setActiveTab: (tab: string) => void;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
   markNotificationAsRead: (notificationId: string) => void;
+}
+
+export type ContentType = 'text' | 'video' | 'infographic' | 'reel' | 'article' | 'simulation';
+
+export interface TranslationKeys {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  home: string;
+  search: string;
+  loading: string;
+  accept: string;
+  notifications: string;
+  signup: string;
+  login: string;
+  welcomeBack: string;
+  forgotPassword: string;
+  username: string;
+  password: string;
+  lessons: string;
+  points: string;
 }

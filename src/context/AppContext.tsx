@@ -1,8 +1,5 @@
-
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Badge, LearningModule, ModuleProgress, Notification, Reel, ScamExample, User } from '../types';
-import { badges, currentUser, modules, reels, scamExamples } from '../data/mockData';
-import { useToast } from '@/hooks/use-toast';
+import { createContext, useContext, useState } from 'react';
+import { User, Badge, LearningModule, Reel, ScamExample, Notification, LanguageKeys } from '@/types';
 
 interface AppContextType {
   user: User;
@@ -12,7 +9,9 @@ interface AppContextType {
   scamExamples: ScamExample[];
   activeTab: string;
   notifications: Notification[];
+  language: LanguageKeys;
   updateUser: (userData: Partial<User>) => void;
+  setUser: (user: User) => void;
   addCoins: (amount: number) => void;
   unlockBadge: (badgeId: string) => void;
   likeContent: (contentId: string) => void;
@@ -25,14 +24,31 @@ interface AppContextType {
 }
 
 const defaultContextValue: AppContextType = {
-  user: currentUser,
-  allBadges: badges,
-  allModules: modules,
-  allReels: reels,
-  scamExamples: scamExamples,
+  user: {
+    id: "user1",
+    firstName: "Rahul",
+    lastName: "Singh",
+    name: "Rahul Singh",
+    phoneNumber: "9876543210",
+    coins: 250,
+    badges: [],
+    progress: [],
+    likedContent: ["reel1", "reel3"],
+    savedContent: ["reel2"],
+    level: 1,
+    email: "",
+    knowledgeLevel: "",
+    preferredCategories: []
+  },
+  allBadges: [],
+  allModules: [],
+  allReels: [],
+  scamExamples: [],
   activeTab: 'home',
   notifications: [],
+  language: 'english',
   updateUser: () => {},
+  setUser: () => {},
   addCoins: () => {},
   unlockBadge: () => {},
   likeContent: () => {},
@@ -46,136 +62,77 @@ const defaultContextValue: AppContextType = {
 
 export const AppContext = createContext<AppContextType>(defaultContextValue);
 
-export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const { toast } = useToast();
-  const [user, setUser] = useState<User>(currentUser);
-  const [allBadges, setAllBadges] = useState<Badge[]>(badges);
-  const [activeTab, setActiveTab] = useState('home');
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUserState] = useState<User>(defaultContextValue.user);
+  const [allBadges, setAllBadges] = useState<Badge[]>(defaultContextValue.allBadges);
+  const [allModules, setAllModules] = useState<LearningModule[]>(defaultContextValue.allModules);
+    const [allReels, setAllReels] = useState<Reel[]>(defaultContextValue.allReels);
+    const [scamExamples, setScamExamples] = useState<ScamExample[]>(defaultContextValue.scamExamples);
+  const [activeTab, setActiveTab] = useState(defaultContextValue.activeTab);
+  const [notifications, setNotifications] = useState<Notification[]>(defaultContextValue.notifications);
+  const [language, setLanguage] = useState<LanguageKeys>('english');
+
+  const setUser = (user: User) => {
+        setUserState(user);
+    };
 
   const updateUser = (userData: Partial<User>) => {
-    setUser(prevUser => ({ ...prevUser, ...userData }));
+    setUserState(prevUser => ({ ...prevUser, ...userData }));
   };
 
   const addCoins = (amount: number) => {
-    setUser(prevUser => ({
+    setUserState(prevUser => ({
       ...prevUser,
       coins: prevUser.coins + amount
     }));
-    
-    toast({
-      title: "Coins Added!",
-      description: `You earned ${amount} coins`,
-    });
   };
 
   const unlockBadge = (badgeId: string) => {
-    const updatedBadges = allBadges.map(badge => 
+    const updatedBadges = allBadges.map(badge =>
       badge.id === badgeId ? { ...badge, unlocked: true } : badge
     );
     setAllBadges(updatedBadges);
-    
-    const unlockedBadge = allBadges.find(badge => badge.id === badgeId);
-    if (unlockedBadge) {
-      addNotification({
-        userId: user.id,
-        title: "New Badge Unlocked!",
-        message: `You've earned the ${unlockedBadge.name} badge`,
-        read: false,
-        type: "achievement"
-      });
-      
-      toast({
-        title: "Badge Unlocked!",
-        description: `You've earned the ${unlockedBadge.name} badge`,
-      });
-    }
   };
 
   const likeContent = (contentId: string) => {
-    if (user.likedContent.includes(contentId)) {
-      setUser(prevUser => ({
-        ...prevUser,
-        likedContent: prevUser.likedContent.filter(id => id !== contentId)
-      }));
-    } else {
-      setUser(prevUser => ({
-        ...prevUser,
-        likedContent: [...prevUser.likedContent, contentId]
-      }));
-    }
+    setUserState(prevUser => ({
+      ...prevUser,
+      likedContent: prevUser.likedContent.includes(contentId)
+        ? prevUser.likedContent.filter(id => id !== contentId)
+        : [...prevUser.likedContent, contentId]
+    }));
   };
 
   const saveContent = (contentId: string) => {
-    if (user.savedContent.includes(contentId)) {
-      setUser(prevUser => ({
-        ...prevUser,
-        savedContent: prevUser.savedContent.filter(id => id !== contentId)
-      }));
-    } else {
-      setUser(prevUser => ({
-        ...prevUser,
-        savedContent: [...prevUser.savedContent, contentId]
-      }));
-      toast({
-        title: "Content Saved",
-        description: "You can find this in your saved items",
-      });
-    }
+    setUserState(prevUser => ({
+      ...prevUser,
+      savedContent: prevUser.savedContent.includes(contentId)
+        ? prevUser.savedContent.filter(id => id !== contentId)
+        : [...prevUser.savedContent, contentId]
+    }));
   };
 
   const updateProgress = (moduleId: string, progress: number) => {
-    const existingProgressIndex = user.progress.findIndex(p => p.moduleId === moduleId);
-    
-    if (existingProgressIndex >= 0) {
-      const newProgress = [...user.progress];
-      newProgress[existingProgressIndex] = {
-        ...newProgress[existingProgressIndex],
-        progress: Math.min(100, progress),
-        lastAccessed: new Date()
-      };
-      setUser(prevUser => ({ ...prevUser, progress: newProgress }));
-    } else {
-      const newProgressItem: ModuleProgress = {
-        moduleId,
-        progress,
-        completed: false,
-        lastAccessed: new Date()
-      };
-      setUser(prevUser => ({
-        ...prevUser,
-        progress: [...prevUser.progress, newProgressItem]
-      }));
-    }
+    setUserState(prevUser => {
+      const updatedProgress = [...prevUser.progress];
+      const moduleIndex = updatedProgress.findIndex(p => p.moduleId === moduleId);
+
+      if (moduleIndex > -1) {
+        updatedProgress[moduleIndex] = { ...updatedProgress[moduleIndex], progress };
+      } else {
+        updatedProgress.push({ moduleId, progress, completed: false, lastAccessed: new Date() });
+      }
+
+      return { ...prevUser, progress: updatedProgress };
+    });
   };
 
   const completeModule = (moduleId: string) => {
-    const module = modules.find(m => m.id === moduleId);
-    if (!module) return;
-    
-    updateProgress(moduleId, 100);
-    addCoins(module.totalPoints);
-    
-    // Update specific module progress as completed
-    setUser(prevUser => ({
-      ...prevUser,
-      progress: prevUser.progress.map(p => 
-        p.moduleId === moduleId 
-          ? { ...p, progress: 100, completed: true, lastAccessed: new Date() }
-          : p
-      )
-    }));
-
-    // Check if we should unlock a badge for this module
-    if (module.category === 'basics' && !allBadges.find(b => b.id === 'badge1')?.unlocked) {
-      unlockBadge('badge1');
-    } else if (module.category === 'investment' && !allBadges.find(b => b.id === 'badge2')?.unlocked) {
-      unlockBadge('badge2');
-    }
-    
-    toast({
-      title: "Module Completed!",
-      description: `You've completed ${module.name} and earned ${module.totalPoints} coins!`,
+    setUserState(prevUser => {
+      const updatedProgress = prevUser.progress.map(p =>
+        p.moduleId === moduleId ? { ...p, completed: true } : p
+      );
+      return { ...prevUser, progress: updatedProgress };
     });
   };
 
@@ -185,13 +142,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       id: `notification-${Date.now()}`,
       timestamp: new Date(),
     };
-    
     setNotifications(prev => [newNotification, ...prev]);
   };
 
   const markNotificationAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(note => 
+    setNotifications(prev =>
+      prev.map(note =>
         note.id === notificationId ? { ...note, read: true } : note
       )
     );
@@ -201,12 +157,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     <AppContext.Provider value={{
       user,
       allBadges,
-      allModules: modules,
-      allReels: reels,
+      allModules,
+      allReels,
       scamExamples,
       activeTab,
       notifications,
+      language,
       updateUser,
+      setUser,
       addCoins,
       unlockBadge,
       likeContent,

@@ -1,16 +1,41 @@
-
 import { Badge, LearningModule, Reel, ScamExample, User } from "../types";
+
+export const mockUser: User = {
+  id: "1",
+  firstName: "Raju",
+  lastName: "Kumar",
+  name: "Raju Kumar",
+  phoneNumber: "+91123456789",
+  points: 100,
+  coins: 50,
+  level: 1,
+  badges: ["नया सीखने वाला"],
+  completedModules: [],
+  completedGames: [],
+  knowledgeLevel: "beginner",
+  preferredCategories: ["savings", "basics"],
+  likedContent: [],
+  savedContent: [],
+  progress: []
+};
 
 export const currentUser: User = {
   id: "user1",
   firstName: "Rahul",
   lastName: "Singh",
+  name: "Rahul Singh",
   phoneNumber: "9876543210",
   coins: 250,
   badges: [],
   progress: [],
   likedContent: ["reel1", "reel3"],
-  savedContent: ["reel2"]
+  savedContent: ["reel2"],
+  level: 1,
+  completedModules: [],
+  completedGames: [],
+  knowledgeLevel: "beginner",
+  preferredCategories: [],
+  email: "",
 };
 
 export const badges: Badge[] = [
@@ -67,146 +92,99 @@ export const badges: Badge[] = [
 export const modules: LearningModule[] = [
   {
     id: "module1",
-    name: "Saving Basics",
-    description: "Learn the fundamentals of saving money",
-    category: "basics",
-    content: [
-      {
-        id: "content1",
-        type: "reel",
-        title: "Why Save Money",
-        description: "The importance of saving money",
-        content: "Saving money is important for emergencies and future goals.",
-        mediaUrl: undefined,
-        points: 10
-      },
-      {
-        id: "content2",
-        type: "article",
-        title: "Simple Saving Tips",
-        description: "Easy ways to save money daily",
-        content: "Start small by saving a little each day. Skip unnecessary expenses.",
-        points: 15
-      }
-    ],
-    quizzes: [
-      {
-        id: "quiz1",
-        question: "Why is saving money important?",
-        options: [
-          "Only for rich people",
-          "For emergencies and future goals",
-          "It's not important",
-          "Only for special occasions"
-        ],
-        correctAnswer: 1,
-        explanation: "Saving money helps you handle emergencies and achieve future goals.",
-        points: 20
-      }
-    ],
-    totalPoints: 45,
-    difficulty: "beginner"
+    name: "बचत का महत्व",
+    description: "छोटी बचत, बड़ी सफलता",
+    category: "savings",
+    difficulty: "beginner",
+    content: [],
+    quizzes: [],
+    totalPoints: 100,
+    estimatedTime: "30 minutes",
+    thumbnail: "/images/savings.jpg"
   },
   {
     id: "module2",
-    name: "Spotting Scams",
-    description: "Learn how to identify and avoid financial scams",
-    category: "fraud",
-    content: [
-      {
-        id: "content3",
-        type: "reel",
-        title: "Common Scam Messages",
-        description: "Identifying suspicious messages",
-        content: "Be wary of messages promising money or asking for personal information.",
-        points: 10
-      },
-      {
-        id: "content4",
-        type: "simulation",
-        title: "Scam Detection Game",
-        description: "Practice identifying scams",
-        content: "Game simulation for identifying scams",
-        points: 25
-      }
-    ],
-    quizzes: [
-      {
-        id: "quiz2",
-        question: "Which of these is likely a scam?",
-        options: [
-          "A message from your bank asking you to visit their branch",
-          "A call from an unknown number offering a job with high salary without interview",
-          "An email from a friend you know",
-          "A reminder to pay your electricity bill"
-        ],
-        correctAnswer: 1,
-        explanation: "Job offers with high salaries without proper interviews are typically scams.",
-        points: 20
-      }
-    ],
-    totalPoints: 55,
-    difficulty: "beginner"
+    name: "निवेश की शुरुआत",
+    description: "सही निवेश, बेहतर भविष्य",
+    category: "investment",
+    difficulty: "beginner",
+    content: [],
+    quizzes: [],
+    totalPoints: 120,
+    estimatedTime: "45 minutes",
+    thumbnail: "/images/investment.jpg"
   },
   {
     id: "module3",
-    name: "Basic Investments",
-    description: "Introduction to investments for beginners",
-    category: "investment",
+    name: "धोखे से बचें",
+    description: "सतर्क रहें, सुरक्षित रहें",
+    category: "fraud",
+    difficulty: "intermediate",
     content: [],
     quizzes: [],
-    totalPoints: 50,
-    difficulty: "intermediate"
+    totalPoints: 150,
+    estimatedTime: "60 minutes",
+    thumbnail: "/images/fraud.jpg"
   },
   {
     id: "module4",
-    name: "Responsible Borrowing",
-    description: "Learn how to borrow money responsibly",
-    category: "borrowing",
+    name: "बजट बनाना सीखें",
+    description: "सही बजट, सही योजना",
+    category: "basics",
+    difficulty: "beginner",
     content: [],
     quizzes: [],
-    totalPoints: 60,
-    difficulty: "intermediate"
+    totalPoints: 80,
+    estimatedTime: "25 minutes",
+    thumbnail: "/images/budget.jpg"
   },
   {
     id: "module5",
-    name: "Building a Budget",
-    description: "Create and maintain a personal budget",
-    category: "basics",
+    name: "कर्ज से मुक्ति",
+    description: "समझदारी से कर्ज लें",
+    category: "borrowing",
+    difficulty: "intermediate",
     content: [],
     quizzes: [],
-    totalPoints: 45,
-    difficulty: "beginner"
+    totalPoints: 130,
+    estimatedTime: "50 minutes",
+    thumbnail: "/images/borrowing.jpg"
   },
   {
     id: "module6",
-    name: "Planning for Future",
-    description: "Long-term financial planning strategies",
+    name: "वित्तीय योजना",
+    description: "भविष्य की तैयारी",
     category: "savings",
+    difficulty: "advanced",
     content: [],
     quizzes: [],
-    totalPoints: 65,
-    difficulty: "advanced"
+    totalPoints: 180,
+    estimatedTime: "75 minutes",
+    thumbnail: "/images/planning.jpg"
   },
   {
     id: "module7",
-    name: "Understanding UPI",
-    description: "Learn how to use UPI safely and effectively",
+    name: "UPI का ज्ञान",
+    description: "UPI से सुरक्षित लेनदेन",
     category: "basics",
+    difficulty: "beginner",
     content: [],
     quizzes: [],
-    totalPoints: 40,
-    difficulty: "beginner"
+    totalPoints: 90,
+    estimatedTime: "35 minutes",
+    thumbnail: "/images/upi.jpg"
   },
   {
     id: "module8",
-    name: "Insurance Basics",
-    description: "Understanding different types of insurance",
+    name: "बीमा का महत्व",
+    description: "सही बीमा, सही सुरक्षा",
     category: "basics",
+    difficulty: "intermediate",
     content: [],
     quizzes: [],
-    totalPoints: 55,
-    difficulty: "intermediate"
+    totalPoints: 140,
+    estimatedTime: "55 minutes",
+    thumbnail: "/images/insurance.jpg"
   }
 ];
 
@@ -218,7 +196,15 @@ export const reels: Reel[] = [
     likes: 245,
     saves: 120,
     moduleId: "module1",
-    category: "savings"
+    category: "savings",
+    videoUrl: "",
+    thumbnailUrl: "",
+    author: "",
+    comments: 0,
+    duration: "",
+    publishedDate: new Date(),
+    authorAvatar: "",
+    tags: []
   },
   {
     id: "reel2",
@@ -227,7 +213,15 @@ export const reels: Reel[] = [
     likes: 189,
     saves: 210,
     moduleId: "module2",
-    category: "fraud"
+    category: "fraud",
+    videoUrl: "",
+    thumbnailUrl: "",
+    author: "",
+    comments: 0,
+    duration: "",
+    publishedDate: new Date(),
+    authorAvatar: "",
+    tags: []
   },
   {
     id: "reel3",
@@ -236,7 +230,15 @@ export const reels: Reel[] = [
     likes: 156,
     saves: 89,
     moduleId: "module3",
-    category: "investment"
+    category: "investment",
+    videoUrl: "",
+    thumbnailUrl: "",
+    author: "",
+    comments: 0,
+    duration: "",
+    publishedDate: new Date(),
+    authorAvatar: "",
+    tags: []
   },
   {
     id: "reel4",
@@ -245,37 +247,53 @@ export const reels: Reel[] = [
     likes: 201,
     saves: 132,
     moduleId: "module5",
-    category: "basics"
+    category: "basics",
+    videoUrl: "",
+    thumbnailUrl: "",
+    author: "",
+    comments: 0,
+    duration: "",
+    publishedDate: new Date(),
+    authorAvatar: "",
+    tags: []
   }
 ];
 
 export const scamExamples: ScamExample[] = [
   {
     id: "scam1",
-    message: "Dear user, You have won Rs 5L. Please click on the below link to get the money. http://link.com",
+    message: "आपको 10 लाख रुपये का इनाम मिला है!",
     isScam: true,
-    explanation: "This is a scam because legitimate organizations don't send unsolicited messages about winning money and ask you to click on suspicious links.",
-    tipCategory: "Prize Scams"
+    explanation: "कभी भी अनजान लोटरी या इनाम के झांसे में न आएं",
+    tipCategory: "online",
+    tags: ["lottery", "prize"],
+    difficulty: "easy"
   },
   {
     id: "scam2",
-    message: "Your UPI account will be blocked tonight. Call 98765-43210 immediately to prevent blocking.",
+    message: "आपका बैंक खाता ब्लॉक हो जाएगा!",
     isScam: true,
-    explanation: "Banks never send threatening messages about account blocking. They don't ask you to call random numbers.",
-    tipCategory: "Banking Scams"
+    explanation: "बैंक कभी भी फोन पर जानकारी नहीं मांगते",
+    tipCategory: "banking",
+    tags: ["account", "block"],
+    difficulty: "medium"
   },
   {
     id: "scam3",
-    message: "This is a reminder that your electricity bill of Rs. 1,450 is due on 25th April. Please pay through our official website or app.",
-    isScam: false,
-    explanation: "This appears to be a legitimate bill reminder as it doesn't ask for immediate action, doesn't include suspicious links, and directs you to official channels.",
-    tipCategory: "Legitimate Reminders"
+    message: "आज ही निवेश करें और डबल मुनाफा पाएं!",
+    isScam: true,
+    explanation: "ज्यादा मुनाफे का वादा हमेशा झूठा होता है",
+    tipCategory: "investment",
+    tags: ["investment", "profit"],
+    difficulty: "hard"
   },
   {
     id: "scam4",
-    message: "Congratulations! You're selected for a govt job with 50,000/month salary. Send your details to claim job.",
+    message: "मुफ्त में आईफोन जीतने का मौका!",
     isScam: true,
-    explanation: "Government jobs require formal application and interview processes. They never offer jobs through text messages.",
-    tipCategory: "Job Scams"
+    explanation: "मुफ्त में कुछ भी नहीं मिलता, यह सिर्फ एक जाल है",
+    tipCategory: "online",
+    tags: ["prize", "iphone"],
+    difficulty: "easy"
   }
 ];
