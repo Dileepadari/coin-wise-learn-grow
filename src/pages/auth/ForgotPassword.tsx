@@ -1,24 +1,26 @@
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Sparkle, ArrowLeft } from "lucide-react";
-import { translate, DEFAULT_LANGUAGE } from "@/utils/translate";
+import { ArrowLeft, Send, Sparkles } from "lucide-react";
+import { translate } from "@/utils/translate";
+import { useApp } from "@/context/AppContext";
+import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
+  const { language } = useApp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call with delay
+    // Simulate API request
     setTimeout(() => {
       setIsSubmitted(true);
       setLoading(false);
@@ -26,25 +28,28 @@ export default function ForgotPassword() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative bg-blue-gradient p-4 overflow-hidden">
-      {/* Decorative rangoli patterns */}
-      <div className="rangoli-decoration top-0 left-0 opacity-10"></div>
-      <div className="rangoli-decoration bottom-0 right-0 opacity-10"></div>
-      
-      <div className="w-full max-w-md z-10">
-        <div className="hero-card bg-white">
-          {/* Colorful top header */}
-          <div className="px-8 pt-8 pb-4 bg-orange-gradient">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-coin-purple/10 via-white to-coin-pink/10 bg-festival-pattern">
+      <motion.div 
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-coin-purple/30">
+          <div className="p-8 pb-4 bg-purple-gradient">
             <div className="text-center">
-              {/* Animated coin symbol */}
-              <div className="coin mx-auto mb-4 animate-float">
-                <Sparkle className="h-8 w-8" />
-              </div>
+              <motion.div 
+                className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              >
+                🔒
+              </motion.div>
               <h2 className="text-2xl font-bold text-white">
-                {translate('forgotPassword', DEFAULT_LANGUAGE)}
+                {translate('forgotPassword', language)}
               </h2>
-              <p className="text-white/80 mt-1">
-                हम आपको एक रीसेट लिंक भेजेंगे
+              <p className="text-white/80 mt-1 max-w-xs mx-auto">
+                चिंता न करें! हम आपको पासवर्ड रीसेट लिंक भेज देंगे
               </p>
             </div>
           </div>
@@ -53,23 +58,20 @@ export default function ForgotPassword() {
             {!isSubmitted ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-700 font-medium">
-                    {translate('phoneNumber', DEFAULT_LANGUAGE)}
+                  <Label htmlFor="phoneNumber" className="text-gray-700">
+                    {translate('phoneNumber', language)}
                   </Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">+91</span>
-                    <Input 
-                      id="phone" 
-                      type="tel" 
-                      placeholder="अपना फोन नंबर दर्ज करें" 
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="h-12 rounded-xl pl-12 border-2 border-gray-300 focus:border-coin-purple"
-                      required
-                    />
-                  </div>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                    className="h-12 rounded-xl border-2 border-gray-300 hover:border-coin-purple focus:border-coin-purple"
+                    placeholder="अपना फोन नंबर दर्ज करें"
+                  />
                   <p className="text-xs text-muted-foreground mt-1">
-                    हम आपको एक वन-टाइम पासवर्ड भेजेंगे
+                    आपके नंबर पर एक OTP भेजा जाएगा
                   </p>
                 </div>
                 
@@ -81,55 +83,95 @@ export default function ForgotPassword() {
                   {loading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>भेजा जा रहा है...</span>
+                      <span>{translate('loading', language)}</span>
                     </div>
                   ) : (
-                    "पासवर्ड रीसेट लिंक भेजें"
+                    <div className="flex items-center justify-center space-x-2">
+                      <Send className="h-5 w-5" />
+                      <span>OTP भेजें</span>
+                    </div>
                   )}
                 </Button>
               </form>
             ) : (
-              <div className="text-center py-4 space-y-6">
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                  <Sparkle className="h-8 w-8 text-green-500" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">लिंक भेज दिया गया!</h3>
-                  <p className="text-muted-foreground">
-                    हमने आपके नंबर +91{phoneNumber.slice(-4).padStart(phoneNumber.length, '*')} पर एक पासवर्ड रीसेट लिंक भेज दिया है।
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => navigate('/login')}
-                  className="h-12 rounded-xl bg-blue-gradient hover:opacity-90 text-white font-bold button-shimmer"
+              <motion.div 
+                className="text-center py-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1, rotate: [0, 10, 0] }}
+                  transition={{ type: "spring", duration: 0.5 }}
                 >
-                  लॉगिन पर वापस जाएं
+                  <Sparkles className="h-8 w-8" />
+                </motion.div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  OTP भेज दिया गया!
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  हमने आपके फोन नंबर <span className="font-medium">{phoneNumber}</span> पर एक OTP भेज दिया है। कृपया अपना पासवर्ड रीसेट करने के लिए OTP दर्ज करें।
+                </p>
+                
+                <div className="mt-6 flex justify-center space-x-3">
+                  <Input
+                    className="w-12 h-12 text-center text-lg font-bold border-2 border-coin-purple"
+                    maxLength={1}
+                  />
+                  <Input
+                    className="w-12 h-12 text-center text-lg font-bold border-2 border-coin-purple"
+                    maxLength={1}
+                  />
+                  <Input
+                    className="w-12 h-12 text-center text-lg font-bold border-2 border-coin-purple"
+                    maxLength={1}
+                  />
+                  <Input
+                    className="w-12 h-12 text-center text-lg font-bold border-2 border-coin-purple"
+                    maxLength={1}
+                  />
+                </div>
+                
+                <Button 
+                  className="mt-6 w-full h-12 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 text-white font-bold"
+                >
+                  पासवर्ड रीसेट करें
                 </Button>
-              </div>
+              </motion.div>
             )}
             
             <div className="mt-6 text-center">
-              <Link 
-                to="/login" 
-                className="text-coin-purple font-medium hover:underline flex items-center justify-center"
+              <Link
+                to="/login"
+                className="inline-flex items-center text-coin-purple hover:text-coin-purple-dark"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
-                लॉगिन पर वापस जाएं
+                <span>{translate('login', language)} पर वापस जाएँ</span>
               </Link>
             </div>
           </div>
-          
-          {/* Festive bottom decoration */}
-          <div className="h-3 w-full bg-holi-gradient"></div>
         </div>
         
-        {/* Decorative elements */}
-        <div className="flex justify-between mt-6">
-          <div className="diya"></div>
-          <div className="diya"></div>
-          <div className="diya"></div>
+        {/* Festive decoration */}
+        <div className="flex justify-around mt-4">
+          {[...Array(5)].map((_, i) => (
+            <motion.div 
+              key={i}
+              className={`w-3 h-3 rounded-full bg-${['coin-purple', 'coin-orange', 'coin-pink', 'coin-blue', 'coin-yellow'][i % 5]}`}
+              animate={{ 
+                y: [0, -10, 0],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{ 
+                duration: 2, 
+                repeat: Infinity, 
+                delay: i * 0.2
+              }}
+            />
+          ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
