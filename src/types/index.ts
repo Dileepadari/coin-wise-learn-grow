@@ -1,3 +1,4 @@
+
 // Add LanguageKeys export to fix the TypeScript error
 export type LanguageKeys = 'english' | 'hindi' | 'telugu';
 
@@ -150,4 +151,10 @@ export interface TranslationKeys {
   password: string;
   lessons: string;
   points: string;
+  learn: string;
+  games: string;
+  community: string;
+  profile: string;
+  reels: string;
+  saveMoney: string;
 }

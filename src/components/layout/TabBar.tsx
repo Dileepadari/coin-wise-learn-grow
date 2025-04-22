@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { translate } from "@/utils/translate";
 import { motion } from "framer-motion";
+import { bounceIn, fadeInUp, popIn } from "@/utils/animations";
 
 export default function TabBar() {
   const { activeTab, setActiveTab, language } = useApp();
@@ -18,7 +19,12 @@ export default function TabBar() {
       icon: Home,
       path: '/',
       color: 'text-coin-purple',
-      emoji: '📱'
+      emoji: '📱',
+      message: {
+        english: "Check new reels!",
+        hindi: "नई रील्स देखें!",
+        telugu: "కొత్త రీల్స్ చూడండి!"
+      }
     },
     {
       id: 'games',
@@ -26,7 +32,12 @@ export default function TabBar() {
       icon: Gamepad2,
       path: '/games',
       color: 'text-coin-orange',
-      emoji: '🎮'
+      emoji: '🎮',
+      message: {
+        english: "Play & earn!",
+        hindi: "खेलें और कमाएं!",
+        telugu: "ఆడండి & సంపాదించండి!"
+      }
     },
     {
       id: 'learn',
@@ -34,7 +45,12 @@ export default function TabBar() {
       icon: BookOpen,
       path: '/learn',
       color: 'text-green-500',
-      emoji: '📚'
+      emoji: '📚',
+      message: {
+        english: "Learn with fun!",
+        hindi: "मज़े से सीखें!",
+        telugu: "సరదాగా నేర్చుకోండి!"
+      }
     },
     {
       id: 'community',
@@ -42,7 +58,12 @@ export default function TabBar() {
       icon: Users,
       path: '/community',
       color: 'text-blue-500',
-      emoji: '👥'
+      emoji: '👥',
+      message: {
+        english: "Join friends!",
+        hindi: "दोस्तों से जुड़ें!",
+        telugu: "స్నేహితులతో చేరండి!"
+      }
     },
     {
       id: 'profile',
@@ -50,7 +71,12 @@ export default function TabBar() {
       icon: User,
       path: '/profile',
       color: 'text-coin-pink',
-      emoji: '👤'
+      emoji: '👤',
+      message: {
+        english: "Your progress!",
+        hindi: "आपकी प्रगति!",
+        telugu: "మీ పురోగతి!"
+      }
     }
   ];
 
@@ -86,9 +112,9 @@ export default function TabBar() {
                 <tab.icon className="h-6 w-6 mb-1" />
                 <motion.div
                   className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-yellow-400 flex items-center justify-center text-[8px]"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2 }}
+                  variants={popIn}
+                  initial="initial"
+                  animate="animate"
                 >
                   <Sparkles className="h-2 w-2 text-white" />
                 </motion.div>
@@ -100,11 +126,20 @@ export default function TabBar() {
             
             {isActive && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-1 text-xs opacity-70"
+                variants={fadeInUp}
+                initial="initial"
+                animate="animate"
+                className="mt-1 flex flex-col text-xs opacity-70"
               >
-                {tab.emoji}
+                <span className="text-[10px]">{tab.message[language]}</span>
+                <motion.div 
+                  variants={bounceIn}
+                  initial="initial" 
+                  animate="animate" 
+                  transition={{ delay: 0.3 }}
+                >
+                  {tab.emoji}
+                </motion.div>
               </motion.div>
             )}
           </Link>

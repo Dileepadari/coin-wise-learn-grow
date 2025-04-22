@@ -12,13 +12,17 @@ import GameSuggestion from "@/components/game/GameSuggestion";
 import ModuleSuggestion from "@/components/learning/ModuleSuggestion";
 import { toast } from "sonner";
 import { Reel } from "@/types";
+import { motion } from "framer-motion";
+import { Character } from "@/components/ui/character-dialog";
+import { getMotivationalPhrase } from "@/utils/translate";
 
 export default function Home() {
-  const { user } = useApp();
+  const { user, language } = useApp();
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
   const [currentReel, setCurrentReel] = useState<Reel | null>(null);
   const [reelViewCount, setReelViewCount] = useState(0);
+  const [showCharacter, setShowCharacter] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -36,6 +40,16 @@ export default function Home() {
       }, 1000);
     } else {
       setShowPrompt(null);
+    }
+
+    // Occasionally show a character
+    if (Math.random() > 0.7) {
+      setTimeout(() => {
+        setShowCharacter(true);
+        setTimeout(() => setShowCharacter(false), 5000);
+      }, 2000);
+    } else {
+      setShowCharacter(false);
     }
   }, [currentReelIndex]);
 
@@ -59,52 +73,117 @@ export default function Home() {
       className: "bg-primary text-primary-foreground",
     });
   };
+  
+  const getCharacterForCategory = () => {
+    const category = currentReel?.category || 'basics';
+    const characters = {
+      'basics': {
+        name: 'Raju',
+        avatar: '👨‍🏫',
+        dialog: getMotivationalPhrase('basics', language),
+        emotion: 'excited' as const
+      },
+      'savings': {
+        name: 'Lakshmi',
+        avatar: '👩‍💼',
+        dialog: getMotivationalPhrase('savings', language),
+        emotion: 'happy' as const
+      },
+      'investment': {
+        name: 'Vikram',
+        avatar: '👨‍💼',
+        dialog: getMotivationalPhrase('investment', language),
+        emotion: 'thinking' as const
+      },
+      'fraud': {
+        name: 'Sameera',
+        avatar: '👮‍♀️',
+        dialog: getMotivationalPhrase('fraud', language),
+        emotion: 'thinking' as const
+      },
+      'borrowing': {
+        name: 'Pradeep',
+        avatar: '🏦',
+        dialog: getMotivationalPhrase('borrowing', language),
+        emotion: 'happy' as const
+      }
+    };
+    
+    return characters[category as keyof typeof characters] || characters.basics;
+  };
 
   return (
     <Layout>
       <div className="relative h-full pb-16">
         {/* Reels container with snap scroll */}
         <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)] overflow-hidden">
-          <div 
-            className="h-full transition-transform duration-300 ease-in-out"
+          <motion.div 
+            className="h-full transition-all duration-300 ease-out"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             style={{ transform: `translateY(-${currentReelIndex * 100}%)` }}
           >
             {reels.map((reel, index) => (
-              <div key={reel.id} className="h-full w-full">
+              <motion.div 
+                key={reel.id} 
+                className="h-full w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: currentReelIndex === index ? 1 : 0 }}
+                transition={{ duration: 0.5 }}
+              >
                 <ReelCard reel={reel} height="h-full" onCelebrate={handleCelebrate} />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Navigation buttons positioned differently based on screen size */}
         <div className={`absolute ${isMobile ? 'bottom-20 left-1/2 -translate-x-1/2' : 'right-4 top-1/2 -translate-y-1/2'} flex ${isMobile ? 'flex-row gap-8' : 'flex-col gap-2'}`}>
-          <Button
-            variant="secondary" 
-            size="icon"
-            className="rounded-full bg-black/20 backdrop-blur-md"
-            onClick={handlePreviousReel}
-            disabled={currentReelIndex === 0}
-          >
-            <ChevronUp className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
-          </Button>
-          <Button
-            variant="secondary" 
-            size="icon"
-            className="rounded-full bg-black/20 backdrop-blur-md"
-            onClick={handleNextReel}
-            disabled={currentReelIndex === reels.length - 1}
-          >
-            <ChevronDown className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
-          </Button>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="secondary" 
+              size="icon"
+              className="rounded-full bg-black/20 backdrop-blur-md"
+              onClick={handlePreviousReel}
+              disabled={currentReelIndex === 0}
+            >
+              <ChevronUp className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="secondary" 
+              size="icon"
+              className="rounded-full bg-black/20 backdrop-blur-md"
+              onClick={handleNextReel}
+              disabled={currentReelIndex === reels.length - 1}
+            >
+              <ChevronDown className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
+            </Button>
+          </motion.div>
         </div>
 
         {/* Reel indicator - different position for mobile */}
         <div className={`absolute ${isMobile ? 'top-4 right-4' : 'left-4 top-1/2 -translate-y-1/2'}`}>
-          <div className="text-sm text-white bg-black/20 backdrop-blur-md px-2 py-1 rounded-full">
+          <motion.div 
+            className="text-sm text-white bg-black/20 backdrop-blur-md px-2 py-1 rounded-full"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            key={currentReelIndex}
+          >
             {currentReelIndex + 1}/{reels.length}
-          </div>
+          </motion.div>
         </div>
+
+        {/* Character guide that appears occasionally */}
+        {showCharacter && currentReel && (
+          <div className="absolute bottom-20 left-4 z-20">
+            <Character 
+              {...getCharacterForCategory()}
+              size="small"
+            />
+          </div>
+        )}
 
         {/* Conditional prompts */}
         {showPrompt === 'quiz' && (

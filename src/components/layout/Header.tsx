@@ -1,15 +1,22 @@
 
-import { Bell, Search, Settings, ChevronDown } from "lucide-react";
+import { Bell, Search, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useApp } from "@/context/AppContext";
-import { translate } from "@/utils/translate";
+import { translate, getRandomGreeting } from "@/utils/translate";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { coinFlip, fadeInUp, floating } from "@/utils/animations";
 
 export default function Header() {
   const { user, language, notifications } = useApp();
   const navigate = useNavigate();
+  const [greeting, setGreeting] = useState("");
+  
+  useEffect(() => {
+    setGreeting(getRandomGreeting(language));
+  }, [language]);
   
   const unreadNotifications = notifications.filter(n => !n.read).length;
   
@@ -33,6 +40,9 @@ export default function Header() {
           <Link to="/" className="flex items-center space-x-2">
             <motion.div 
               className="h-9 w-9 bg-purple-gradient rounded-full flex items-center justify-center text-white font-bold text-lg"
+              variants={coinFlip}
+              initial="initial"
+              animate="animate"
               whileHover={{ rotate: 10 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -45,8 +55,9 @@ export default function Header() {
           
           <motion.div 
             className="ml-4 px-2 py-1 bg-green-500/10 rounded-full text-xs text-green-600 font-medium"
-            animate={{ y: [0, -2, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            variants={floating}
+            initial="initial"
+            animate="animate"
           >
             ₹50 {translate('saveMoney', language)}
           </motion.div>
@@ -59,7 +70,9 @@ export default function Header() {
             onClick={handleSearchClick}
             className="relative rounded-full hover:bg-coin-purple/10 hover:text-coin-purple"
           >
-            <Search className="h-[1.2rem] w-[1.2rem]" />
+            <motion.div whileHover={{ rotate: 15 }}>
+              <Search className="h-[1.2rem] w-[1.2rem]" />
+            </motion.div>
           </Button>
           
           <Button 
@@ -68,7 +81,10 @@ export default function Header() {
             onClick={handleNotificationClick}
             className="relative rounded-full hover:bg-coin-pink/10 hover:text-coin-pink"
           >
-            <Bell className="h-[1.2rem] w-[1.2rem]" />
+            <motion.div animate={{ rotate: unreadNotifications > 0 ? [0, -5, 5, -5, 5, 0] : 0 }} 
+              transition={{ repeat: unreadNotifications > 0 ? Infinity : 0, repeatDelay: 2 }}>
+              <Bell className="h-[1.2rem] w-[1.2rem]" />
+            </motion.div>
             {unreadNotifications > 0 && (
               <motion.span 
                 className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-coin-red text-[10px] text-white font-bold"
@@ -94,14 +110,29 @@ export default function Header() {
               </Avatar>
               
               <div className="hidden md:flex flex-col items-start">
-                <span className="text-xs font-medium">{user?.name || "गेस्ट"}</span>
+                <motion.span 
+                  className="text-xs font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  key={greeting} // Force animation when greeting changes
+                >
+                  {greeting}
+                </motion.span>
                 <div className="flex items-center">
-                  <span className="coin text-xs h-4 w-4 mr-1">₹</span>
+                  <motion.span 
+                    className="coin text-xs h-4 w-4 mr-1"
+                    animate={{ rotateY: [0, 360] }}
+                    transition={{ repeat: Infinity, repeatDelay: 5, duration: 1 }}
+                  >
+                    ₹
+                  </motion.span>
                   <span className="text-xs text-orange-500">{user?.points || 0}</span>
                 </div>
               </div>
               
-              <ChevronDown className="h-3 w-3 text-gray-500" />
+              <motion.div animate={{ rotate: [0, 10, 0] }} transition={{ repeatDelay: 3, repeat: Infinity }}>
+                <ChevronDown className="h-3 w-3 text-gray-500" />
+              </motion.div>
             </Button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState } from 'react';
 import { User, Badge, LearningModule, Reel, ScamExample, Notification, LanguageKeys } from '@/types';
 
@@ -30,6 +31,7 @@ const defaultContextValue: AppContextType = {
     lastName: "Singh",
     name: "Rahul Singh",
     phoneNumber: "9876543210",
+    points: 250,
     coins: 250,
     badges: [],
     progress: [],
@@ -38,7 +40,9 @@ const defaultContextValue: AppContextType = {
     level: 1,
     email: "",
     knowledgeLevel: "",
-    preferredCategories: []
+    preferredCategories: [],
+    completedModules: [],
+    completedGames: []
   },
   allBadges: [],
   allModules: [],
@@ -66,15 +70,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUserState] = useState<User>(defaultContextValue.user);
   const [allBadges, setAllBadges] = useState<Badge[]>(defaultContextValue.allBadges);
   const [allModules, setAllModules] = useState<LearningModule[]>(defaultContextValue.allModules);
-    const [allReels, setAllReels] = useState<Reel[]>(defaultContextValue.allReels);
-    const [scamExamples, setScamExamples] = useState<ScamExample[]>(defaultContextValue.scamExamples);
+  const [allReels, setAllReels] = useState<Reel[]>(defaultContextValue.allReels);
+  const [scamExamples, setScamExamples] = useState<ScamExample[]>(defaultContextValue.scamExamples);
   const [activeTab, setActiveTab] = useState(defaultContextValue.activeTab);
   const [notifications, setNotifications] = useState<Notification[]>(defaultContextValue.notifications);
   const [language, setLanguage] = useState<LanguageKeys>('english');
 
   const setUser = (user: User) => {
-        setUserState(user);
-    };
+    setUserState(user);
+  };
 
   const updateUser = (userData: Partial<User>) => {
     setUserState(prevUser => ({ ...prevUser, ...userData }));
@@ -132,7 +136,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       const updatedProgress = prevUser.progress.map(p =>
         p.moduleId === moduleId ? { ...p, completed: true } : p
       );
-      return { ...prevUser, progress: updatedProgress };
+      const updatedCompletedModules = [...prevUser.completedModules];
+      if (!updatedCompletedModules.includes(moduleId)) {
+        updatedCompletedModules.push(moduleId);
+      }
+      return { 
+        ...prevUser, 
+        progress: updatedProgress,
+        completedModules: updatedCompletedModules
+      };
     });
   };
 

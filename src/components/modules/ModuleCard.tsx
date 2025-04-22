@@ -6,7 +6,7 @@ import ProgressCircle from "../ui/ProgressCircle";
 import { BookOpen, Award, Star } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
-import { translate } from "@/utils/translate";
+import { getMotivationalPhrase } from "@/utils/translate";
 import { motion } from "framer-motion";
 
 interface ModuleCardProps {
@@ -50,23 +50,6 @@ export default function ModuleCard({ module }: ModuleCardProps) {
       default: return 'bg-gray-100';
     }
   };
-  
-  const getMotivationalPhrase = (category: string) => {
-    switch (category) {
-      case 'savings':
-        return "बचत आपका सबसे अच्छा दोस्त है!";
-      case 'investment':
-        return "छोटा निवेश, बड़ी कमाई!";
-      case 'fraud':
-        return "सावधान रहें, सुरक्षित रहें!";
-      case 'borrowing':
-        return "समझदारी से लें कर्ज़!";
-      case 'basics':
-        return "पहला कदम आपका सबसे महत्वपूर्ण है!";
-      default:
-        return "ज्ञान ही शक्ति है!";
-    }
-  };
 
   return (
     <Link to={`/learn/module/${module.id}`}>
@@ -106,12 +89,12 @@ export default function ModuleCard({ module }: ModuleCardProps) {
                 
                 <div className="flex items-center text-xs text-muted-foreground">
                   <BookOpen className="h-3 w-3 mr-1" />
-                  <span>{module.content.length} {translate('lessons', language)}</span>
+                  <span>{module.content.length} {language === 'english' ? 'lessons' : language === 'hindi' ? 'पाठ' : 'పాఠాలు'}</span>
                 </div>
                 
                 <div className="flex items-center text-xs text-muted-foreground">
                   <Award className="h-3 w-3 mr-1" />
-                  <span>{module.totalPoints} {translate('points', language)}</span>
+                  <span>{module.totalPoints} {language === 'english' ? 'points' : language === 'hindi' ? 'अंक' : 'పాయింట్లు'}</span>
                 </div>
               </div>
             </div>
@@ -127,7 +110,7 @@ export default function ModuleCard({ module }: ModuleCardProps) {
           </div>
           
           <div className="mt-3 py-2 px-3 rounded-lg bg-white/50 border border-dashed border-coin-purple/30 text-xs text-center text-gray-600 italic">
-            "{getMotivationalPhrase(module.category)}"
+            "{getMotivationalPhrase(module.category, language)}"
           </div>
         </div>
         
