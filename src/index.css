@@ -91,11 +91,12 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
 
 @layer components {
+  /* Existing components */
   .progress-ring-circle {
     transition: stroke-dashoffset 0.35s;
     transform: rotate(-90deg);
@@ -140,5 +141,134 @@
   
   .tab-active {
     @apply text-primary font-medium;
+  }
+  
+  /* New festive components */
+  .coin {
+    @apply w-16 h-16 rounded-full flex items-center justify-center bg-coin-gradient text-white text-3xl font-bold;
+    box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
+  }
+  
+  .festive-border {
+    @apply border-2 border-marigold rounded-xl;
+    background-image: linear-gradient(white, white), 
+                      linear-gradient(90deg, #FFAA33, #FF4D4D, #FFAA33);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+  
+  .button-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .button-shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+  }
+  
+  .rangoli-decoration {
+    @apply absolute w-40 h-40 opacity-20 pointer-events-none;
+    background-image: url('/patterns/rangoli-pattern.svg');
+    background-size: contain;
+    animation: rangoli-rotate 20s linear infinite;
+  }
+  
+  .diya {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+  }
+  
+  .diya::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background: #FFAA33;
+    border-radius: 50% 50% 0 0;
+    top: 10px;
+    left: 5px;
+  }
+  
+  .diya::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #FF4D4D;
+    border-radius: 50%;
+    top: 7px;
+    left: 12px;
+    box-shadow: 0 0 10px #FF4D4D, 0 0 20px #FF4D4D;
+    animation: diya-flicker 3s infinite ease-in-out;
+  }
+  
+  .badge-glow {
+    @apply relative;
+  }
+  
+  .badge-glow::before {
+    content: "";
+    @apply absolute inset-0 rounded-full;
+    background: inherit;
+    filter: blur(8px);
+    opacity: 0.6;
+    z-index: -1;
+    animation: pulse 2s infinite;
+  }
+  
+  .hero-card {
+    @apply rounded-3xl overflow-hidden border-2 border-marigold relative;
+    box-shadow: 0 10px 25px -5px rgba(255, 170, 51, 0.3);
+  }
+  
+  .indian-pattern-card {
+    @apply relative overflow-hidden;
+    background-repeat: repeat;
+  }
+  
+  .indian-pattern-card::before {
+    content: "";
+    @apply absolute inset-0 opacity-10;
+    background-image: url('/patterns/festival-pattern.svg');
+    z-index: 0;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
   }
 }

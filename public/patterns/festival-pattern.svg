@@ -1,0 +1,14 @@
+
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="festival" patternUnits="userSpaceOnUse" width="100" height="100">
+      <circle cx="10" cy="10" r="3" fill="#FF3EA5" opacity="0.2" />
+      <circle cx="40" cy="20" r="2" fill="#FFD966" opacity="0.2" />
+      <circle cx="70" cy="30" r="4" fill="#4BC94B" opacity="0.2" />
+      <circle cx="20" cy="50" r="3" fill="#5BA1FC" opacity="0.2" />
+      <circle cx="80" cy="70" r="2" fill="#FF4D4D" opacity="0.2" />
+      <circle cx="50" cy="90" r="3" fill="#FFAA33" opacity="0.2" />
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#festival)" />
+</svg>
