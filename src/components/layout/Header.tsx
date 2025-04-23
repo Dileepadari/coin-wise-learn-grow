@@ -1,4 +1,3 @@
-
 import { Bell, Search, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,17 +12,18 @@ export default function Header() {
   const { user, language, notifications } = useApp();
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState("");
-  
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   useEffect(() => {
     setGreeting(getRandomGreeting(language));
   }, [language]);
-  
+
   const unreadNotifications = notifications.filter(n => !n.read).length;
-  
+
   const handleNotificationClick = () => {
     navigate("/notifications");
   };
-  
+
   const handleSearchClick = () => {
     navigate("/search");
   };
@@ -53,14 +53,14 @@ export default function Header() {
             </div>
           </Link>
           
-          <motion.div 
+          {/* <motion.div 
             className="ml-4 px-2 py-1 bg-green-500/10 rounded-full text-xs text-green-600 font-medium"
             variants={floating}
             initial="initial"
             animate="animate"
           >
             ₹50 {translate('saveMoney', language)}
-          </motion.div>
+          </motion.div> */}
         </motion.div>
         
         <div className="flex items-center space-x-1">
@@ -101,15 +101,15 @@ export default function Header() {
             <Button 
               variant="ghost" 
               className="flex items-center space-x-2 p-1 rounded-full hover:bg-coin-purple/10"
-              onClick={() => navigate('/profile')}
-            >
-              <Avatar className="h-8 w-8 border-2 border-coin-purple/20">
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+              <Avatar className="hidden md:flex h-8 w-8 border-2 border-coin-purple/20">
                 <AvatarFallback className="bg-purple-gradient text-white">
                   {user?.name?.charAt(0) || 'G'}
                 </AvatarFallback>
               </Avatar>
               
-              <div className="hidden md:flex flex-col items-start">
+              <div className="md:flex flex-col items-start">
                 <motion.span 
                   className="text-xs font-medium"
                   initial={{ opacity: 0 }}
@@ -130,16 +130,58 @@ export default function Header() {
                 </div>
               </div>
               
-              <motion.div animate={{ rotate: [0, 10, 0] }} transition={{ repeatDelay: 3, repeat: Infinity }}>
-                <ChevronDown className="h-3 w-3 text-gray-500" />
-              </motion.div>
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: [0, 10, 0] }}
+                  transition={{ repeatDelay: 3, repeat: Infinity }}
+                  className="cursor-pointer"
+                >
+                  <ChevronDown className="h-3 w-3 text-gray-500" />
+                </motion.div>
+                {dropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                  >
+                    <ul className="py-1">
+                      <li>
+                      <Button
+                      className="w-full justify-start text-left px-4 py-2 bg-white text-sm text-gray-700 hover:bg-yellow-200 flex items-center space-x-2"
+                      onClick={() => navigate('/profile')}
+                      >
+                      <span>👤</span>
+                      <span>Profile</span>
+                      </Button>
+                      </li>
+                      <li>
+                      <Button
+                      className="w-full justify-start text-left px-4 py-2 bg-white text-sm text-gray-700 hover:bg-green-200 flex items-center space-x-2"
+                      onClick={() => navigate('/community')}
+                      >
+                      <span>🌐</span>
+                      <span>Community</span>
+                      </Button>
+                      </li>
+                      <li>
+                      <Button
+                      className="w-full justify-start text-left px-4 py-2 bg-white text-sm text-gray-700 hover:bg-red-200 flex items-center space-x-2"
+                      onClick={() => navigate('/login')}
+                      >
+                      <span>🚪</span>
+                      <span>Logout</span>
+                      </Button>
+                      </li>
+                    </ul>
+                  </motion.div>
+                )}
+              </div>
             </Button>
           </div>
         </div>
       </div>
       
-      {/* Animated gradient strip at bottom */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-coin-pink via-coin-purple to-coin-orange animate-shimmer"></div>
-    </header>
+      <div className="h-[2px] w-full bg-gradient-to-r from-coin-pink via-coin-purple to-coin-orange" style={{ animationDuration: '5s' }}></div> </header>
   );
 }

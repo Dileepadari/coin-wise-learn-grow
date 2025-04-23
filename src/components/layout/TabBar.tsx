@@ -1,76 +1,75 @@
-
 import { useApp } from "@/context/AppContext";
-import { Home, Gamepad2, BookOpen, Users, User, Sparkles } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { translate } from "@/utils/translate";
 import { motion } from "framer-motion";
-import { bounceIn, fadeInUp, popIn } from "@/utils/animations";
+import { FaHome, FaGamepad, FaBook, FaUsers, FaUserTie } from "react-icons/fa";
 
 export default function TabBar() {
   const { activeTab, setActiveTab, language } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const tabs = [
     {
-      id: 'home',
-      label: translate('reels', language),
-      icon: Home,
-      path: '/',
-      color: 'text-coin-purple',
-      emoji: '📱',
+      id: 'learn',
+      label: translate('learn', language),
+      icon: FaBook,
+      path: '/learn',
+      color: 'bg-gradient-to-r from-purple-400 to-pink-500',
+      emoji: '📖',
       message: {
-        english: "Check new reels!",
-        hindi: "नई रील्स देखें!",
-        telugu: "కొత్త రీల్స్ చూడండి!"
+        english: "Learn new!",
+        hindi: "नया सीखें!",
+        telugu: "కొత్తదాన్ని నేర్చుకోండి!"
       }
     },
     {
       id: 'games',
       label: translate('games', language),
-      icon: Gamepad2,
+      icon: FaGamepad,
       path: '/games',
-      color: 'text-coin-orange',
+      color: 'bg-gradient-to-r from-green-400 to-blue-500',
       emoji: '🎮',
       message: {
         english: "Play & earn!",
         hindi: "खेलें और कमाएं!",
-        telugu: "ఆడండి & సంపాదించండి!"
+        telugu: "ఆడి సంపాదించండి!"
       }
     },
     {
-      id: 'learn',
-      label: translate('learn', language),
-      icon: BookOpen,
-      path: '/learn',
-      color: 'text-green-500',
-      emoji: '📚',
+      id: 'home',
+      label: translate('reels', language),
+      icon: FaHome,
+      path: '/',
+      color: 'bg-gradient-to-r from-yellow-400 to-red-500',
+      emoji: '🏠',
       message: {
-        english: "Learn with fun!",
-        hindi: "मज़े से सीखें!",
-        telugu: "సరదాగా నేర్చుకోండి!"
+        english: "Trending reels!",
+        hindi: "ट्रेंडिंग रील्स!",
+        telugu: "ట్రెండింగ్ రీల్స్!"
       }
     },
     {
       id: 'community',
       label: translate('community', language),
-      icon: Users,
+      icon: FaUsers,
       path: '/community',
-      color: 'text-blue-500',
-      emoji: '👥',
+      color: 'bg-gradient-to-r to-green-400 from-blue-500',
+      emoji: '🤝',
       message: {
-        english: "Join friends!",
-        hindi: "दोस्तों से जुड़ें!",
-        telugu: "స్నేహితులతో చేరండి!"
+        english: "Connect now!",
+        hindi: "जुड़ें अभी!",
+        telugu: "ఇప్పుడు కనెక్ట్ అవ్వండి!"
       }
     },
     {
       id: 'profile',
       label: translate('profile', language),
-      icon: User,
+      icon: FaUserTie,
       path: '/profile',
-      color: 'text-coin-pink',
+      color: 'bg-gradient-to-r from-red-400 to-purple-500',
       emoji: '👤',
       message: {
         english: "Your progress!",
@@ -80,7 +79,6 @@ export default function TabBar() {
     }
   ];
 
-  // Update active tab based on current path
   useEffect(() => {
     const currentTab = tabs.find(tab => tab.path === location.pathname);
     if (currentTab) {
@@ -89,60 +87,51 @@ export default function TabBar() {
   }, [location.pathname, setActiveTab]);
 
   return (
-    <div className="tab-navigation">
+    <div className="tab-navigation flex justify-around bg-gray-100 p-2 rounded-lg shadow-lg">
       {tabs.map(tab => {
         const isActive = activeTab === tab.id;
-        
+
         return (
-          <Link
+          <motion.div
             key={tab.id}
-            to={tab.path}
+            initial={false}
+            animate={{
+              translateY: isActive ? -15 : 0,
+              borderRadius: isActive ? '1.5rem' : '0.75rem',
+              boxShadow: isActive ? '0 10px 20px rgba(0, 0, 0, 0.25)' : 'none',
+              zIndex: isActive ? 20 : 1,
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className={cn(
-              "tab-item hover-float",
-              isActive ? `${tab.color} font-medium tab-active` : "text-gray-500"
+              "tab-item flex flex-col items-center justify-center p-3 cursor-pointer transition-transform",
+              isActive ? `${tab.color} text-white font-bold` : "text-gray-600"
             )}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              setTimeout(() => navigate(tab.path), 300); // Delay navigation to allow animation to complete
+            }}
           >
-            {isActive ? (
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                className="relative"
-              >
-                <tab.icon className="h-6 w-6 mb-1" />
+            <div
+              className={cn(
+                "icon-container flex items-center justify-center w-12 h-12 rounded-full",
+                isActive ? "bg-opacity-90" : "bg-gray-200"
+              )}
+            >
+              {isActive ? (
                 <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-yellow-400 flex items-center justify-center text-[8px]"
-                  variants={popIn}
-                  initial="initial"
-                  animate="animate"
+                  initial={{ scale: 0.85 }}
+                  animate={{ scale: 1.1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="relative"
                 >
-                  <Sparkles className="h-2 w-2 text-white" />
+                  <tab.icon className="h-6 w-6" />
                 </motion.div>
-              </motion.div>
-            ) : (
-              <tab.icon className="h-6 w-6 mb-1" />
-            )}
-            <span>{tab.label}</span>
-            
-            {isActive && (
-              <motion.div
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-                className="mt-1 flex flex-col text-xs opacity-70"
-              >
-                <span className="text-[10px]">{tab.message[language]}</span>
-                <motion.div 
-                  variants={bounceIn}
-                  initial="initial" 
-                  animate="animate" 
-                  transition={{ delay: 0.3 }}
-                >
-                  {tab.emoji}
-                </motion.div>
-              </motion.div>
-            )}
-          </Link>
+              ) : (
+                <tab.icon className="h-6 w-6" />
+              )}
+            </div>
+            <span className="text-xs mt-1">{tab.label}</span>
+          </motion.div>
         );
       })}
     </div>

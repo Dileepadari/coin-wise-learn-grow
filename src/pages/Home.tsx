@@ -114,7 +114,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="relative h-full pb-16">
+      <div className="relative h-full">
         {/* Reels container with snap scroll */}
         <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)] overflow-hidden">
           <motion.div 
@@ -138,7 +138,7 @@ export default function Home() {
         </div>
 
         {/* Navigation buttons positioned differently based on screen size */}
-        <div className={`absolute ${isMobile ? 'bottom-20 left-1/2 -translate-x-1/2' : 'right-4 top-1/2 -translate-y-1/2'} flex ${isMobile ? 'flex-row gap-8' : 'flex-col gap-2'}`}>
+        <div className={`absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2`} style={{ marginTop: '-50px' }}>
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <Button
               variant="secondary" 
@@ -147,7 +147,7 @@ export default function Home() {
               onClick={handlePreviousReel}
               disabled={currentReelIndex === 0}
             >
-              <ChevronUp className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
+              <ChevronUp className={`h-5 w-5`} />
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -158,7 +158,7 @@ export default function Home() {
               onClick={handleNextReel}
               disabled={currentReelIndex === reels.length - 1}
             >
-              <ChevronDown className={`h-5 w-5 ${isMobile ? 'rotate-90' : ''}`} />
+              <ChevronDown className={`h-5 w-5`} />
             </Button>
           </motion.div>
         </div>
@@ -175,15 +175,15 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Character guide that appears occasionally */}
+        {/* Character guide that appears occasionally
         {showCharacter && currentReel && (
-          <div className="absolute bottom-20 left-4 z-20">
+          <div className="absolute top-10 left-4 z-20">
             <Character 
               {...getCharacterForCategory()}
               size="small"
             />
           </div>
-        )}
+        )} */}
 
         {/* Conditional prompts */}
         {showPrompt === 'quiz' && (
