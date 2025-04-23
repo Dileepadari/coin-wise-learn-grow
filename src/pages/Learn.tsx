@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -74,9 +73,9 @@ export default function Learn() {
   
   const getTipForLanguage = () => {
     const tips = {
-      english: "Completing all modules in a category unlocks a special badge!",
-      hindi: "एक श्रेणी के सभी मॉड्यूल पूरे करने से एक विशेष बैज मिलता है!",
-      telugu: "ఒక వర్గంలోని అన్ని మాడ్యూల్‌లను పూర్తి చేయడం ద్వారా ప్రత్యేక బ్యాడ్జ్‌ని అన్‌లాక్ చేస్తుంది!"
+      english: "Finish all modules in a category and unlock a cool badge!",
+      hindi: "एक श्रेणी के सभी मॉड्यूल पूरे करो और एक शानदार बैज पाओ!",
+      telugu: "ఒక వర్గంలోని అన్ని మాడ్యూల్‌లను పూర్తి చేసి ఒక కూల్ బ్యాడ్జ్ పొందండి!"
     };
     
     return tips[language];
@@ -120,10 +119,11 @@ export default function Learn() {
 
         {/* Category filter */}
         <motion.div 
-          className="flex gap-2 pb-6 overflow-x-auto"
+          className="flex gap-2 pb-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          style={{ flexWrap: 'wrap' }}
         >
           <Badge 
             variant={selectedCategory === null ? "default" : "outline"} 
@@ -181,10 +181,10 @@ export default function Learn() {
                           <CardDescription>
                             {progress.completed} {language === 'english' ? 'of' : language === 'hindi' ? 'में से' : 'నుండి'} {progress.total} {
                               language === 'english' 
-                                ? 'modules completed' 
+                                ? 'modules done!' 
                                 : language === 'hindi' 
-                                  ? 'मॉड्यूल पूरे किए' 
-                                  : 'మాడ్యూల్స్ పూర్తి'
+                                  ? 'मॉड्यूल पूरे!' 
+                                  : 'మాడ్యూల్స్ పూర్తి!'
                             }
                           </CardDescription>
                         </div>
@@ -237,17 +237,17 @@ export default function Learn() {
                       
                       {modules.filter(module => module.category === category).length > 3 && (
                         <motion.div 
-                          className="text-xs text-muted-foreground pl-6"
+                          className="text-xs text-blue-500 pl-6 font-semibold"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.8 }}
                         >
                           + {modules.filter(module => module.category === category).length - 3} {
-                            language === 'english' 
-                              ? 'more modules' 
-                              : language === 'hindi' 
-                                ? 'और मॉड्यूल' 
-                                : 'మరిన్ని మాడ్యూల్స్'
+                          language === 'english' 
+                            ? 'more cool modules 🎉' 
+                            : language === 'hindi' 
+                            ? 'और मज़ेदार मॉड्यूल 🎉' 
+                            : 'మరిన్ని ఆసక్తికరమైన మాడ్యూల్స్ 🎉'
                           }
                         </motion.div>
                       )}

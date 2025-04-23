@@ -158,21 +158,21 @@ export default function ReelCard({
       <div className="absolute right-3 top-1/2 z-30 flex flex-col gap-4 -translate-y-1/2">
         <Button 
           size="icon"
-          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12"
+          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12 bg-black/30"
           onClick={toggleLike}
         >
           <ThumbsUp className={isLiked ? "fill-holi-white text-holi-white scale-125 h-6 w-6" : "text-white h-6 w-6"} />
         </Button>
         <Button
           size="icon"
-          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12"
+          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12 bg-black/30"
           onClick={toggleSave}
         >
           <Bookmark className={isSaved ? "fill-holi-white text-holi-white scale-125 h-6 w-6" : "text-white h-6 w-6"} />
         </Button>
         <Button
           size="icon"
-          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12"
+          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12 bg-black/30"
           onClick={toggleMute}
         >
           {isMuted ? <VolumeX className="h-6 w-6 text-white" /> : <Volume2 className="h-6 w-6 text-white" />}

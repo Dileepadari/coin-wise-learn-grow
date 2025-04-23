@@ -6,9 +6,10 @@ import { useAppContext } from "@/context/AppContext";
 import { getCelebrityGuide } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Share, User, Plus, Search } from "lucide-react";
+import { Heart, MessageSquare, Share, User, Plus, Search, Save, Bookmark } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { Navigate, useNavigate } from "react-router";
 
 const demoUsers = [
   { id: "1", name: "Anita", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
@@ -48,6 +49,7 @@ const demoPosts = [
 
 export default function Community() {
   const { user } = useAppContext();
+  const navigate = useNavigate();
   const celeb = getCelebrityGuide("basics");
   const [activeTab, setActiveTab] = useState("trending");
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
@@ -147,8 +149,8 @@ export default function Community() {
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" className="text-coin-purple">
-                  <User className="h-4 w-4" />
-                  <span className="ml-1 text-xs">Profile</span>
+                  <Plus className="h-4 w-4" />
+                  <span className="ml-1 text-xs">Add Friend</span>
                 </Button>
               </div>
               
@@ -182,8 +184,8 @@ export default function Community() {
                   {post.comments}
                 </Button>
                 <Button variant="ghost" size="sm" className="text-sm">
-                  <Share className="h-4 w-4 mr-1" />
-                  Share
+                  <Bookmark className="h-4 w-4 mr-1" />
+                  Save
                 </Button>
               </div>
             </motion.div>
@@ -192,12 +194,16 @@ export default function Community() {
         
         {/* FAB */}
         <motion.div
-          className="fixed bottom-20 right-4"
+          className="fixed right-4"
+          style={{ bottom: "14vh" }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <Button
             className="h-14 w-14 rounded-full bg-gradient-to-r from-coin-purple to-coin-pink shadow-lg"
+            onClick={() => navigate("/create-post")}
+            aria-label="Create Post"
+            title="Create Post"
           >
             <Plus className="h-6 w-6 text-white" />
           </Button>
