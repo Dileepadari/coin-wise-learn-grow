@@ -77,6 +77,7 @@ export default {
         "rangoli-pink": "#FF69B4",
         "rangoli-yellow": "#FFC107",
         "rangoli-green": "#26A69A",
+        "holi-white": "#F0F4F8",
       },
       fontFamily: {
         'sans': ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],

@@ -1,151 +1,146 @@
+import React, { createContext, useContext, useState } from "react";
+import { User } from "@/types";
 
-import { createContext, useContext, useState } from 'react';
-import { User, Badge, LearningModule, Reel, ScamExample, Notification, LanguageKeys } from '@/types';
-
-interface AppContextType {
-  user: User;
-  allBadges: Badge[];
-  allModules: LearningModule[];
-  allReels: Reel[];
-  scamExamples: ScamExample[];
-  activeTab: string;
-  notifications: Notification[];
-  language: LanguageKeys;
-  updateUser: (userData: Partial<User>) => void;
-  setUser: (user: User) => void;
-  addCoins: (amount: number) => void;
-  unlockBadge: (badgeId: string) => void;
-  likeContent: (contentId: string) => void;
-  saveContent: (contentId: string) => void;
-  updateProgress: (moduleId: string, progress: number) => void;
-  completeModule: (moduleId: string) => void;
-  setActiveTab: (tab: string) => void;
-  addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
-  markNotificationAsRead: (notificationId: string) => void;
+export interface Notification {
+  id: string;
+  title: string; // Add this line
+  message: string;
+  read: boolean;
+  actionLink?: string;
+  type: 'achievement' | 'social' | 'reminder' | 'general';
+  timestamp: Date; // Add this line
 }
 
-const defaultContextValue: AppContextType = {
-  user: {
-    id: "user1",
-    firstName: "Rahul",
-    lastName: "Singh",
-    name: "Rahul Singh",
-    phoneNumber: "9876543210",
-    points: 250,
-    coins: 250,
-    badges: [],
-    progress: [],
-    likedContent: ["reel1", "reel3"],
-    savedContent: ["reel2"],
-    level: 1,
-    email: "",
-    knowledgeLevel: "",
-    preferredCategories: [],
-    completedModules: [],
-    completedGames: []
-  },
-  allBadges: [],
-  allModules: [],
-  allReels: [],
-  scamExamples: [],
-  activeTab: 'home',
-  notifications: [],
-  language: 'english',
-  updateUser: () => {},
-  setUser: () => {},
-  addCoins: () => {},
-  unlockBadge: () => {},
-  likeContent: () => {},
-  saveContent: () => {},
-  updateProgress: () => {},
-  completeModule: () => {},
-  setActiveTab: () => {},
-  addNotification: () => {},
-  markNotificationAsRead: () => {},
+export interface AppContextType {
+  user: User;
+  language: 'english' | 'hindi' | 'telugu';
+  notifications: Notification[];
+  setLanguage: (language: 'english' | 'hindi' | 'telugu') => void;
+  likeContent: (contentId: string) => void;
+  saveContent: (contentId: string) => void;
+  addCoins: (amount: number) => void;
+  addPoints: (amount: number) => void;
+  completeModule: (moduleId: string) => void;
+  markNotificationAsRead: (id: string) => void;
+  logout: () => void;
+  activeTab: string; // Add this line
+  setActiveTab: (tab: string) => void; // Add this line
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void; // Add this line
+  updateUser: (userData: Partial<User>) => void; // Add this line
+}
+
+const defaultUser: User = {
+  id: "user1",
+  name: "Raju",
+  email: "raju@example.com",
+  phoneNumber: "9876543210",
+  points: 120,
+  coins: 50,
+  level: 2,
+  xp: 67,
+  streak: 3,
+  avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop",
+  badges: ["savings-master", "fraud-detector"],
+  completedModules: [],
+  completedGames: [],
+  knowledgeLevel: "beginner",
+  preferredCategories: ["savings", "basics"],
+  likedContent: ["reel1", "reel3"],
+  savedContent: ["reel2"],
+  progress: []
 };
 
-export const AppContext = createContext<AppContextType>(defaultContextValue);
+const AppContext = createContext<AppContextType>({
+  user: defaultUser,
+  language: 'english',
+  notifications: [],
+  setLanguage: () => {},
+  likeContent: () => {},
+  saveContent: () => {},
+  addCoins: () => {},
+  addPoints: () => {},
+  completeModule: () => {},
+  markNotificationAsRead: () => {},
+  logout: () => {},
+  activeTab: "home", // Add this line
+  setActiveTab: () => {}, // Add this line
+  addNotification: () => {}, // Add this line
+  updateUser: () => {} // Add this line
+});
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUserState] = useState<User>(defaultContextValue.user);
-  const [allBadges, setAllBadges] = useState<Badge[]>(defaultContextValue.allBadges);
-  const [allModules, setAllModules] = useState<LearningModule[]>(defaultContextValue.allModules);
-  const [allReels, setAllReels] = useState<Reel[]>(defaultContextValue.allReels);
-  const [scamExamples, setScamExamples] = useState<ScamExample[]>(defaultContextValue.scamExamples);
-  const [activeTab, setActiveTab] = useState(defaultContextValue.activeTab);
-  const [notifications, setNotifications] = useState<Notification[]>(defaultContextValue.notifications);
-  const [language, setLanguage] = useState<LanguageKeys>('english');
+export const useAppContext = () => useContext(AppContext);
 
-  const setUser = (user: User) => {
-    setUserState(user);
-  };
+const updateLikedContent = (user: User, contentId: string): string[] => {
+  if (user.likedContent.includes(contentId)) {
+    return user.likedContent.filter(id => id !== contentId);
+  } else {
+    return [...user.likedContent, contentId];
+  }
+};
 
-  const updateUser = (userData: Partial<User>) => {
-    setUserState(prevUser => ({ ...prevUser, ...userData }));
-  };
+const updateSavedContent = (user: User, contentId: string): string[] => {
+  if (user.savedContent.includes(contentId)) {
+    return user.savedContent.filter(id => id !== contentId);
+  } else {
+    return [...user.savedContent, contentId];
+  }
+};
 
-  const addCoins = (amount: number) => {
-    setUserState(prevUser => ({
-      ...prevUser,
-      coins: prevUser.coins + amount
-    }));
-  };
-
-  const unlockBadge = (badgeId: string) => {
-    const updatedBadges = allBadges.map(badge =>
-      badge.id === badgeId ? { ...badge, unlocked: true } : badge
-    );
-    setAllBadges(updatedBadges);
-  };
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User>(defaultUser);
+  const [language, setLanguage] = useState<'english' | 'hindi' | 'telugu'>('english');
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("home"); // Add this line
 
   const likeContent = (contentId: string) => {
-    setUserState(prevUser => ({
-      ...prevUser,
-      likedContent: prevUser.likedContent.includes(contentId)
-        ? prevUser.likedContent.filter(id => id !== contentId)
-        : [...prevUser.likedContent, contentId]
+    setUser(prev => ({
+      ...prev,
+      likedContent: updateLikedContent(prev, contentId)
     }));
   };
 
   const saveContent = (contentId: string) => {
-    setUserState(prevUser => ({
-      ...prevUser,
-      savedContent: prevUser.savedContent.includes(contentId)
-        ? prevUser.savedContent.filter(id => id !== contentId)
-        : [...prevUser.savedContent, contentId]
+    setUser(prev => ({
+      ...prev,
+      savedContent: updateSavedContent(prev, contentId)
     }));
   };
 
-  const updateProgress = (moduleId: string, progress: number) => {
-    setUserState(prevUser => {
-      const updatedProgress = [...prevUser.progress];
-      const moduleIndex = updatedProgress.findIndex(p => p.moduleId === moduleId);
+  const addCoins = (amount: number) => {
+    setUser(prev => ({
+      ...prev,
+      coins: prev.coins + amount
+    }));
+  };
 
-      if (moduleIndex > -1) {
-        updatedProgress[moduleIndex] = { ...updatedProgress[moduleIndex], progress };
-      } else {
-        updatedProgress.push({ moduleId, progress, completed: false, lastAccessed: new Date() });
-      }
-
-      return { ...prevUser, progress: updatedProgress };
-    });
+  const addPoints = (amount: number) => {
+    setUser(prev => ({
+      ...prev,
+      points: prev.points + amount
+    }));
   };
 
   const completeModule = (moduleId: string) => {
-    setUserState(prevUser => {
-      const updatedProgress = prevUser.progress.map(p =>
-        p.moduleId === moduleId ? { ...p, completed: true } : p
-      );
-      const updatedCompletedModules = [...prevUser.completedModules];
-      if (!updatedCompletedModules.includes(moduleId)) {
-        updatedCompletedModules.push(moduleId);
-      }
-      return { 
-        ...prevUser, 
-        progress: updatedProgress,
-        completedModules: updatedCompletedModules
-      };
-    });
+    setUser(prev => ({
+      ...prev,
+      completedModules: [...prev.completedModules, moduleId]
+    }));
+  };
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
+
+  const logout = () => {
+    setUser(defaultUser);
+  };
+
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prevUser => ({ ...prevUser, ...userData })); // Add this function
   };
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp'>) => {
@@ -154,42 +149,32 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       id: `notification-${Date.now()}`,
       timestamp: new Date(),
     };
-    setNotifications(prev => [newNotification, ...prev]);
-  };
-
-  const markNotificationAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(note =>
-        note.id === notificationId ? { ...note, read: true } : note
-      )
-    );
+    setNotifications(prev => [newNotification, ...prev]); // Add this function
   };
 
   return (
-    <AppContext.Provider value={{
-      user,
-      allBadges,
-      allModules,
-      allReels,
-      scamExamples,
-      activeTab,
-      notifications,
-      language,
-      updateUser,
-      setUser,
-      addCoins,
-      unlockBadge,
-      likeContent,
-      saveContent,
-      updateProgress,
-      completeModule,
-      setActiveTab,
-      addNotification,
-      markNotificationAsRead,
-    }}>
+    <AppContext.Provider
+      value={{
+        user,
+        language,
+        notifications,
+        setLanguage,
+        likeContent,
+        saveContent,
+        addCoins,
+        addPoints,
+        completeModule,
+        markNotificationAsRead,
+        logout,
+        activeTab, // Add this line
+        setActiveTab, // Add this line
+        addNotification, // Add this line
+        updateUser // Add this line
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
 };
 
-export const useApp = () => useContext(AppContext);
+export default AppContext;

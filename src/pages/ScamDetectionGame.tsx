@@ -1,20 +1,21 @@
 
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle, ShieldAlert, MessageSquare, Trophy, Star, User } from "lucide-react";
 import { scamExamples } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { AnimatePresence, motion } from "framer-motion";
 import GameCharacter from "@/components/game/GameCharacter";
 import CharacterDialog from "@/components/game/CharacterDialog";
+import { getCelebrityGuide } from "@/lib/utils";
 
 export default function ScamDetectionGame() {
   const { toast } = useToast();
-  const { user, addCoins } = useApp();
+  const { user, addCoins } = useAppContext();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -23,23 +24,21 @@ export default function ScamDetectionGame() {
   const [streak, setStreak] = useState(0);
   const [showCharacterDialog, setShowCharacterDialog] = useState(false);
   const [characterMessage, setCharacterMessage] = useState("");
-  
-  // Mentor character that gives tips
   const [showMentor, setShowMentor] = useState(true);
-  
+  const celebrityMentor = getCelebrityGuide('fraud');
+
   useEffect(() => {
     if (showMentor) {
       setTimeout(() => {
-        setCharacterMessage("Welcome to the Scam Detection Challenge! I'll help you learn to spot financial scams.");
+        setCharacterMessage(`${celebrityMentor.name} bolte hain: "Yahan pe tum scam se bachne ka asli tareeka sikhenge, mast ready ho jao!"`);
         setShowCharacterDialog(true);
-        
         setTimeout(() => {
           setShowCharacterDialog(false);
         }, 5000);
       }, 1000);
     }
   }, [showMentor]);
-  
+
   const handleAnswer = (isScam: boolean) => {
     if (answered) return;
     
@@ -55,19 +54,19 @@ export default function ScamDetectionGame() {
       setScore(newScore);
       setStreak(streak + 1);
       
-      setCharacterMessage(`Correct! ${currentScam.explanation} ${streakBonus ? `+${streakBonus} streak bonus!` : ''}`);
+      setCharacterMessage(`Bilkul sahi! ${currentScam.explanation} ${streakBonus ? `+${streakBonus} streak bonus!` : ''}`);
       
       toast({
-        title: "Correct!",
+        title: "Ekdum correct!",
         description: currentScam.explanation + (streakBonus ? ` +${streakBonus} streak bonus!` : ''),
         variant: "default",
       });
     } else {
       setStreak(0);
-      setCharacterMessage(`Oops! That's incorrect. ${currentScam.explanation}`);
+      setCharacterMessage(`Arre yaar! Galat ho gaya. ${currentScam.explanation}`);
       
       toast({
-        title: "Incorrect",
+        title: "Oops! Galat jawab",
         description: currentScam.explanation,
         variant: "destructive",
       });
@@ -76,7 +75,7 @@ export default function ScamDetectionGame() {
     setShowCharacterDialog(true);
     setTimeout(() => setShowCharacterDialog(false), 4000);
   };
-  
+
   const nextQuestion = () => {
     setAnswered(false);
     setSelectedAnswer(null);
@@ -86,18 +85,16 @@ export default function ScamDetectionGame() {
     } else {
       setGameOver(true);
       
-      // Give final reward based on score
       const finalReward = Math.floor(score / 10);
       addCoins(finalReward);
       
-      // Show final message from mentor
       setTimeout(() => {
-        setCharacterMessage(`Great job! You've earned ${finalReward} coins for your financial knowledge!`);
+        setCharacterMessage(`Kamaal kar diya! Aapne ${finalReward} coins jeete hain apne gyaan se!`);
         setShowCharacterDialog(true);
       }, 1000);
     }
   };
-  
+
   const restartGame = () => {
     setCurrentQuestion(0);
     setScore(0);
@@ -106,36 +103,33 @@ export default function ScamDetectionGame() {
     setSelectedAnswer(null);
     setStreak(0);
   };
-  
+
   const currentScam = scamExamples[currentQuestion];
-  
-  // Award badges based on performance
+
   useEffect(() => {
     if (gameOver && score >= 70) {
-      // This would normally update user profile with a badge
       toast({
-        title: "Badge Unlocked!",
-        description: "You've earned the 'Scam Detective' badge!",
+        title: "Badge Mila!",
+        description: "Aapne 'Scam Master' badge jeet liya hai!",
         variant: "default",
       });
     }
   }, [gameOver, score]);
-  
+
   return (
     <Layout>
       <div className="container px-4 pb-20 relative">
-        <div className="py-6">
-          <h1 className="text-2xl font-bold">Scam Detection Challenge</h1>
-          <p className="text-muted-foreground">Learn to spot financial scams</p>
+        <div className="py-4">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-coin-purple to-coin-pink bg-clip-text text-transparent">Scam Detection Challenge</h1>
+          <p className="text-muted-foreground">Jhol-jhaal se kaise bache, wo seekho!</p>
         </div>
         
-        {/* Game UI with mentor character */}
         <div className="relative">
           {showMentor && (
             <div className="absolute right-0 top-0 z-10">
               <div className="relative">
                 <GameCharacter 
-                  name="Financial Mentor" 
+                  name={celebrityMentor.name} 
                   role="Security Expert" 
                   position={{x: 0, y: 0}} 
                   avatar="👨‍💼" 
@@ -150,26 +144,25 @@ export default function ScamDetectionGame() {
           )}
           
           <div className="flex justify-between items-center mb-4">
-            <Badge variant="outline" className="flex gap-1">
-              <Trophy className="h-4 w-4" />
+            <Badge variant="outline" className="flex gap-1 bg-gradient-to-r from-coin-yellow/30 to-coin-pink/30 border-0">
+              <Trophy className="h-4 w-4 text-coin-yellow" />
               Score: {score}
             </Badge>
             
             <div className="flex gap-2">
-              {/* Streak indicator */}
               {streak >= 3 && (
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs"
+                  className="flex items-center gap-1 bg-holi-yellow text-coin-purple px-2 py-1 rounded-full text-xs"
                 >
-                  <Star className="h-3 w-3 text-amber-500" fill="currentColor" />
+                  <Star className="h-3 w-3 text-coin-orange" fill="currentColor" />
                   Streak: {streak}
                 </motion.div>
               )}
               
-              <Badge variant="outline">
-                Question {currentQuestion + 1}/{scamExamples.length}
+              <Badge variant="outline" className="bg-gradient-to-r from-holi-blue/30 to-holi-green/30 border-0">
+                Q. {currentQuestion + 1}/{scamExamples.length}
               </Badge>
             </div>
           </div>
@@ -183,50 +176,53 @@ export default function ScamDetectionGame() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <Card className="mb-6 overflow-hidden">
-                  <CardHeader className="bg-muted/50">
+                <div className="rounded-xl overflow-hidden bg-gradient-to-br from-white to-holi-blue/10 shadow-md mb-6">
+                  <div className="bg-gradient-to-r from-coin-purple/20 to-coin-blue/10 p-4">
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-lg">Is this a scam?</CardTitle>
-                      <Badge>{currentScam.tipCategory}</Badge>
+                      <h3 className="text-lg font-bold text-coin-purple">Kya ye scam hai?</h3>
+                      <Badge className="bg-holi-pink border-0 text-white">{currentScam.tipCategory}</Badge>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="bg-accent/30 p-4 rounded-md mb-6 flex">
+                  </div>
+                  <div className="p-6">
+                    <div className="bg-gradient-to-r from-coin-yellow/20 to-white rounded-lg p-4 mb-6 flex">
                       <div className="mr-3 flex-shrink-0">
-                        <User className="h-8 w-8 p-1 bg-primary/10 rounded-full text-primary" />
+                        <User className="h-8 w-8 p-1 bg-coin-purple/10 rounded-full text-coin-purple" />
                       </div>
-                      <div className="chat-bubble relative bg-white p-3 rounded-lg shadow-sm border">
+                      <div className="chat-bubble relative rounded-lg p-4 bg-white shadow-sm border">
                         <p className="text-sm">{currentScam.message}</p>
                       </div>
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-3">
+                  </div>
+                  <div className="p-4 flex gap-3">
                     {!answered ? (
                       <>
                         <Button 
                           onClick={() => handleAnswer(true)} 
                           variant="outline" 
-                          className="flex-1 border-destructive border hover:bg-destructive/10"
+                          className="flex-1 border-coin-pink border hover:bg-coin-pink/10 rounded-xl"
                         >
-                          <AlertCircle className="h-4 w-4 mr-2 text-destructive" />
-                          It's a Scam
+                          <AlertCircle className="h-4 w-4 mr-2 text-coin-pink" />
+                          Ye Scam Hai
                         </Button>
                         <Button 
                           onClick={() => handleAnswer(false)} 
                           variant="outline" 
-                          className="flex-1 border-primary border hover:bg-primary/10"
+                          className="flex-1 border-coin-blue border hover:bg-coin-blue/10 rounded-xl"
                         >
-                          <CheckCircle className="h-4 w-4 mr-2 text-primary" />
-                          It's Legitimate
+                          <CheckCircle className="h-4 w-4 mr-2 text-coin-blue" />
+                          Ye Sahi Hai
                         </Button>
                       </>
                     ) : (
-                      <Button onClick={nextQuestion} className="w-full">
-                        Next Question
+                      <Button 
+                        onClick={nextQuestion} 
+                        className="w-full bg-gradient-to-r from-holi-green to-holi-blue text-white border-0 rounded-xl"
+                      >
+                        Agla Sawaal
                       </Button>
                     )}
-                  </CardFooter>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             </AnimatePresence>
           ) : (
@@ -235,48 +231,51 @@ export default function ScamDetectionGame() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Card className="text-center py-8">
-                <CardContent>
-                  <ShieldAlert className="h-16 w-16 mx-auto text-primary mb-4" />
-                  <h2 className="text-2xl font-bold mb-2">Game Complete!</h2>
-                  <p className="mb-4">You scored {score} out of {scamExamples.length * 10} points</p>
-                  
-                  <div className="p-4 bg-muted rounded-md mb-6">
-                    <h3 className="font-medium mb-2">Your Performance</h3>
-                    <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div className="bg-background p-2 rounded">
-                        <div className="text-muted-foreground">Accuracy</div>
-                        <div className="font-medium">{Math.round(score / (scamExamples.length * 10) * 100)}%</div>
-                      </div>
-                      <div className="bg-background p-2 rounded">
-                        <div className="text-muted-foreground">Best Streak</div>
-                        <div className="font-medium">{streak}</div>
-                      </div>
-                      <div className="bg-background p-2 rounded">
-                        <div className="text-muted-foreground">Coins Earned</div>
-                        <div className="font-medium">{Math.floor(score / 10)}</div>
-                      </div>
+              <div className="text-center py-8 rounded-xl bg-gradient-to-br from-white to-holi-yellow/30 shadow-md">
+                <ShieldAlert className="h-16 w-16 mx-auto text-coin-purple mb-4" />
+                <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-coin-purple to-coin-pink bg-clip-text text-transparent">Game Khatam!</h2>
+                <p className="mb-4">Aapne {score} mein se {scamExamples.length * 10} points score kiye</p>
+                
+                <div className="p-4 bg-gradient-to-r from-white to-coin-yellow/20 rounded-md mb-6 mx-4">
+                  <h3 className="font-medium mb-2">Aapka Performance</h3>
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div className="bg-white p-3 rounded-xl shadow-sm">
+                      <div className="text-muted-foreground">Accuracy</div>
+                      <div className="font-medium">{Math.round(score / (scamExamples.length * 10) * 100)}%</div>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl shadow-sm">
+                      <div className="text-muted-foreground">Best Streak</div>
+                      <div className="font-medium">{streak}</div>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl shadow-sm">
+                      <div className="text-muted-foreground">Coins Mile</div>
+                      <div className="font-medium">{Math.floor(score / 10)}</div>
                     </div>
                   </div>
-                  
-                  <Button onClick={restartGame}>Play Again</Button>
-                </CardContent>
-              </Card>
+                </div>
+                
+                <Button 
+                  onClick={restartGame} 
+                  className="bg-gradient-to-r from-coin-purple to-holi-pink text-white border-0 rounded-xl"
+                >
+                  Phir Se Khelo
+                </Button>
+              </div>
             </motion.div>
           )}
         </div>
         
-        <div className="mt-8 bg-muted/30 p-4 rounded-lg">
-          <h3 className="font-medium mb-2 flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 text-primary" />
-            Scam Detection Tips
+        <div className="mt-8 bg-gradient-to-r from-white to-coin-purple/10 p-4 rounded-xl shadow-sm">
+          <h3 className="font-medium mb-2 flex items-center gap-2 text-coin-purple">
+            <ShieldAlert className="h-4 w-4 text-coin-pink" />
+            Scam Se Bachne Ke Tips
           </h3>
           <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-            <li>Be suspicious of unexpected messages claiming you've won money or prizes</li>
-            <li>Banks will never ask for your PIN or full password over message or call</li>
-            <li>Don't click on suspicious links in messages or emails</li>
-            <li>Government jobs are never offered via text messages without a formal process</li>
-            <li>Be cautious of urgent requests demanding immediate action</li>
+            <li>Kabhi bhi anjaane message ya calls pe bharosa na kare jisme lottery ya prize ki baat ho</li>
+            <li>Bank wale kabhi bhi aapse PIN ya password poore nahin poochtey, na phone pe na message pe</li>
+            <li>Message ya email mein aaye links pe click karne se pehle sochiye</li>
+            <li>Sarkari naukri ki message kabhi seedhe message se nahin aati, hamesa official process hota hai</li>
+            <li>Jaldi decision lene ko pressure karne waalon se savdhan rahiye</li>
           </ul>
         </div>
       </div>

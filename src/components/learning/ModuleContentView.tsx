@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { CheckCircle, Play, ArrowRight, Share2, Gamepad2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,7 @@ interface ModuleContentViewProps {
 }
 
 export default function ModuleContentView({ content, onComplete, moduleCategory, completed }: ModuleContentViewProps) {
-  const { addCoins } = useApp();
+  const { addCoins } = useAppContext();
   const navigate = useNavigate();
   const [showCelebration, setShowCelebration] = useState(false);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);

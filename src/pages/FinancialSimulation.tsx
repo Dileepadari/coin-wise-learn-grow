@@ -4,7 +4,7 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { toast } from "sonner";
 import { 
   Map, 
@@ -63,7 +63,7 @@ interface ShopItem {
 
 export default function FinancialSimulation() {
   const navigate = useNavigate();
-  const { user, addCoins } = useApp();
+  const { user, addCoins } = useAppContext();
   const [currentLocation, setCurrentLocation] = useState<GameLocation>('home');
   const [gameMoney, setGameMoney] = useState(1000);
   const [gameDay, setGameDay] = useState(1);

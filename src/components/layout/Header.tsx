@@ -2,14 +2,14 @@ import { Bell, Search, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { translate, getRandomGreeting } from "@/utils/translate";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { coinFlip, fadeInUp, floating } from "@/utils/animations";
 
 export default function Header() {
-  const { user, language, notifications } = useApp();
+  const { user, language, notifications } = useAppContext();
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);

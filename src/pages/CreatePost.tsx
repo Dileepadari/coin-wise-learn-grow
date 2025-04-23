@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { ArrowLeft, Image, AtSign, Hash, Send } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CreatePost() {
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user } = useAppContext();
   const [postContent, setPostContent] = useState("");
   const [postTopic, setPostTopic] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

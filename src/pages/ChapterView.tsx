@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { modules } from "@/data/mockData";
 import { ArrowLeft, BookOpen, Award, Clock, TrendingUp, CheckCircle } from "lucide-react";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 
 export default function ChapterView() {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user } = useAppContext();
   const [chapterModules, setChapterModules] = useState(modules.filter(m => m.category === category));
   
   useEffect(() => {

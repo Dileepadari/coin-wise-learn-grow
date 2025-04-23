@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import CharacterDialog from "./CharacterDialog";
 import { floating, celebration } from "@/utils/animations";
 import { translate } from "@/utils/translate";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 
 interface GameCharacterProps {
   name: string;
@@ -26,7 +26,7 @@ export default function GameCharacter({
   emotion = 'happy' 
 }: GameCharacterProps) {
   const [showDialog, setShowDialog] = useState(false);
-  const { language } = useApp();
+  const { language } = useAppContext();
   
   const handleInteract = () => {
     setShowDialog(true);

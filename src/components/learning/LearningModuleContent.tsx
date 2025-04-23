@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { LearningModule } from "@/types";
 import { Button } from "@/components/ui/button";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { CheckCircle, Play, Lightbulb, Award, ArrowRight, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ interface LearningModuleContentProps {
 }
 
 export default function LearningModuleContent({ module }: LearningModuleContentProps) {
-  const { user, updateProgress, completeModule, addCoins } = useApp();
+  const { user, updateProgress, completeModule, addCoins } = useAppContext();
   const [activeContent, setActiveContent] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number | null>>({});

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ScamExample } from "@/types";
 import { Button } from "../ui/button";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -15,7 +15,7 @@ interface ScamDetectorProps {
 export default function ScamDetector({ example, onComplete }: ScamDetectorProps) {
   const [userAnswer, setUserAnswer] = useState<boolean | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const { addCoins } = useApp();
+  const { addCoins } = useAppContext();
   
   const handleAnswer = (answer: boolean) => {
     setUserAnswer(answer);

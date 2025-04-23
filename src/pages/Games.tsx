@@ -20,12 +20,12 @@ import {
   Store as StoreIcon, 
   Briefcase as BriefcaseIcon 
 } from "lucide-react";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { motion } from "framer-motion";
 
 export default function Games() {
   const navigate = useNavigate();
-  const { addCoins } = useApp();
+  const { addCoins } = useAppContext();
   const [activeTab, setActiveTab] = useState("simulation");
   
   const gameCategories = [

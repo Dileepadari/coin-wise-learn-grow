@@ -6,12 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Sparkles } from "lucide-react";
 import { translate } from "@/utils/translate";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
-  const { language } = useApp();
+  const { language } = useAppContext();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);

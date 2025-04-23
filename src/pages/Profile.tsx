@@ -1,351 +1,303 @@
 
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAppContext } from "@/context/AppContext";
+import { Character } from "@/components/ui/character-dialog";
+import { getCelebrityGuide } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useApp } from "@/context/AppContext";
-import { badges, reels, modules } from "@/data/mockData";
-import { Award, Coins, Clock, ArrowUpRight, LockIcon, CheckCircle, TrendingUp, BookOpen, ThumbsUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useNavigate } from "react-router-dom";
+import { Bell, BookOpen, Edit, LogOut, Settings, Trophy, User as UserIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Profile() {
-  const navigate = useNavigate();
-  const { user } = useApp();
+  const { user, logout } = useAppContext();
+  const celeb = getCelebrityGuide(user.preferredCategories?.[0] || "basics");
   const [activeTab, setActiveTab] = useState("overview");
-  
-  const userBadges = badges.filter(badge => badge.unlocked);
-  const lockedBadges = badges.filter(badge => !badge.unlocked);
-  
-  const userLikedContent = reels.filter(reel => user.likedContent.includes(reel.id));
-  const userSavedContent = reels.filter(reel => user.savedContent.includes(reel.id));
-  
-  // Daily tasks - moved from Home page
-  const dailyTasks = [
-    { id: 'task1', description: 'Complete a learning module', completed: true, points: 15 },
-    { id: 'task2', description: 'Watch 5 financial reels', completed: false, points: 10 },
-    { id: 'task3', description: 'Play the scam detection game', completed: false, points: 20 }
-  ];
-  
-  // Daily tips - moved from Home page
-  const dailyTips = [
-    "Save ₹10 each day in a digital piggy bank. You'll have ₹3,650 by year-end!",
-    "Avoid late fees by setting up automatic bill payments through UPI.",
-    "Before buying something, ask yourself if it's a 'need' or a 'want'."
-  ];
 
-  // Featured modules - take first 2
-  const featuredModules = modules.slice(0, 2);
+  // Calculate stats
+  const totalModulesCompleted = user.completedModules.length;
+  const totalBadgesEarned = user.badges.length;
+  const totalCoinsEarned = user.coins;
+  const streakDays = user.streak || 0;
 
   return (
     <Layout>
       <div className="container px-4 pb-20">
-        {/* Profile header */}
-        <div className="py-6 flex flex-col items-center text-center">
-          <Avatar className="h-20 w-20 mb-4">
-            <AvatarFallback className="text-xl bg-primary/20 text-primary">
-              {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <h1 className="text-2xl font-bold">{user.firstName} {user.lastName}</h1>
-          <p className="text-muted-foreground">{user.phoneNumber}</p>
+        <div className="py-6">
+          <Character
+            name={celeb.name}
+            avatar={celeb.avatar || "👑"}
+            dialog={`Arrey ${user.name}, tumhare financial safar mein ${celeb.name} sath hai! Champion banne ke liye progress barte raho!`}
+            category={user.preferredCategories?.[0] || "basics"}
+            emotion="excited"
+          />
           
-          <div className="flex items-center mt-2 gap-2">
-            <div className="flex items-center">
-              <Coins className="h-4 w-4 mr-1 text-amber-500" />
-              <span className="font-medium">{user.coins}</span>
-            </div>
-            <div className="flex items-center">
-              <Award className="h-4 w-4 mr-1 text-primary" />
-              <span>{userBadges.length} badges</span>
-            </div>
+          <div className="flex flex-col md:flex-row gap-6 mt-6">
+            {/* Profile Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full md:w-1/3"
+            >
+              <div className="rounded-xl overflow-hidden bg-gradient-to-b from-white via-holi-yellow/10 to-coin-pink/10 shadow-md">
+                <div className="p-5 pb-2">
+                  <h2 className="text-lg font-bold text-coin-purple">Aapka Profile</h2>
+                  <p className="text-xs text-muted-foreground">Apna account manage kariye</p>
+                </div>
+                <div className="p-4">
+                  <div className="flex flex-col items-center">
+                    <div className="relative">
+                      <Avatar className="w-24 h-24 border-4 border-coin-purple">
+                        <AvatarImage src={user.avatar || "https://github.com/shadcn.png"} />
+                        <AvatarFallback className="bg-gradient-to-r from-coin-purple to-coin-pink text-white text-xl">
+                          {user.name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Button size="icon" variant="outline" className="absolute bottom-0 right-0 rounded-full bg-background">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <h2 className="text-xl font-bold mt-4">{user.name || "User"}</h2>
+                    <p className="text-muted-foreground text-sm">{user.email || "user@example.com"}</p>
+                    
+                    <div className="flex gap-2 mt-4">
+                      <Badge variant="outline" className="bg-gradient-to-r from-coin-yellow/30 to-coin-yellow/10 text-coin-purple border-0">Level {user.level || 1}</Badge>
+                      <Badge variant="outline" className="bg-gradient-to-r from-coin-pink/30 to-coin-pink/10 text-coin-purple border-0">{streakDays} Din Streak 🔥</Badge>
+                    </div>
+                    
+                    <div className="w-full mt-6">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Level {(user.level || 1) + 1} tak ka progress</span>
+                        <span>{user.xp || 0}/100 XP</span>
+                      </div>
+                      <div className="bg-white/50 rounded-full h-2 overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${user.xp || 0}%` }}
+                          className="h-full bg-gradient-to-r from-coin-purple to-coin-pink rounded-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-2 w-full mt-6 text-center">
+                      <div className="bg-gradient-to-b from-white to-coin-purple/10 p-3 rounded-xl shadow-sm">
+                        <div className="text-xl font-bold text-coin-purple">{totalCoinsEarned}</div>
+                        <div className="text-xs text-muted-foreground">Coins</div>
+                      </div>
+                      <div className="bg-gradient-to-b from-white to-holi-green/10 p-3 rounded-xl shadow-sm">
+                        <div className="text-xl font-bold text-holi-green">{totalModulesCompleted}</div>
+                        <div className="text-xs text-muted-foreground">Modules</div>
+                      </div>
+                      <div className="bg-gradient-to-b from-white to-holi-yellow/10 p-3 rounded-xl shadow-sm">
+                        <div className="text-xl font-bold text-holi-yellow">{totalBadgesEarned}</div>
+                        <div className="text-xs text-muted-foreground">Badges</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2 mt-6 w-full">
+                      <Button variant="outline" className="flex-1 bg-gradient-to-r from-white to-coin-yellow/10 rounded-xl border-0 shadow-sm">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 bg-gradient-to-r from-white to-coin-pink/10 rounded-xl border-0 shadow-sm" 
+                        onClick={logout}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+            
+            {/* Tabs Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex-1"
+            >
+              <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="grid grid-cols-3 mb-4 bg-gradient-to-r from-coin-yellow/30 to-coin-pink/30 rounded-xl p-1">
+                  <TabsTrigger value="overview" className="rounded-lg data-[state=active]:bg-white">Overview</TabsTrigger>
+                  <TabsTrigger value="badges" className="rounded-lg data-[state=active]:bg-white">Badges</TabsTrigger>
+                  <TabsTrigger value="activity" className="rounded-lg data-[state=active]:bg-white">Activity</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="overview" className="space-y-4">
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-b from-white via-coin-blue/5 to-coin-blue/10 shadow-md">
+                    <div className="p-5 pb-2">
+                      <h3 className="text-lg font-bold text-coin-purple">Learning Progress</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="space-y-4">
+                        {['savings', 'investment', 'fraud', 'borrowing', 'basics'].map((category) => {
+                          const progress = Math.floor(Math.random() * 100);
+                          return (
+                            <div key={category} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="capitalize">{category}</span>
+                                <span>{progress}%</span>
+                              </div>
+                              <div className="bg-white/50 rounded-full h-2 overflow-hidden">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${progress}%` }}
+                                  transition={{ delay: 0.2 }}
+                                  className={`h-full rounded-full ${
+                                    category === 'savings' ? 'bg-holi-green' :
+                                    category === 'investment' ? 'bg-coin-blue' :
+                                    category === 'fraud' ? 'bg-coin-pink' :
+                                    category === 'borrowing' ? 'bg-holi-yellow' :
+                                    'bg-coin-purple'
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-b from-white via-coin-purple/5 to-coin-purple/10 shadow-md">
+                    <div className="p-5 pb-2">
+                      <h3 className="text-lg font-bold text-coin-purple">Aap Ki Recent Activity</h3>
+                    </div>
+                    <div className="p-4">
+                      <div className="space-y-4">
+                        {[
+                          { icon: BookOpen, text: "'Saving Basics' module complete kiya", time: "2 ghante pehle" },
+                          { icon: Trophy, text: "'Smart Saver' badge jeeta", time: "1 din pehle" },
+                          { icon: UserIcon, text: "Profile update kiya", time: "3 din pehle" },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-3">
+                            <div className="bg-gradient-to-r from-holi-pink/20 to-holi-yellow/20 p-2 rounded-full">
+                              <item.icon className="h-4 w-4 text-coin-purple" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm">{item.text}</p>
+                              <p className="text-xs text-muted-foreground">{item.time}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="badges" className="space-y-4">
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-b from-white via-holi-yellow/10 to-holi-yellow/20 shadow-md">
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-coin-purple">Aapke Badges</h3>
+                      <p className="text-xs text-muted-foreground">Jo achievements aapne unlock kiye hai</p>
+                    </div>
+                    <div className="p-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {[
+                          { name: "Smart Saver", icon: "💰", color: "bg-gradient-to-b from-white to-green-100" },
+                          { name: "Scam Detector", icon: "🛡️", color: "bg-gradient-to-b from-white to-red-100" },
+                          { name: "Investment Guru", icon: "📈", color: "bg-gradient-to-b from-white to-blue-100" },
+                          { name: "Budget Master", icon: "📊", color: "bg-gradient-to-b from-white to-purple-100" },
+                          { name: "7 Din Streak", icon: "🔥", color: "bg-gradient-to-b from-white to-orange-100" },
+                          { name: "Quiz Champion", icon: "🏆", color: "bg-gradient-to-b from-white to-yellow-100" },
+                        ].map((badge, i) => (
+                          <motion.div
+                            key={i}
+                            className={`aspect-square border-0 rounded-xl flex flex-col items-center justify-center p-2 shadow-sm ${badge.color}`}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <span className="text-3xl mb-2">{badge.icon}</span>
+                            <span className="text-xs font-medium text-center">{badge.name}</span>
+                          </motion.div>
+                        ))}
+                        
+                        {/* Locked badges */}
+                        {[
+                          { name: "Finance Expert", icon: "🧠", color: "bg-gradient-to-b from-white to-gray-100" },
+                          { name: "Community Leader", icon: "👑", color: "bg-gradient-to-b from-white to-gray-100" },
+                        ].map((badge, i) => (
+                          <motion.div
+                            key={i}
+                            className={`aspect-square border-0 rounded-xl flex flex-col items-center justify-center p-2 shadow-sm ${badge.color} opacity-50`}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <span className="text-3xl mb-2">🔒</span>
+                            <span className="text-xs font-medium text-center">{badge.name}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="activity" className="space-y-4">
+                  <div className="rounded-xl overflow-hidden bg-gradient-to-b from-white via-coin-pink/5 to-coin-pink/10 shadow-md">
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-coin-purple">Activity Feed</h3>
+                      <p className="text-xs text-muted-foreground">Aapki recent activities aur achievements</p>
+                    </div>
+                    <div className="p-4">
+                      <div className="space-y-6">
+                        {[
+                          { 
+                            icon: BookOpen, 
+                            title: "Module Complete Kiya", 
+                            description: "Aapne 'Understanding Interest Rates' seekha",
+                            time: "Aaj, 10:30 AM",
+                            reward: "+15 coins"
+                          },
+                          { 
+                            icon: Trophy, 
+                            title: "Badge Jeeta", 
+                            description: "Aapne 'Smart Saver' badge unlock kiya",
+                            time: "Kal, 3:45 PM",
+                            reward: "+25 coins"
+                          },
+                          { 
+                            icon: Bell, 
+                            title: "Daily Streak", 
+                            description: "Aapne 7 dino se continuously app use kiya!",
+                            time: "Kal, 9:15 AM",
+                            reward: "+5 coins"
+                          },
+                        ].map((activity, i) => (
+                          <div key={i} className="flex gap-4">
+                            <div className="mt-1">
+                              <div className="bg-gradient-to-r from-coin-purple/20 to-holi-pink/20 p-2 rounded-full">
+                                <activity.icon className="h-5 w-5 text-coin-purple" />
+                              </div>
+                            </div>
+                            <div className="flex-1 border-b border-muted/30 pb-4">
+                              <div className="flex justify-between">
+                                <h4 className="font-medium">{activity.title}</h4>
+                                <span className="text-xs text-muted-foreground">{activity.time}</span>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
+                              {activity.reward && (
+                                <Badge variant="outline" className="mt-2 bg-gradient-to-r from-holi-yellow/30 to-holi-yellow/10 border-0">
+                                  {activity.reward}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </motion.div>
           </div>
-          
-          <Button variant="outline" size="sm" className="mt-4">
-            Edit Profile
-          </Button>
         </div>
-        
-        {/* Daily stats - moved from Home page */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <Card className="text-center">
-            <CardContent className="p-4">
-              <Clock className="h-5 w-5 mx-auto mb-1 text-blue-500" />
-              <p className="text-2xl font-bold">5</p>
-              <p className="text-xs text-muted-foreground">Day streak</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="text-center">
-            <CardContent className="p-4">
-              <CheckCircle className="h-5 w-5 mx-auto mb-1 text-green-500" />
-              <p className="text-2xl font-bold">2/3</p>
-              <p className="text-xs text-muted-foreground">Tasks done</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="text-center">
-            <CardContent className="p-4">
-              <TrendingUp className="h-5 w-5 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold">{user.coins}</p>
-              <p className="text-xs text-muted-foreground">Coins earned</p>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Tabs for different sections */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="badges">Badges</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          </TabsList>
-          
-          {/* Overview tab */}
-          <TabsContent value="overview" className="py-4">
-            <Card className="mb-6">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Learning Progress</CardTitle>
-                <CardDescription>Your financial education journey</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span>Savings Basics</span>
-                      <span>60%</span>
-                    </div>
-                    <Progress value={60} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span>Scam Detection</span>
-                      <span>75%</span>
-                    </div>
-                    <Progress value={75} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span>Investment Fundamentals</span>
-                      <span>30%</span>
-                    </div>
-                    <Progress value={30} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Activity Summary</CardTitle>
-                <CardDescription>Your recent activities</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-start gap-3">
-                      <Award className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
-                        <p className="font-medium">Earned "Savings Starter" badge</p>
-                        <p className="text-xs text-muted-foreground">Completed first savings module</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">2d ago</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-start gap-3">
-                      <Coins className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-medium">Earned 45 coins</p>
-                        <p className="text-xs text-muted-foreground">Completed "Daily Saving" quiz</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">3d ago</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-green-500 mt-0.5" />
-                      <div>
-                        <p className="font-medium">Learning streak: 5 days</p>
-                        <p className="text-xs text-muted-foreground">Keep going to increase your streak</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Today</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {/* Badges tab */}
-          <TabsContent value="badges" className="py-4">
-            <h3 className="font-medium mb-3">Earned Badges</h3>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {userBadges.map(badge => (
-                <Card key={badge.id} className="flex items-center p-3">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xl">
-                    {badge.image}
-                  </div>
-                  <div className="ml-3">
-                    <p className="font-medium text-sm">{badge.name}</p>
-                    <p className="text-xs text-muted-foreground">{badge.description}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-            
-            <h3 className="font-medium mb-3">Badges to Earn</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {lockedBadges.map(badge => (
-                <Card key={badge.id} className="flex items-center p-3 opacity-70">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center relative">
-                    <LockIcon className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div className="ml-3">
-                    <p className="font-medium text-sm">{badge.name}</p>
-                    <p className="text-xs text-muted-foreground">{badge.description}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-          
-          {/* Saved content tab */}
-          <TabsContent value="saved" className="py-4">
-            <Tabs defaultValue="liked" className="w-full">
-              <TabsList className="w-full grid grid-cols-2 mb-4">
-                <TabsTrigger value="liked">Liked</TabsTrigger>
-                <TabsTrigger value="saved">Saved</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="liked">
-                <div className="space-y-4">
-                  {userLikedContent.map(content => (
-                    <Card key={content.id} className="p-4">
-                      <div className="flex justify-between">
-                        <h4 className="font-medium">{content.title}</h4>
-                        <Badge>{content.category}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">{content.content}</p>
-                      <div className="flex justify-between items-center mt-3 text-xs">
-                        <span className="text-muted-foreground">{content.likes} likes</span>
-                        <Button variant="ghost" size="sm" className="text-xs flex items-center">
-                          View <ArrowUpRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="saved">
-                <div className="space-y-4">
-                  {userSavedContent.map(content => (
-                    <Card key={content.id} className="p-4">
-                      <div className="flex justify-between">
-                        <h4 className="font-medium">{content.title}</h4>
-                        <Badge>{content.category}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">{content.content}</p>
-                      <div className="flex justify-between items-center mt-3 text-xs">
-                        <span className="text-muted-foreground">{content.saves} saves</span>
-                        <Button variant="ghost" size="sm" className="text-xs flex items-center">
-                          View <ArrowUpRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </TabsContent>
-          
-          {/* Tasks tab - moved from Home page */}
-          <TabsContent value="tasks" className="py-4">
-            <Card className="mb-6">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Your Daily Tasks</CardTitle>
-                <CardDescription>Complete tasks to earn coins</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {dailyTasks.map(task => (
-                  <div key={task.id} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`h-5 w-5 rounded-full border flex items-center justify-center ${
-                        task.completed 
-                          ? "bg-primary border-primary" 
-                          : "border-muted-foreground"
-                      }`}>
-                        {task.completed && (
-                          <CheckCircle className="h-4 w-4 text-primary-foreground" />
-                        )}
-                      </div>
-                      <span className={`ml-3 text-sm ${task.completed ? "line-through text-muted-foreground" : ""}`}>
-                        {task.description}
-                      </span>
-                    </div>
-                    <Badge variant="outline">+{task.points} coins</Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Daily Financial Tip</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="border-l-4 border-primary pl-3 py-1 italic text-sm">
-                  {dailyTips[0]}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <h3 className="font-medium mb-3 mt-6">Today's Learning Modules</h3>
-            <div className="space-y-3">
-              {featuredModules.map(module => (
-                <Card key={module.id} className="overflow-hidden">
-                  <div className="flex items-center">
-                    <div className="p-4 flex-1">
-                      <div className="flex justify-between mb-1">
-                        <Badge variant="outline">{module.category}</Badge>
-                        <Badge className={
-                          module.difficulty === "beginner" ? "bg-green-500" :
-                          module.difficulty === "intermediate" ? "bg-yellow-500" :
-                          "bg-red-500"
-                        }>
-                          {module.difficulty}
-                        </Badge>
-                      </div>
-                      <h4 className="font-medium">{module.name}</h4>
-                      <p className="text-xs text-muted-foreground mb-2">{module.description}</p>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <BookOpen className="h-3 w-3 mr-1" />
-                          <span>{module.content.length} lessons</span>
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-xs"
-                          onClick={() => navigate("/learn")}
-                        >
-                          Start <ArrowUpRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
       </div>
     </Layout>
   );

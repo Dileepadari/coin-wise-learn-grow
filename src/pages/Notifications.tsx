@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { 
   Card, 
   CardContent
@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Notifications() {
-  const { notifications, markNotificationAsRead } = useApp();
+  const { notifications, markNotificationAsRead } = useAppContext();
   const navigate = useNavigate();
   
   const getNotificationIcon = (type: string) => {

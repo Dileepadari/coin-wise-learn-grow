@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 
 interface RequestCardProps {
   id: string;
@@ -18,7 +18,7 @@ interface RequestCardProps {
 
 export default function RequestCard({ id, userName, status, onAccept, onDecline, isSendRequest = false, userId }: RequestCardProps) {
   const navigate = useNavigate();
-  const { addNotification } = useApp();
+  const { addNotification } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
   
   const handleAccept = () => {

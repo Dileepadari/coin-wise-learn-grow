@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Layout from "@/components/layout/Layout";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { reels } from "@/data/mockData";
 import ReelCard from "@/components/reel/ReelCard";
 import { ChevronUp, ChevronDown } from "lucide-react";
@@ -15,34 +14,29 @@ import { Reel } from "@/types";
 import { motion } from "framer-motion";
 import { Character } from "@/components/ui/character-dialog";
 import { getMotivationalPhrase } from "@/utils/translate";
+import { getCelebrityGuide } from "@/lib/utils";
 
 export default function Home() {
-  const { user, language } = useApp();
+  const { user, language } = useAppContext();
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
   const [currentReel, setCurrentReel] = useState<Reel | null>(null);
   const [reelViewCount, setReelViewCount] = useState(0);
   const [showCharacter, setShowCharacter] = useState(false);
+  const reelsContainerRef = useRef<HTMLDivElement | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Set current reel when index changes
     setCurrentReel(reels[currentReelIndex]);
-    
-    // Increment view count
-    setReelViewCount(prev => prev + 1);
+    setReelViewCount((prev) => prev + 1);
 
-    // Logic to show random prompts
-    if (reelViewCount > 0 && reelViewCount % 2 === 0) { // Show suggestion every 2 reels
+    if (reelViewCount > 0 && reelViewCount % 2 === 0) {
       const promptType = ['quiz', 'game', 'module'][Math.floor(Math.random() * 3)] as 'quiz' | 'game' | 'module';
-      setTimeout(() => {
-        setShowPrompt(promptType);
-      }, 1000);
+      setTimeout(() => setShowPrompt(promptType), 1000);
     } else {
       setShowPrompt(null);
     }
 
-    // Occasionally show a character
     if (Math.random() > 0.7) {
       setTimeout(() => {
         setShowCharacter(true);
@@ -53,147 +47,124 @@ export default function Home() {
     }
   }, [currentReelIndex]);
 
+  const handleScroll = () => {
+    if (!reelsContainerRef.current) return;
+    const children = reelsContainerRef.current.children;
+    let newIndex = 0;
+    const scrollY = reelsContainerRef.current.scrollTop;
+    const height = reelsContainerRef.current.clientHeight;
+    for (let i = 0; i < children.length; i++) {
+      if ((children[i] as HTMLElement).offsetTop <= scrollY + height/2) {
+        newIndex = i;
+      }
+    }
+    setCurrentReelIndex(newIndex);
+  }
+
   const handlePreviousReel = () => {
     setCurrentReelIndex((prev) => (prev > 0 ? prev - 1 : prev));
     setShowPrompt(null);
+    if (reelsContainerRef.current) {
+      const newScroll = (currentReelIndex - 1) * reelsContainerRef.current.clientHeight;
+      reelsContainerRef.current.scrollTo({ top: newScroll, behavior: "smooth" });
+    }
   };
 
   const handleNextReel = () => {
     setCurrentReelIndex((prev) => (prev < reels.length - 1 ? prev + 1 : prev));
     setShowPrompt(null);
+    if (reelsContainerRef.current) {
+      const newScroll = (currentReelIndex + 1) * reelsContainerRef.current.clientHeight;
+      reelsContainerRef.current.scrollTo({ top: newScroll, behavior: "smooth" });
+    }
   };
 
-  const handleDismissPrompt = () => {
-    setShowPrompt(null);
-  };
+  const handleDismissPrompt = () => setShowPrompt(null);
 
   const handleCelebrate = (message: string) => {
     toast(message, {
       icon: "🎉",
-      className: "bg-primary text-primary-foreground",
+      className: "bg-marigold text-white font-bold text-lg",
     });
   };
-  
+
   const getCharacterForCategory = () => {
     const category = currentReel?.category || 'basics';
-    const characters = {
-      'basics': {
-        name: 'Raju',
-        avatar: '👨‍🏫',
-        dialog: getMotivationalPhrase('basics', language),
-        emotion: 'excited' as const
-      },
-      'savings': {
-        name: 'Lakshmi',
-        avatar: '👩‍💼',
-        dialog: getMotivationalPhrase('savings', language),
-        emotion: 'happy' as const
-      },
-      'investment': {
-        name: 'Vikram',
-        avatar: '👨‍💼',
-        dialog: getMotivationalPhrase('investment', language),
-        emotion: 'thinking' as const
-      },
-      'fraud': {
-        name: 'Sameera',
-        avatar: '👮‍♀️',
-        dialog: getMotivationalPhrase('fraud', language),
-        emotion: 'thinking' as const
-      },
-      'borrowing': {
-        name: 'Pradeep',
-        avatar: '🏦',
-        dialog: getMotivationalPhrase('borrowing', language),
-        emotion: 'happy' as const
-      }
-    };
+    const celebrity = getCelebrityGuide(category);
     
-    return characters[category as keyof typeof characters] || characters.basics;
+    return {
+      name: celebrity.name,
+      avatar: celebrity.avatar || '👑',
+      dialog: getMotivationalPhrase(category, language),
+      emotion: category === 'investment' || category === 'fraud' ? 'thinking' as const : 'happy' as const
+    };
   };
 
   return (
     <Layout>
       <div className="relative h-full">
-        {/* Reels container with snap scroll */}
-        <div className="h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)] overflow-hidden">
-          <motion.div 
-            className="h-full transition-all duration-300 ease-out"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{ transform: `translateY(-${currentReelIndex * 100}%)` }}
-          >
-            {reels.map((reel, index) => (
-              <motion.div 
-                key={reel.id} 
-                className="h-full w-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: currentReelIndex === index ? 1 : 0 }}
-                transition={{ duration: 0.5 }}
+        <div 
+          className="h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)] overflow-y-scroll snap-y snap-mandatory no-scrollbar"
+          ref={reelsContainerRef}
+          onScroll={handleScroll}
+        >
+          {reels.map((reel, index) => (
+            <div
+              key={reel.id}
+              className="snap-start snap-always h-[calc(100vh-5rem)] flex items-center justify-center"
+              style={{ minHeight: "500px" }}
+            >
+              <ReelCard 
+                reel={reel}
+                height="h-[90vh] md:h-[90vh]"
+                onCelebrate={handleCelebrate}
+                isActive={index === currentReelIndex}
+                accentColor={index % 2 === 0 ? "bg-gradient-to-br from-coin-orange to-coin-purple" : "bg-gradient-to-bl from-holi-yellow to-coin-pink"}
+                withVideo
+              />
+            </div>
+          ))}
+        </div>
+        
+        {!isMobile && (
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="secondary" 
+                size="icon"
+                className="rounded-full bg-holi-yellow text-coin-dark shadow-xl border-2 border-white"
+                onClick={handlePreviousReel}
+                disabled={currentReelIndex === 0}
               >
-                <ReelCard reel={reel} height="h-full" onCelebrate={handleCelebrate} />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Navigation buttons positioned differently based on screen size */}
-        <div className={`absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2`} style={{ marginTop: '-50px' }}>
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="secondary" 
-              size="icon"
-              className="rounded-full bg-black/20 backdrop-blur-md"
-              onClick={handlePreviousReel}
-              disabled={currentReelIndex === 0}
-            >
-              <ChevronUp className={`h-5 w-5`} />
-            </Button>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="secondary" 
-              size="icon"
-              className="rounded-full bg-black/20 backdrop-blur-md"
-              onClick={handleNextReel}
-              disabled={currentReelIndex === reels.length - 1}
-            >
-              <ChevronDown className={`h-5 w-5`} />
-            </Button>
-          </motion.div>
-        </div>
-
-        {/* Reel indicator - different position for mobile */}
-        <div className={`absolute ${isMobile ? 'top-4 right-4' : 'left-4 top-1/2 -translate-y-1/2'}`}>
-          <motion.div 
-            className="text-sm text-white bg-black/20 backdrop-blur-md px-2 py-1 rounded-full"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            key={currentReelIndex}
-          >
-            {currentReelIndex + 1}/{reels.length}
-          </motion.div>
-        </div>
-
-        {/* Character guide that appears occasionally
-        {showCharacter && currentReel && (
-          <div className="absolute top-10 left-4 z-20">
-            <Character 
-              {...getCharacterForCategory()}
-              size="small"
-            />
+                <ChevronUp />
+              </Button>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="secondary" 
+                size="icon"
+                className="rounded-full bg-coin-pink text-coin-dark shadow-xl border-2 border-white"
+                onClick={handleNextReel}
+                disabled={currentReelIndex === reels.length - 1}
+              >
+                <ChevronDown />
+              </Button>
+            </motion.div>
           </div>
-        )} */}
-
-        {/* Conditional prompts */}
+        )}
+        
+        <div className="absolute top-4 right-4">
+          <div className="text-sm font-bold text-holi-pink bg-white/90 px-5 py-2 rounded-full shadow ring-2 ring-marigold">
+            {currentReelIndex + 1}/{reels.length}
+          </div>
+        </div>
+        
         {showPrompt === 'quiz' && (
           <QuizPrompt onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />
         )}
-
         {showPrompt === 'game' && (
           <GameSuggestion onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />
         )}
-
         {showPrompt === 'module' && (
           <ModuleSuggestion onDismiss={handleDismissPrompt} moduleId={currentReel?.moduleId} category={currentReel?.category || 'basics'} />
         )}

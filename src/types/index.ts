@@ -1,25 +1,27 @@
-
 // Add LanguageKeys export to fix the TypeScript error
 export type LanguageKeys = 'english' | 'hindi' | 'telugu';
 
 export interface User {
   id: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   name: string;
-  phoneNumber?: string;
   email?: string;
+  phoneNumber: string;
   points: number;
   coins: number;
   level: number;
+  xp?: number;
+  streak?: number;
+  avatar?: string;
   badges: string[];
-  completedModules: string[];
-  completedGames: string[];
+  completedModules: any[];
+  completedGames: any[];
   knowledgeLevel: string;
   preferredCategories: string[];
   likedContent: string[];
   savedContent: string[];
-  progress: ModuleProgress[];
+  progress: any[];
 }
 
 export interface ModuleProgress {
@@ -74,20 +76,20 @@ export interface LearningModule {
 export interface Reel {
   id: string;
   title: string;
+  content: string;
   description: string;
+  likes: number;
+  saves: number;
+  moduleId: string;
+  category: string;
   videoUrl: string;
   thumbnailUrl: string;
-  category: string;
-  likes: number;
-  comments: number;
-  content: string;
-  moduleId: string;
   author: string;
-  authorAvatar?: string;
-  tags: string[];
+  authorAvatar: string;
+  comments: number;
   duration: string;
   publishedDate: Date;
-  saves: number;
+  tags: any[];
 }
 
 export interface ScamExample {

@@ -1,7 +1,7 @@
 
 import { LearningModule } from "@/types";
 import { Link } from "react-router-dom";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import ProgressCircle from "../ui/ProgressCircle";
 import { BookOpen, Award, Star } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -14,7 +14,7 @@ interface ModuleCardProps {
 }
 
 export default function ModuleCard({ module }: ModuleCardProps) {
-  const { user, language } = useApp();
+  const { user, language } = useAppContext();
   
   const moduleProgress = user.progress.find(p => p.moduleId === module.id);
   const progress = moduleProgress?.progress || 0;

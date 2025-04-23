@@ -1,4 +1,4 @@
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { FaHome, FaGamepad, FaBook, FaUsers, FaUserTie } from "react-icons/fa";
 
 export default function TabBar() {
-  const { activeTab, setActiveTab, language } = useApp();
+  const { activeTab, setActiveTab, language } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
 

@@ -7,11 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Search, UserPlus, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import RequestCard from "@/components/community/RequestCard";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 
 export default function ConnectRequests() {
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user } = useAppContext();
   const [searchQuery, setSearchQuery] = useState("");
   
   // Mock data for pending requests

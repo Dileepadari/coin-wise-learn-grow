@@ -6,12 +6,12 @@ import { Search as SearchIcon, ArrowLeft, Users, BookOpen, Gamepad2, X } from "l
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Search() {
   const navigate = useNavigate();
-  const { allModules } = useApp();
+  const { allModules } = useAppContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Search, Send, Shield } from "lucide-react";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 
 interface Message {
@@ -28,7 +28,7 @@ interface Contact {
 }
 
 export default function Messages() {
-  const { user } = useApp();
+  const { user } = useAppContext();
   const [contacts, setContacts] = useState<Contact[]>([
     {
       id: "contact1",

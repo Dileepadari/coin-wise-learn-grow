@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import ModuleContentView from "@/components/learning/ModuleContentView";
 
 // Import modules instead of learningModules
@@ -16,7 +16,7 @@ import { modules } from "@/data/mockData";
 export default function ModuleView() {
   const { moduleId } = useParams();
   const navigate = useNavigate();
-  const { addCoins } = useApp();
+  const { addCoins } = useAppContext();
   
   const module = modules.find(m => m.id === moduleId);
   const [currentContentIndex, setCurrentContentIndex] = useState(0);

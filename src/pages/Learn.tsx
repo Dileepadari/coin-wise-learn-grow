@@ -6,13 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Check } from "lucide-react";
 import { modules } from "@/data/mockData";
-import { useApp } from "@/context/AppContext";
+import { useAppContext } from "@/context/AppContext";
 import { Character } from "@/components/ui/character-dialog";
 import { motion } from "framer-motion";
 import { translate } from "@/utils/translate";
+import { getCelebrityGuide } from "@/utils/utils"; // <-- this import is now used below
 
 export default function Learn() {
-  const { user, language } = useApp();
+  const { user, language } = useAppContext();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showTip, setShowTip] = useState(false);
@@ -21,12 +22,14 @@ export default function Learn() {
     // Show a random tip after page loads
     const timer = setTimeout(() => {
       setShowTip(true);
-      // Hide after some time
       setTimeout(() => setShowTip(false), 6000);
     }, 1000);
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Celebrity guiding the user
+  const currentCelebrity = getCelebrityGuide("savings"); // pick as per your context or randomize if you want
 
   // Get unique categories
   const categories = [...new Set(modules.map(module => module.category))];
@@ -106,10 +109,11 @@ export default function Learn() {
         {showTip && (
           <div className="mb-6">
             <Character
-              name="Professor Sharma"
-              avatar="👨‍🏫"
-              dialog={getTipForLanguage()}
+              name={currentCelebrity.name}
+              avatar={currentCelebrity.avatar || "✨"}
+              dialog={currentCelebrity.quote || "Seekh kar hi jeet hai, dosto~"}
               emotion="excited"
+              category="savings"
             />
           </div>
         )}

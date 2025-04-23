@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
@@ -15,16 +14,38 @@ interface ModuleSuggestionProps {
 export default function ModuleSuggestion({ onDismiss, moduleId, category }: ModuleSuggestionProps) {
   const navigate = useNavigate();
   
-  // Find recommended module - prioritize moduleId if available, otherwise suggest by category
-  const suggestedModule = moduleId ? 
-    modules.find(m => m.id === moduleId) : 
-    modules.filter(m => m.category === category)[0] || modules[0];
+  // Ensure modules array is not empty and find recommended module
+  const suggestedModule = modules.length > 0 ? (
+    moduleId ? 
+      modules.find(m => m.id === moduleId) : 
+      modules.find(m => m.category === category)
+  ) : null;
+
+  if (!suggestedModule) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+        <Card className="w-[90%] max-w-md mx-auto animate-scale-in">
+          <CardContent className="text-center">
+            <h4 className="text-lg font-medium mb-2">No Module Found</h4>
+            <p className="text-muted-foreground">
+              We couldn't find a module to suggest. Please try again later.
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center border-t p-4">
+            <Button variant="outline" onClick={onDismiss}>
+              Close
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
   
   const handleStartLearning = () => {
     navigate(`/learn/module/${suggestedModule.id}`);
     onDismiss();
   };
-  
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <Card className="w-[90%] max-w-md mx-auto animate-scale-in">

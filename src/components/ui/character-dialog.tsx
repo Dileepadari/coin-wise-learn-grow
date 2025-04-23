@@ -1,6 +1,6 @@
-
 import { motion } from "framer-motion";
 import { celebration, popIn } from "@/utils/animations";
+import { getCelebrityGuide } from "@/utils/utils"; // <-- fixed import path
 
 interface CharacterProps {
   name: string;
@@ -9,6 +9,7 @@ interface CharacterProps {
   emotion?: 'happy' | 'sad' | 'excited' | 'thinking' | 'confused' | 'celebrating';
   size?: 'small' | 'medium' | 'large';
   position?: 'left' | 'right' | 'center';
+  category?: string; // added to support looking up Bollywood celebrities
 }
 
 export const Character = ({ 
@@ -17,8 +18,16 @@ export const Character = ({
   dialog, 
   emotion = 'happy',
   size = 'medium',
-  position = 'left'
+  position = 'left',
+  category
 }: CharacterProps) => {
+  // If category is provided, override with celebrity
+  if (category) {
+    const celebrity = getCelebrityGuide(category);
+    name = celebrity.name;
+    avatar = celebrity.avatar || avatar;
+  }
+
   const getEmoji = () => {
     switch (emotion) {
       case 'happy': return '😊';
@@ -49,20 +58,20 @@ export const Character = ({
 
   return (
     <motion.div 
-      className={`flex items-center space-x-4 p-4 bg-white/90 rounded-lg shadow-lg ${getPositionClass()}`}
+      className={`flex items-center space-x-4 p-4 bg-gradient-to-r from-white/90 to-coin-yellow/20 rounded-lg shadow-lg ${getPositionClass()}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
       <div className="relative">
-        <motion.img 
-          src={avatar} 
-          alt={name} 
-          className={`${getSizeClass()} rounded-full border-4 border-coin-purple`} 
+        <motion.div 
+          className={`${getSizeClass()} rounded-full border-4 border-coin-purple bg-gradient-to-br from-holi-yellow to-holi-pink flex items-center justify-center`}
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           whileHover={{ scale: 1.05, rotate: [-1, 1, -1] }}
-        />
+        >
+          <span className="text-2xl">{avatar}</span>
+        </motion.div>
         <motion.div 
           className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center"
           variants={popIn}
@@ -74,12 +83,12 @@ export const Character = ({
       </div>
       
       <motion.div 
-        className={`flex-1 bg-coin-yellow/10 p-3 rounded-lg relative ${position === 'right' ? 'mr-3' : 'ml-3'}`}
+        className={`flex-1 bg-gradient-to-r from-coin-yellow/10 to-white/70 p-3 rounded-lg relative ${position === 'right' ? 'mr-3' : 'ml-3'} border-l-4 border-holi-yellow`}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <div className="font-medium text-sm text-coin-purple mb-1">{name}</div>
+        <div className="font-bold text-sm text-coin-purple mb-1">{name}</div>
         <p className="text-sm">{dialog}</p>
         
         {position !== 'center' && (
