@@ -202,7 +202,7 @@ export const reels: Reel[] = [
     saves: 423,
     moduleId: "mod1",
     category: "savings",
-    videoUrl: "https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    videoUrl: "hblob:https://www.youtube.com/b207f0e6-e223-4d56-bafc-927f4a9f6eae",
     thumbnailUrl: "https://images.unsplash.com/photo-1579621970795-87facc2f976d?q=80&w=200&auto=format&fit=crop",
     author: "Money Master",
     comments: 89,
