@@ -28,7 +28,7 @@ export default function ForgotPassword() {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-coin-purple/10 via-white to-coin-pink/10 bg-festival-pattern">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-gradient p-4 bg-festival-pattern">
       <motion.div 
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
@@ -143,7 +143,7 @@ export default function ForgotPassword() {
             
             <div className="mt-6 text-center">
               <Link
-                to="/login"
+                to="/auth/login"
                 className="inline-flex items-center text-coin-purple hover:text-coin-purple-dark"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />

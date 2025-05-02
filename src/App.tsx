@@ -25,6 +25,14 @@ import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import Search from "./pages/Search";
 import ConnectRequests from "./pages/ConnectRequests";
+import OnboardingWelcome from "./pages/onboarding/OnboardingWelcome";
+import OnboardingProfile from "./pages/onboarding/OnboardingProfile";
+import OnboardingFinance from "./pages/onboarding/OnboardingFinance";
+import OnboardingKnowledge from "./pages/onboarding/OnboardingKnowledge";
+import OnboardingInterests from "./pages/onboarding/OnboardingInterests";
+import OnboardingComplete from "./pages/onboarding/OnboardingComplete";
+import Index from "./pages/Index";
+
 
 const queryClient = new QueryClient();
 
@@ -36,13 +44,22 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            
+          {/* Auth Routes */}
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/signup" element={<SignUp />} />
+          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+          
+          {/* Onboarding Routes */}
+          <Route path="/onboarding/welcome" element={<OnboardingWelcome />} />
+          <Route path="/onboarding/profile" element={<OnboardingProfile />} />
+          <Route path="/onboarding/finance" element={<OnboardingFinance />} />
+          <Route path="/onboarding/knowledge" element={<OnboardingKnowledge />} />
+          <Route path="/onboarding/interests" element={<OnboardingInterests />} />
+          <Route path="/onboarding/complete" element={<OnboardingComplete />} />
+          
             {/* Main App Routes */}
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/games" element={<Games />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/learn/chapter/:category" element={<ChapterView />} />

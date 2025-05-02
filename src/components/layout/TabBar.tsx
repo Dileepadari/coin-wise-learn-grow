@@ -42,7 +42,7 @@ export default function TabBar() {
       id: 'home',
       label: translate('reels', language),
       icon: FaHome,
-      path: '/',
+      path: '/home',
       color: 'bg-gradient-to-r from-yellow-400 to-red-500',
       emoji: '🏠',
       message: {

@@ -84,7 +84,7 @@ export default function ReelCard({
       const summary = summaries[reel.category as keyof typeof summaries] || 
         `${getCelebrityName('basics')} kehte hain: Yeh reel financial gyaan ke liye hai. Chal mast seekh lo!`;
       uiToast({
-        title: "Filmi Sitaron Ka Gyaan",
+        title: "Filmi Sitaron se Poocho",
         description: summary,
         duration: 6000,
       });
@@ -149,7 +149,7 @@ export default function ReelCard({
               disabled={isAiLoading}
             >
               <BrainCircuit className="h-5 w-5 text-coin-pink" />
-              {isAiLoading ? "Jugaad..." : `${getCelebrityName(reel.category)} Ka Gyaan`}
+              {isAiLoading ? "Jugaad..." : `${getCelebrityName(reel.category)} se Pucho`}
             </Button>
           </div>
         </div>

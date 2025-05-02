@@ -152,12 +152,12 @@ export default function Home() {
             </motion.div>
           </div>
         )}
-        
+{/*         
         <div className="absolute top-4 right-4">
           <div className="text-sm font-bold text-holi-pink bg-white/90 px-5 py-2 rounded-full shadow ring-2 ring-marigold">
             {currentReelIndex + 1}/{reels.length}
           </div>
-        </div>
+        </div> */}
         
         {showPrompt === 'quiz' && (
           <QuizPrompt onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />

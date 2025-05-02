@@ -1,214 +1,322 @@
 
-import { useState, useEffect } from "react";
-import Layout from "@/components/layout/Layout";
-import { Character } from "@/components/ui/character-dialog";
-import { useAppContext } from "@/context/AppContext";
-import { getCelebrityGuide } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageSquare, Share, User, Plus, Search, Save, Bookmark } from "lucide-react";
-import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Navigate, useNavigate } from "react-router";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { 
+  Heart, MessageCircle, Share, Bookmark, Plus, Users, MoreVertical, Search
+} from 'lucide-react';
+import { toast } from 'sonner';
 
-const demoUsers = [
-  { id: "1", name: "Anita", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
-  { id: "2", name: "Ramesh", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" },
-  { id: "3", name: "Priya", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=200&auto=format&fit=crop" },
-  { id: "4", name: "Dinesh", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
-];
-
-const demoPosts = [
+// Mock data for community posts
+const posts = [
   {
-    id: "p1",
-    user: demoUsers[0],
-    content: "Meri sabse acchi bachat tip hai: har din 20 rupay ki mithai na khao, paise bachao! 😂 #SaveMoneyEatLess",
-    image: "https://images.unsplash.com/photo-1579621970795-87facc2f976d?q=80&w=600&auto=format&fit=crop",
-    likes: 42,
-    comments: 7,
-    time: "2 ghante pehle"
+    id: 1,
+    user: {
+      name: 'अमित शर्मा',
+      avatar: null,
+      location: 'मुंबई'
+    },
+    content: 'मैंने पिछले 6 महीने में हर दिन ₹50 बचाए और अब मैंने अपने बच्चों के लिए एक छोटा सा इमरजेंसी फंड बना लिया है। छोटी बचत, बड़ा सुख!',
+    translation: 'I saved ₹50 every day for the past 6 months and now I have created a small emergency fund for my children. Small savings, big happiness!',
+    image: '/placeholder.svg',
+    likes: 45,
+    comments: 12,
+    timestamp: '2 घंटे पहले',
+    category: 'savings'
   },
   {
-    id: "p2",
-    user: demoUsers[1],
-    content: "Bhaiyo aur beheno! Mujhe ye investment scheme mili hai, kya koi janta hai ye sahi hai ya nahi? Bahut confused hoon main 🤔",
-    likes: 12,
-    comments: 23,
-    time: "Kal"
-  },
-  {
-    id: "p3",
-    user: demoUsers[3],
-    content: "Aaj mujhe ek UPI scam call aaya. Dhyan se rahiye dosto! Kisi ko bhi apna OTP na bataye. Maine bacha liya apna paisa 😎 #ScamAlert",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=600&auto=format&fit=crop",
+    id: 2,
+    user: {
+      name: 'प्रिया पटेल',
+      avatar: null,
+      location: 'अहमदाबाद'
+    },
+    content: 'मैंने एक ऑनलाइन फ्रॉड से बचने में कामयाबी हासिल की! किसी ने मुझे WhatsApp पर "बैंक अधिकारी" के रूप में संपर्क किया और OTP मांगा, लेकिन मुझे धोखाधड़ी डिटेक्शन गेम से सीखे गए संकेतों की याद आई।',
+    translation: 'I successfully avoided an online fraud! Someone contacted me on WhatsApp as a "bank officer" and asked for OTP, but I remembered the signs I learned from the fraud detection game.',
     likes: 78,
-    comments: 15,
-    time: "Parso"
+    comments: 23,
+    timestamp: '5 घंटे पहले',
+    category: 'fraud'
   },
+  {
+    id: 3,
+    user: {
+      name: 'राजेश कुमार',
+      avatar: null,
+      location: 'कोलकाता'
+    },
+    content: 'इस ऐप के बजट टूल का उपयोग करके, मैंने अपने खर्च को ट्रैक करना शुरू किया और 3 महीने में ₹15,000 की बचत की! अब मैं अपनी दुकान के लिए नए उपकरण खरीदने की योजना बना रहा हूं।',
+    translation: 'By using the budget tool of this app, I started tracking my expenses and saved ₹15,000 in 3 months! Now I am planning to buy new equipment for my shop.',
+    image: '/placeholder.svg',
+    likes: 112,
+    comments: 34,
+    timestamp: '1 दिन पहले',
+    category: 'savings'
+  }
 ];
 
-export default function Community() {
-  const { user } = useAppContext();
-  const navigate = useNavigate();
-  const celeb = getCelebrityGuide("basics");
-  const [activeTab, setActiveTab] = useState("trending");
-  const [likedPosts, setLikedPosts] = useState<string[]>([]);
+// Mock data for community suggestions
+const suggestions = [
+  {
+    id: 1,
+    name: 'सुनील वर्मा',
+    avatar: null,
+    location: 'जयपुर',
+    mutualFriends: 3
+  },
+  {
+    id: 2,
+    name: 'नेहा गुप्ता',
+    avatar: null,
+    location: 'लखनऊ',
+    mutualFriends: 1
+  },
+  {
+    id: 3,
+    name: 'विकास सिंह',
+    avatar: null,
+    location: 'चंडीगढ़',
+    mutualFriends: 2
+  },
+  {
+    id: 4,
+    name: 'अनुष्का पांडे',
+    avatar: null,
+    location: 'भोपाल',
+    mutualFriends: 5
+  }
+];
 
-  const toggleLike = (postId: string) => {
+const Community = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('posts');
+  const [likedPosts, setLikedPosts] = useState<number[]>([]);
+  const [savedPosts, setSavedPosts] = useState<number[]>([]);
+  
+  const handleLike = (postId: number) => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(likedPosts.filter(id => id !== postId));
+      toast.info('पोस्ट अनलाइक किया गया (Post unliked)');
     } else {
       setLikedPosts([...likedPosts, postId]);
+      toast.success('पोस्ट लाइक किया गया! +2 XP (Post liked! +2 XP)');
     }
   };
-
+  
+  const handleSave = (postId: number) => {
+    if (savedPosts.includes(postId)) {
+      setSavedPosts(savedPosts.filter(id => id !== postId));
+      toast.info('पोस्ट अनसेव किया गया (Post unsaved)');
+    } else {
+      setSavedPosts([...savedPosts, postId]);
+      toast.success('पोस्ट सेव किया गया! (Post saved!)');
+    }
+  };
+  
+  const handleComment = (postId: number) => {
+    toast.info('कमेंट फीचर जल्द आ रहा है... (Comment feature coming soon...)');
+  };
+  
+  const handleShare = (postId: number) => {
+    toast.success('शेयरिंग लिंक कॉपी किया गया! (Sharing link copied!)');
+  };
+  
+  const handleConnect = (userId: number) => {
+    toast.success('कनेक्शन अनुरोध भेजा गया! (Connection request sent!)');
+  };
+  
+  const handleCreatePost = () => {
+    navigate('/community/create-post');
+  };
+  
+  const handleConnectRequests = () => {
+    navigate('/connect-requests');
+  };
+  
+  const handleSearch = () => {
+    navigate('/search');
+  };
+  
+  const getCategoryEmoji = (category: string) => {
+    switch(category) {
+      case 'savings': return '💰';
+      case 'investment': return '📈';
+      case 'fraud': return '🛡️';
+      case 'borrowing': return '💸';
+      default: return '💡';
+    }
+  };
+  
   return (
     <Layout>
-      <div className="container px-2 pb-20">
-        <div className="pt-3 pb-1">
-          <Character
-            name={celeb.name}
-            avatar={celeb.avatar || "🤝"}
-            dialog={`Masti karo, milke seekho, aur khoob gyaan baanto! ${celeb.name} ke saath finance pe charcha karo!`}
-            category="basics"
-            emotion="happy"
-          />
-        </div>
-        
-        {/* Search bar */}
-        <div className="relative my-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Samudaay mein kya chal raha hai?"
-            className="pl-9 bg-gradient-to-r from-white to-coin-yellow/20 border-0 shadow-sm"
-          />
-        </div>
-        
-        {/* Trending users row */}
-        <div className="my-4">
-          <p className="text-sm font-medium mb-2 text-coin-purple">Popular Saathiyon se jude</p>
-          <div className="flex overflow-x-auto space-x-2 py-2 no-scrollbar">
-            {demoUsers.map(demoUser => (
-              <motion.div 
-                key={demoUser.id}
-                className="flex-shrink-0 flex flex-col items-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Avatar className="w-16 h-16 border-2 border-holi-pink">
-                  <AvatarImage src={demoUser.avatar} />
-                  <AvatarFallback className="bg-holi-yellow text-coin-purple">
-                    {demoUser.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs mt-1">{demoUser.name}</span>
-                <Button size="sm" variant="outline" className="mt-1 h-7 text-xs px-2 rounded-full bg-gradient-to-r from-coin-pink to-holi-yellow border-0 text-white">
-                  <Plus className="h-3 w-3 mr-1" />
-                  Jude
-                </Button>
-              </motion.div>
-            ))}
+      <div className="container px-4 pt-4 pb-20 max-w-lg mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">समुदाय (Community)</h1>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={handleSearch}>
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleConnectRequests}>
+              <Users className="h-5 w-5" />
+            </Button>
           </div>
         </div>
         
-        {/* Tabs */}
-        <div className="flex border-b overflow-x-auto no-scrollbar">
-          {["trending", "recent", "following"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2 text-sm font-medium capitalize ${
-                activeTab === tab
-                  ? "text-coin-purple relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-0.5 before:bg-gradient-to-r before:from-holi-pink before:to-holi-yellow"
-                  : "text-muted-foreground"
-              }`}
+        <Tabs defaultValue="posts" value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid grid-cols-2 mb-4">
+            <TabsTrigger value="posts">
+              कहानियां (Stories)
+            </TabsTrigger>
+            <TabsTrigger value="connect">
+              जुड़ें (Connect)
+            </TabsTrigger>
+          </TabsList>
+          
+          {/* Posts Tab */}
+          <TabsContent value="posts" className="space-y-4">
+            <Button 
+              onClick={handleCreatePost}
+              className="w-full bg-gradient-to-r from-primary to-accent text-white"
             >
-              {tab === "trending" ? "Mashhoor" : tab === "recent" ? "Naya" : "Dost"}
-            </button>
-          ))}
-        </div>
-        
-        {/* Posts */}
-        <div className="space-y-5 py-4">
-          {demoPosts.map((post) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-white to-coin-yellow/10 shadow-sm rounded-xl overflow-hidden border-0"
-            >
-              {/* Post header */}
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={post.user.avatar} />
-                    <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-medium">{post.user.name}</h3>
-                    <p className="text-xs text-muted-foreground">{post.time}</p>
+              <Plus className="h-4 w-4 mr-2" />
+              अपनी सफलता की कहानी शेयर करें
+              <br />
+              <span className="text-xs">(Share your success story)</span>
+            </Button>
+            
+            {posts.map(post => (
+              <Card key={post.id} className="overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Post Header */}
+                  <div className="flex justify-between items-center p-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarFallback className="bg-primary text-white">
+                          {post.user.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-medium">{post.user.name}</h3>
+                        <p className="text-xs text-muted-foreground">{post.user.location} • {post.timestamp}</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-primary/10 text-primary">
+                      {getCategoryEmoji(post.category)} {post.category}
+                    </Badge>
                   </div>
-                </div>
-                <Button variant="ghost" size="sm" className="text-coin-purple">
-                  <Plus className="h-4 w-4" />
-                  <span className="ml-1 text-xs">Add Friend</span>
-                </Button>
-              </div>
-              
-              {/* Post content */}
-              <div className="px-4 pb-2">
-                <p className="text-sm">{post.content}</p>
-              </div>
-              
-              {/* Post image */}
-              {post.image && (
-                <div className="pt-2">
-                  <img src={post.image} alt="Post image" className="w-full" />
-                </div>
-              )}
-              
-              {/* Post actions */}
-              <div className="px-4 py-3 flex justify-between border-t border-muted/30">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`text-sm ${likedPosts.includes(post.id) ? 'text-red-500' : ''}`}
-                  onClick={() => toggleLike(post.id)}
-                >
-                  <Heart
-                    className={`h-4 w-4 mr-1 ${likedPosts.includes(post.id) ? 'fill-red-500 text-red-500' : ''}`}
-                  />
-                  {post.likes + (likedPosts.includes(post.id) ? 1 : 0)}
-                </Button>
-                <Button variant="ghost" size="sm" className="text-sm">
-                  <MessageSquare className="h-4 w-4 mr-1" />
-                  {post.comments}
-                </Button>
-                <Button variant="ghost" size="sm" className="text-sm">
-                  <Bookmark className="h-4 w-4 mr-1" />
-                  Save
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        
-        {/* FAB */}
-        <motion.div
-          className="fixed right-4"
-          style={{ bottom: "14vh" }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            className="h-14 w-14 rounded-full bg-gradient-to-r from-coin-purple to-coin-pink shadow-lg"
-            onClick={() => navigate("/create-post")}
-            aria-label="Create Post"
-            title="Create Post"
-          >
-            <Plus className="h-6 w-6 text-white" />
-          </Button>
-        </motion.div>
+                  
+                  {/* Post Content */}
+                  <div className="p-4 pt-0">
+                    <p className="mb-4">{post.content}</p>
+                    <p className="text-xs text-muted-foreground mb-4">{post.translation}</p>
+                    
+                    {post.image && (
+                      <div className="h-48 w-full rounded-md overflow-hidden mb-4">
+                        <img src={post.image} alt="Post" className="h-full w-full object-cover" />
+                      </div>
+                    )}
+                    
+                    {/* Post Actions */}
+                    <div className="flex justify-between border-t pt-3">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleLike(post.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <Heart 
+                          className={`h-4 w-4 ${likedPosts.includes(post.id) ? 'fill-red-500 text-red-500' : ''}`} 
+                        />
+                        <span>{likedPosts.includes(post.id) ? post.likes + 1 : post.likes}</span>
+                      </Button>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleComment(post.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        <span>{post.comments}</span>
+                      </Button>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleShare(post.id)}
+                      >
+                        <Share className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSave(post.id)}
+                      >
+                        <Bookmark 
+                          className={`h-4 w-4 ${savedPosts.includes(post.id) ? 'fill-yellow-500 text-yellow-500' : ''}`}
+                        />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+          
+          {/* Connect Tab */}
+          <TabsContent value="connect">
+            <h2 className="text-lg font-medium mb-4">सुझाए गए लोग (Suggested People)</h2>
+            
+            <div className="space-y-4">
+              {suggestions.map(person => (
+                <Card key={person.id}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-primary/80 text-white">
+                            {person.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium">{person.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {person.location} • {person.mutualFriends} आपस के दोस्त
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleConnect(person.id)}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        जुड़ें
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <Button
+              variant="outline"
+              className="w-full mt-6"
+              onClick={handleSearch}
+            >
+              <Search className="h-4 w-4 mr-2" />
+              और लोगों को खोजें (Find More People)
+            </Button>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
-}
+};
+
+export default Community;

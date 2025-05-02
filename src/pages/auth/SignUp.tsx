@@ -55,7 +55,7 @@ const SignUp = () => {
       });
       
       setLoading(false);
-      navigate('/');
+      navigate('/onboarding/welcome');
       
     }, 1500);
   };
@@ -80,7 +80,7 @@ const SignUp = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col p-4 bg-gradient-to-br from-coin-purple/20 to-coin-orange/20 bg-festival-pattern">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-gradient p-4 bg-festival-pattern">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -298,7 +298,7 @@ const SignUp = () => {
             <div className="text-center mt-8">
               <p className="text-gray-600 text-sm">
                 {translate('alreadyHaveAccount', language)}{' '}
-                <Link to="/login" className="text-coin-purple-vivid font-medium hover:underline hover:text-coin-purple-dark">
+                <Link to="/auth/login" className="text-coin-purple-vivid font-medium hover:underline hover:text-coin-purple-dark">
                   {translate('loginText', language)}
                 </Link>
               </p>

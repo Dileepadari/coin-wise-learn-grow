@@ -135,3 +135,58 @@ export const glitter: Variants = {
     }
   }
 };
+
+
+export const tada: Variants = {
+  initial: { scale: 1 },
+  animate: {
+    scale: [1, 0.9, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1],
+    rotate: [0, -3, 3, -3, 3, -3, 3, 0],
+    transition: {
+      duration: 1.5
+    }
+  }
+};
+
+export const jello: Variants = {
+  initial: { skewX: 0, skewY: 0 },
+  animate: {
+    skewX: [0, -12.5, 6.25, -3.125, 1.5625, -0.78125, 0],
+    skewY: [0, -12.5, 6.25, -3.125, 1.5625, -0.78125, 0],
+    transition: { duration: 1 }
+  }
+};
+export const wiggle: Variants = {
+  initial: { rotate: 0 },
+  animate: { 
+    rotate: [0, -5, 5, -3, 3, 0],
+    transition: {
+      duration: 0.5,
+      ease: "easeInOut",
+      times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+      repeat: 0
+    }
+  },
+  hover: {
+    rotate: [0, -5, 5, -3, 3, 0],
+    transition: {
+      duration: 0.5,
+      ease: "easeInOut",
+      times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+    }
+  }
+};
+
+export const bounceUpDown: Variants = {
+  initial: { y: 0 },
+  animate: {
+    y: [0, -8, 0],
+    transition: {
+      duration: 1,
+      ease: "easeInOut",
+      times: [0, 0.5, 1],
+      repeat: Infinity,
+      repeatType: "reverse"
+    }
+  }
+};

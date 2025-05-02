@@ -88,7 +88,14 @@ const translations: Record<LanguageKeys, Record<string, string>> = {
     nameCannotBeEmpty: "Name cannot be empty!",
     emailInvalid: "Invalid email address",
     wantToEarn: "Want to earn coins?",
-    tips: "Tips & Tricks"
+    tips: "Tips & Tricks",
+    alreadyHaveAccount: "Already have an account?",
+    createAccount: "Create an account",
+    loginText: "Login",
+    orSignUpWith: "or sign up with",
+    welcomeTitle: "Welcome to the world of finance!",
+    welcomeSubtitle: "Your journey to financial literacy starts here.",
+    welcomeMessage: "Join us in learning about saving, investing, and managing your money wisely.",
   },
   hindi: {
     firstName: "पहला नाम",

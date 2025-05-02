@@ -37,7 +37,7 @@ export default function Header() {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/home" className="flex items-center space-x-2">
             <motion.div 
               className="h-9 w-9 bg-purple-gradient rounded-full flex items-center justify-center text-white font-bold text-lg"
               variants={coinFlip}
@@ -100,7 +100,7 @@ export default function Header() {
           <div className="relative ml-2">
             <Button 
               variant="ghost" 
-              className="flex items-center space-x-2 p-1 rounded-full hover:bg-coin-purple/10"
+              className="flex items-center space-x-2 p-1 rounded-full hover:bg-coin-pink/10"
               onClick={() => setDropdownOpen(!dropdownOpen)}
               >
               <Avatar className="hidden md:flex h-8 w-8 border-2 border-coin-purple/20">
