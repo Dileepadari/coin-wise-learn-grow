@@ -242,7 +242,7 @@ const SignUp = () => {
               <Button 
                 type="submit" 
                 disabled={loading || !formData.terms}
-                className="w-full h-12 rounded-xl bg-coin-gradient hover:opacity-90 text-white font-bold button-shimmer" 
+                className="w-full h-12 rounded-xl bg-coin-purple hover:opacity-90 text-white font-bold button-shimmer" 
               >
                 {loading ? (
                   <div className="flex items-center space-x-2">

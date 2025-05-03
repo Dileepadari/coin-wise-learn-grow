@@ -32,7 +32,7 @@ import OnboardingKnowledge from "./pages/onboarding/OnboardingKnowledge";
 import OnboardingInterests from "./pages/onboarding/OnboardingInterests";
 import OnboardingComplete from "./pages/onboarding/OnboardingComplete";
 import Index from "./pages/Index";
-
+import Logout from "./pages/auth/Logout";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +73,7 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/search" element={<Search />} />
             <Route path="/connect-requests" element={<ConnectRequests />} />
+            <Route path="/logout" element={<Logout />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

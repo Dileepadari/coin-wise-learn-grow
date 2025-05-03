@@ -167,7 +167,7 @@ export default function Header() {
                       <li>
                       <Button
                       className="w-full justify-start text-left px-4 py-2 bg-white text-sm text-gray-700 hover:bg-red-200 flex items-center space-x-2"
-                      onClick={() => navigate('/login')}
+                      onClick={() => navigate('/auth/logout')}
                       >
                       <span>🚪</span>
                       <span>Logout</span>

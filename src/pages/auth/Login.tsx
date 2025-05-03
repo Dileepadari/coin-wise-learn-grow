@@ -181,6 +181,19 @@ const Login = () => {
 
               {isOtpLogin ? (
                 <>
+                    <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      onClick={handleGenerateOtp}
+                      className={`h-12 rounded-xl ${
+                      otpSent
+                      ? 'bg-purple-500 hover:bg-purple-600'
+                      : 'bg-purple-gradient hover:opacity-90'
+                      } text-white font-bold button-shimmer`}
+                    >
+                      {otpSent ? 'Resend OTP' : 'Generate OTP'}
+                    </Button>
+                    </div>
                   <div className="space-y-2">
                     <Label htmlFor="otp" className="text-gray-700">
                       {translate('OTP', language)}
@@ -192,18 +205,11 @@ const Login = () => {
                       required
                       value={formData.otp}
                       onChange={handleChange}
-                      className="h-12 rounded-xl border-2 border-gray-300 hover:border-coin-orange focus:border-coin-orange"
+                      className="h-12 rounded-xl border-2 border-gray-300 hover:border-coin-orange focus:border-coin-orange "
                       placeholder="आपका OTP दर्ज करें"
                       disabled={!otpSent}
                     />
                   </div>
-                  <Button
-                    type="button"
-                    onClick={handleGenerateOtp}
-                    className="w-full h-12 rounded-xl bg-coin-gradient hover:opacity-90 text-white font-bold button-shimmer"
-                  >
-                    {otpSent ? 'Resend OTP' : 'Generate OTP'}
-                  </Button>
                 </>
               ) : (
                 <div className="space-y-2">
@@ -246,7 +252,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 rounded-xl bg-coin-gradient hover:opacity-90 text-white font-bold button-shimmer"
+                className="w-full h-12 rounded-xl bg-purple-500 hover:opacity-90 text-white font-bold button-shimmer"
                 disabled={loading}
               >
                 {loading ? (
