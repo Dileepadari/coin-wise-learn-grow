@@ -39,7 +39,7 @@ const defaultUser: User = {
   level: 2,
   xp: 67,
   streak: 3,
-  avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop",
+  avatar: "/profile.jpeg",
   badges: ["savings-master", "fraud-detector"],
   completedModules: [],
   completedGames: [],

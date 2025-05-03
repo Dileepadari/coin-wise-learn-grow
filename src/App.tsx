@@ -73,7 +73,7 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/search" element={<Search />} />
             <Route path="/connect-requests" element={<ConnectRequests />} />
-            <Route path="/logout" element={<Logout />} />
+            <Route path="/auth/logout" element={<Logout />} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
