@@ -69,6 +69,22 @@ const Login = () => {
             savedContent: [],
             progress: []
           });
+          localStorage.setItem('user', JSON.stringify({
+            id: 'user-123',
+            name: 'राजेश कुमार',
+            phoneNumber: formData.phoneNumber,
+            points: 75,
+            level: 1,
+            badges: ["नया सितारा", "शुरुआती वित्तीय गुरु"],
+            completedModules: [],
+            completedGames: [],
+            knowledgeLevel: "beginner",
+            preferredCategories: ["saving", "budgeting"],
+            likedContent: [],
+            savedContent: [],
+            progress: []
+          }));
+
           navigate('/home');
         } else {
           setError('Invalid OTP');
@@ -90,6 +106,23 @@ const Login = () => {
           savedContent: [],
           progress: []
         });
+
+        localStorage.setItem('user', JSON.stringify({
+          id: 'user-123',
+          name: 'राजेश कुमार',
+          phoneNumber: formData.phoneNumber,
+          points: 75,
+          level: 1,
+          badges: ["नया सितारा", "शुरुआती वित्तीय गुरु"],
+          completedModules: [],
+          completedGames: [],
+          knowledgeLevel: "beginner",
+          preferredCategories: ["saving", "budgeting"],
+          likedContent: [],
+          savedContent: [],
+          progress: []
+        }));
+        
         navigate('/home');
       }
       setLoading(false);

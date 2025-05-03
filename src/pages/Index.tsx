@@ -7,7 +7,11 @@ const Index = () => {
 
   useEffect(() => {
     // Redirect to login page
-    navigate('/auth/login');
+    if (!localStorage.getItem('user')) {
+      navigate('/auth/login');
+      return;
+    }
+    navigate('/home');
   }, [navigate]);
 
   return (

@@ -100,8 +100,22 @@ export const modules: LearningModule[] = [
     description: "छोटी बचत, बड़ी सफलता",
     category: "savings",
     difficulty: "beginner",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content1", title: "बचत क्यों जरूरी है?", points: 10, type: "article", content: "बचत के महत्व को समझें।" },
+      { id: "content2", title: "बचत के तरीके", points: 15, type: "article", content: "बचत के विभिन्न तरीकों को जानें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz1", 
+        title: "बचत का महत्व", 
+        type: "quiz", 
+        question: "बचत का पहला कदम क्या है?", 
+        points: 20, 
+        options: ["बजट बनाना", "लक्ष्य तय करना", "खर्च कम करना", "बचत शुरू करना"], 
+        correctAnswer: 3, // Index of "बचत शुरू करना" in the options array
+        explanation: "बचत का पहला कदम बचत शुरू करना है।"
+      }
+    ],
     totalPoints: 100,
     estimatedTime: "30 minutes",
     thumbnail: "/images/savings.jpg"
@@ -112,8 +126,22 @@ export const modules: LearningModule[] = [
     description: "सही निवेश, बेहतर भविष्य",
     category: "investment",
     difficulty: "beginner",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content3", title: "निवेश क्या है?", points: 10, type: "article", content: "निवेश के बारे में जानें।" },
+      { id: "content4", title: "निवेश के फायदे", points: 15, type: "article", content: "निवेश के फायदों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz2", 
+        title: "निवेश का महत्व", 
+        type: "quiz", 
+        question: "निवेश का मुख्य उद्देश्य क्या है?", 
+        points: 20, 
+        options: ["लाभ कमाना", "भविष्य सुरक्षित करना", "जोखिम उठाना", "सभी"], 
+        correctAnswer: 1, // Index of "भविष्य सुरक्षित करना" in the options array
+        explanation: "निवेश का मुख्य उद्देश्य भविष्य को सुरक्षित करना है।"
+      }
+    ],
     totalPoints: 120,
     estimatedTime: "45 minutes",
     thumbnail: "/images/investment.jpg"
@@ -124,8 +152,22 @@ export const modules: LearningModule[] = [
     description: "सतर्क रहें, सुरक्षित रहें",
     category: "fraud",
     difficulty: "intermediate",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content5", title: "सामान्य धोखाधड़ी के प्रकार", points: 15, type: "article", content: "सामान्य धोखाधड़ी के प्रकारों को समझें।" },
+      { id: "content6", title: "धोखाधड़ी से बचने के उपाय", points: 20, type: "article", content: "धोखाधड़ी से बचने के उपायों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz3", 
+        title: "धोखाधड़ी से बचाव", 
+        type: "quiz", 
+        question: "धोखाधड़ी से बचने का सबसे अच्छा तरीका क्या है?", 
+        points: 25, 
+        options: ["सतर्क रहें", "अनजान लिंक पर क्लिक करें", "अपनी जानकारी साझा करें", "सभी"], 
+        correctAnswer: 0, // Index of "सतर्क रहें" in the options array
+        explanation: "सतर्क रहना और अनजान स्रोतों से बचना सबसे अच्छा तरीका है।"
+      }
+    ],
     totalPoints: 150,
     estimatedTime: "60 minutes",
     thumbnail: "/images/fraud.jpg"
@@ -136,8 +178,22 @@ export const modules: LearningModule[] = [
     description: "सही बजट, सही योजना",
     category: "basics",
     difficulty: "beginner",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content7", title: "बजट क्या है?", points: 10, type: "article", content: "बजट के बारे में जानें।" },
+      { id: "content8", title: "बजट बनाने के चरण", points: 15, type: "article", content: "बजट बनाने के चरणों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz4", 
+        title: "बजट का महत्व", 
+        type: "quiz", 
+        question: "बजट का मुख्य उद्देश्य क्या है?", 
+        points: 20, 
+        options: ["खर्च कम करना", "बचत बढ़ाना", "लक्ष्य तय करना", "उपरोक्त सभी"], 
+        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
+        explanation: "बजट का मुख्य उद्देश्य सभी पहलुओं को संतुलित करना है।"
+      }
+    ],
     totalPoints: 80,
     estimatedTime: "25 minutes",
     thumbnail: "/images/budget.jpg"
@@ -148,8 +204,22 @@ export const modules: LearningModule[] = [
     description: "समझदारी से कर्ज लें",
     category: "borrowing",
     difficulty: "intermediate",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content9", title: "कर्ज के प्रकार", points: 15, type: "article", content: "कर्ज के विभिन्न प्रकारों को समझें।" },
+      { id: "content10", title: "कर्ज चुकाने की रणनीतियाँ", points: 20, type: "article", content: "कर्ज चुकाने की रणनीतियों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz5", 
+        title: "कर्ज लेने से पहले", 
+        type: "quiz", 
+        question: "कर्ज लेने से पहले क्या विचार करना चाहिए?", 
+        points: 25, 
+        options: ["ब्याज दर", "ऋण अवधि", "भुगतान क्षमता", "उपरोक्त सभी"], 
+        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
+        explanation: "कर्ज लेने से पहले सभी पहलुओं पर विचार करना चाहिए।"
+      }
+    ],
     totalPoints: 130,
     estimatedTime: "50 minutes",
     thumbnail: "/images/borrowing.jpg"
@@ -160,8 +230,22 @@ export const modules: LearningModule[] = [
     description: "भविष्य की तैयारी",
     category: "savings",
     difficulty: "advanced",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content11", title: "वित्तीय योजना का महत्व", points: 20, type: "article", content: "वित्तीय योजना के महत्व को समझें।" },
+      { id: "content12", title: "लक्ष्य निर्धारण", points: 25, type: "article", content: "लक्ष्य निर्धारण के महत्व को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz6", 
+        title: "वित्तीय योजना का पहला कदम", 
+        type: "quiz", 
+        question: "वित्तीय योजना का पहला कदम क्या है?", 
+        points: 30, 
+        options: ["लक्ष्य तय करना", "बजट बनाना", "निवेश करना", "खर्च कम करना"], 
+        correctAnswer: 0, // Index of "लक्ष्य तय करना" in the options array
+        explanation: "वित्तीय योजना का पहला कदम लक्ष्य तय करना है।"
+      }
+    ],
     totalPoints: 180,
     estimatedTime: "75 minutes",
     thumbnail: "/images/planning.jpg"
@@ -172,8 +256,22 @@ export const modules: LearningModule[] = [
     description: "UPI से सुरक्षित लेनदेन",
     category: "basics",
     difficulty: "beginner",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content13", title: "UPI क्या है?", points: 10, type: "article", content: "UPI के बारे में जानें।" },
+      { id: "content14", title: "UPI का उपयोग कैसे करें?", points: 15, type: "article", content: "UPI का उपयोग करने के चरणों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz7", 
+        title: "UPI सुरक्षा", 
+        type: "quiz", 
+        question: "UPI पिन को सुरक्षित रखने का सबसे अच्छा तरीका क्या है?", 
+        points: 20, 
+        options: ["किसी को न बताएं", "कागज पर लिखें", "दोस्तों को साझा करें", "सार्वजनिक स्थान पर रखें"], 
+        correctAnswer: 0, // Index of "किसी को न बताएं" in the options array
+        explanation: "UPI पिन को कभी भी किसी के साथ साझा नहीं करना चाहिए।"
+      }
+    ],
     totalPoints: 90,
     estimatedTime: "35 minutes",
     thumbnail: "/images/upi.jpg"
@@ -184,8 +282,22 @@ export const modules: LearningModule[] = [
     description: "सही बीमा, सही सुरक्षा",
     category: "basics",
     difficulty: "intermediate",
-    content: [],
-    quizzes: [],
+    content: [
+      { id: "content15", title: "बीमा क्यों आवश्यक है?", points: 15, type: "article", content: "बीमा के महत्व को समझें।" },
+      { id: "content16", title: "बीमा के प्रकार", points: 20, type: "article", content: "बीमा के विभिन्न प्रकारों को समझें।" }
+    ],
+    quizzes: [
+      { 
+        id: "quiz8", 
+        title: "बीमा का महत्व", 
+        type: "quiz",
+        question: "बीमा चुनते समय किन बातों का ध्यान रखना चाहिए?", 
+        points: 25, 
+        options: ["बीमा की लागत", "कवर की गई बीमारियाँ", "कंपनी की प्रतिष्ठा", "उपरोक्त सभी"],
+        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
+        explanation: "बीमा चुनते समय सभी पहलुओं पर विचार करना चाहिए।"
+      }
+    ],
     totalPoints: 140,
     estimatedTime: "55 minutes",
     thumbnail: "/images/insurance.jpg"
