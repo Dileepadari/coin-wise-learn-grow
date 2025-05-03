@@ -33,6 +33,7 @@ export default function ReelCard({
   const { toast: uiToast } = useToast();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const reelCardRef = useRef<HTMLDivElement | null>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   const isLiked = user.likedContent.includes(reel.id);
   const isSaved = user.savedContent.includes(reel.id);
@@ -153,6 +154,11 @@ export default function ReelCard({
         isActive ? "z-10" : "opacity-70")}
       style={{ boxShadow: "0px 0px 25px 0px rgba(253,230,138,0.8)", marginBottom: "10vh", height: "80vh" }}
     >
+        {!isVideoLoaded && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="w-16 h-16 border-4 border-t-coin-orange border-b-coin-purple rounded-full animate-spin"></div>
+          </div>
+        )}
       <div className="absolute top-0 left-0 right-0 px-6 py-5 z-20 bg-gradient-to-b from-black/80 to-transparent flex items-center justify-between">
         <span className="text-3xl font-extrabold tracking-wider text-white mr-2">
           {getCategoryEmoji(reel.category)} 
@@ -171,6 +177,8 @@ export default function ReelCard({
               autoPlay={isActive}
               loop
               playsInline
+              onLoadedData={() => setIsVideoLoaded(true)}
+              onPlay={() => setIsPlaying(true)}
             />
             <div
               className={cn(

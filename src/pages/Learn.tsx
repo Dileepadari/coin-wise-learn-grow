@@ -125,9 +125,9 @@ const Learn = () => {
     <div className="pt-4 pb-24 px-4 bg-gradient-to-br from-background-soft via-background-purple to-background-yellow min-h-screen">
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-4">
-        <Button variant="ghost" size="icon" onClick={handleback}>
+        {/* <Button variant="ghost" size="icon" onClick={handleback}>
               <ArrowLeft className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             सीखें (Learn)
           </h1>

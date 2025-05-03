@@ -24,7 +24,7 @@ const posts = [
     },
     content: 'मैंने पिछले 6 महीने में हर दिन ₹50 बचाए और अब मैंने अपने बच्चों के लिए एक छोटा सा इमरजेंसी फंड बना लिया है। छोटी बचत, बड़ा सुख!',
     translation: 'I saved ₹50 every day for the past 6 months and now I have created a small emergency fund for my children. Small savings, big happiness!',
-    image: '/placeholder.svg',
+    image: 'https://www.ukibc.com/wp-content/uploads/2015/08/money-india.jpg',
     likes: 45,
     comments: 12,
     timestamp: '2 घंटे पहले',
@@ -53,7 +53,7 @@ const posts = [
     },
     content: 'इस ऐप के बजट टूल का उपयोग करके, मैंने अपने खर्च को ट्रैक करना शुरू किया और 3 महीने में ₹15,000 की बचत की! अब मैं अपनी दुकान के लिए नए उपकरण खरीदने की योजना बना रहा हूं।',
     translation: 'By using the budget tool of this app, I started tracking my expenses and saved ₹15,000 in 3 months! Now I am planning to buy new equipment for my shop.',
-    image: '/placeholder.svg',
+    image: 'https://c8.alamy.com/comp/JC03EH/1-indian-shop-keeper-man-counting-money-cash-in-stationary-shop-JC03EH.jpg',
     likes: 112,
     comments: 34,
     timestamp: '1 दिन पहले',
@@ -161,9 +161,9 @@ const Community = () => {
     <Layout>
       <div className="container px-4 pt-4 pb-20 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-4">
-        <Button variant="ghost" size="icon" onClick={handleback}>
+        {/* <Button variant="ghost" size="icon" onClick={handleback}>
               <ArrowLeft className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <h1 className="text-2xl font-bold">समुदाय (Community)</h1>
           <div className="flex gap-2">
             <Button variant="ghost" size="icon" onClick={handleSearch}>
@@ -253,13 +253,13 @@ const Community = () => {
                         <span>{post.comments}</span>
                       </Button>
                       
-                      <Button 
+                      {/* <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => handleShare(post.id)}
                       >
                         <Share className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                       
                       <Button 
                         variant="ghost" 

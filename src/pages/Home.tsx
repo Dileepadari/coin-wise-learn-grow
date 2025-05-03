@@ -21,6 +21,7 @@ export default function Home() {
   const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
   const [currentReel, setCurrentReel] = useState<Reel | null>(null);
   const [reelViewCount, setReelViewCount] = useState(0);
+
   const [floatingSuggestion, setFloatingSuggestion] = useState<{
     type: 'quiz' | 'game' | 'module';
     celebrity: { name: string; avatar: string };
@@ -94,6 +95,7 @@ export default function Home() {
     <Layout>
       <div className="relative h-full">
         {/* Floating Suggestion Widget */}
+      
         {floatingSuggestion && (
           <motion.div
             className="fixed top-4 right-4 z-50 flex items-center gap-4 p-4 bg-white shadow-lg rounded-full cursor-pointer"

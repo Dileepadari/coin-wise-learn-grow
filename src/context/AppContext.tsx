@@ -32,6 +32,8 @@ export interface AppContextType {
 const defaultUser: User = {
   id: "user1",
   name: "Raju",
+  firstName: "Raju", // Add this line
+  lastName: "Kumar", // Add this line
   email: "raju@example.com",
   phoneNumber: "9876543210",
   points: 120,
