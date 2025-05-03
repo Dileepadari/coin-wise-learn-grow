@@ -143,6 +143,10 @@ const Community = () => {
     navigate('/search');
   };
 
+  const handleMessages = () => {
+    navigate('/messages');
+  };
+
   const handleback = () => {
     navigate(-1);
   };
@@ -172,17 +176,20 @@ const Community = () => {
             <Button variant="ghost" size="icon" onClick={handleConnectRequests}>
               <Users className="h-5 w-5" />
             </Button>
+            <Button variant="ghost" size="icon" onClick={handleMessages}>
+              <MessageCircle className="h-5 w-5" />
+            </Button>
           </div>
         </div>
         
         <Tabs defaultValue="posts" value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-2 mb-4">
+          <TabsList className="grid grid-cols-1 mb-4">
             <TabsTrigger value="posts">
               कहानियां (Stories)
             </TabsTrigger>
-            <TabsTrigger value="connect">
+            {/* <TabsTrigger value="connect">
               जुड़ें (Connect)
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
           
           {/* Posts Tab */}

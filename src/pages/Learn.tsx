@@ -80,7 +80,7 @@ const Learn = () => {
   // Recommended modules
   const recommendedModules = [
     {
-      id: "savings101",
+      id: "module1",
       title: "बचत के बुनियादी सिद्धांत",
       translation: "Basic Principles of Saving",
       chapterTitle: "बचत की आदतें",
@@ -90,7 +90,7 @@ const Learn = () => {
       color: "from-primary to-accent"
     },
     {
-      id: "budget101",
+      id: "module4",
       title: "हफ्तेवार बजट कैसे बनाएँ",
       translation: "How to Create a Weekly Budget",
       chapterTitle: "बजट बनाना",

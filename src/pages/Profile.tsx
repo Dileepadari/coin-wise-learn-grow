@@ -29,8 +29,19 @@ const Profile = () => {
   const navigate = useNavigate();
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [presentLanguage, setPresentLanguage] = useState('हिंदी');
   const isMobile = useIsMobile();
 
+  const setPresentLanguageHandler = (language) => {
+    setIsLanguageModalOpen(false);
+    setPresentLanguage(language);
+    localStorage.setItem('language', language);
+    toast.success(`भाषा बदल दी गई है: ${language}`, {
+      description: 'Language changed successfully!',
+      style: { background: 'linear-gradient(to right, #fef9c3, #fef08a)' }
+    });
+  }
   const handleLevelUp = () => {
     setShowConfetti(true);
     confetti({
@@ -145,6 +156,8 @@ const Profile = () => {
                     )}
                   </Avatar>
                 </motion.div>
+              
+
                 <motion.div 
                   className="absolute -bottom-2 -right-2 bg-gradient-to-r from-primary to-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-md"
                   variants={floating}
@@ -169,10 +182,68 @@ const Profile = () => {
                     <span>अनौपचारिक कामगार</span>
                   </Badge>
                 </motion.div>
+                <motion.div
+                  className="container py-4 px-4 "
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {/* Language Change Button */}
+                  <div className="flex justify-center mb-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                    onClick={() => setIsLanguageModalOpen(true)}
+                  >
+                    भाषा बदलें
+                  </Button>
+                  </div>
+
+                  {/* Language Selection Modal */}
+                    {isLanguageModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 relative">
+                      <button
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                      onClick={() => setIsLanguageModalOpen(false)}
+                      >
+                      ✕
+                      </button>
+                      <h2 className="text-lg font-semibold mb-4 text-center text-indigo-700">भाषा चुनें</h2>
+                      <div className="flex flex-col gap-3">
+                      <Button
+                        variant="outline"
+                        className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                        onClick={() => setPresentLanguageHandler('English')}
+                      >
+                        English
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                        onClick={() => setPresentLanguageHandler('Hindi')}
+                      >
+                        हिंदी
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700 hover:from-blue-100 hover:to-indigo-100"
+                        onClick={() => setPresentLanguageHandler('Telugu')}
+                      >
+                        తెలుగు
+                      </Button>
+                      </div>
+                    </div>
+                    </div>
+                    )}
+                </motion.div>
               </motion.div>
             </CardContent>
           </Card>
         </motion.div>
+
+
 
         <motion.div 
           className="md:col-span-2"

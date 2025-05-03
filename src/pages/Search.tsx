@@ -58,7 +58,7 @@ const Search = () => {
         id: 'financial-simulation',
         title: 'वित्तीय जीवन सिमुलेशन',
         translation: 'Financial Life Simulation',
-        type: 'game',
+        type: 'game' as SearchResultType,
         icon: <Gamepad className="h-5 w-5" />,
         color: 'from-primary to-accent'
       },
@@ -66,7 +66,7 @@ const Search = () => {
         id: 'fraud-detector',
         title: 'धोखा डिटेक्टर',
         translation: 'Fraud Detector',
-        type: 'game',
+        type: 'game' as SearchResultType,
         icon: <Gamepad className="h-5 w-5" />,
         color: 'from-red-500 to-orange-500'
       }
@@ -81,7 +81,7 @@ const Search = () => {
         id: 'savings-group',
         title: 'बचत समूह',
         translation: 'Savings Group',
-        type: 'community',
+        type: 'community' as SearchResultType,
         icon: <Users className="h-5 w-5" />,
         color: 'from-green-500 to-emerald-400'
       },
@@ -89,7 +89,7 @@ const Search = () => {
         id: 'investment-club',
         title: 'निवेश क्लब',
         translation: 'Investment Club',
-        type: 'community',
+        type: 'community' as SearchResultType,
         icon: <Users className="h-5 w-5" />,
         color: 'from-blue-500 to-cyan-400'
       }

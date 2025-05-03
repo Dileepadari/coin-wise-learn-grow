@@ -267,7 +267,7 @@ export default function ReelCard({
       </div>
       
       <div className="absolute left-0 right-0 bottom-4 flex items-center justify-center gap-3 z-20">
-        <Link to={`/category/${reel.category}`}>
+        <Link to={`/learn/chapter/${reel.category}`}>
           <span className="text-base font-bold rounded-full px-4 py-1 bg-holi-white/60 text-white border-2 border-holi-pink shadow">{getCategoryEmoji(reel.category)} {reel.category.toUpperCase()}</span>
         </Link>
       </div>

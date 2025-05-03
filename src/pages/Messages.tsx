@@ -1,11 +1,12 @@
 
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Layout from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Search, Send, Shield } from "lucide-react";
+import { Search, Send, Shield, ArrowLeft } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +29,7 @@ interface Contact {
 }
 
 export default function Messages() {
+  const navigate = useNavigate();
   const { user } = useAppContext();
   const [contacts, setContacts] = useState<Contact[]>([
     {
@@ -145,6 +147,13 @@ export default function Messages() {
     }).format(date);
   };
 
+
+  const handleback = () => {
+    setSelectedContact(null);
+    setNewMessage("");
+    navigate(-1);
+  };
+
   const selectContact = (contact: Contact) => {
     setSelectedContact(contact);
     // Mark messages as read
@@ -169,6 +178,13 @@ export default function Messages() {
         {/* Contacts sidebar */}
         <div className={`w-full ${selectedContact ? "hidden md:block" : ""} md:w-1/3 border-r`}>
           <div className="p-4 border-b">
+          <div className="relative flex items-center justify-between mb-4">
+
+            <Button variant="ghost" size="icon" onClick={handleback}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold text-primary">Messages</h1>
+            </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
@@ -183,7 +199,7 @@ export default function Messages() {
             {filteredContacts.map(contact => (
               <div
                 key={contact.id}
-                className={`flex items-center p-4 hover:bg-accent cursor-pointer ${
+                className={`flex items-center p-4 hover:bg-red-50 cursor-pointer ${
                   selectedContact?.id === contact.id ? "bg-accent" : ""
                 }`}
                 onClick={() => selectContact(contact)}
@@ -242,7 +258,7 @@ export default function Messages() {
                   className="md:hidden mr-2"
                   onClick={() => setSelectedContact(null)}
                 >
-                  Back
+                  <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-primary/20 text-primary">
