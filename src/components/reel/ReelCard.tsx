@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
-import { ThumbsUp, Bookmark, Volume2, VolumeX, BrainCircuit } from "lucide-react";
+import { ThumbsUp, Bookmark, Volume2, VolumeX, BrainCircuit, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Reel } from "@/types";
 import { Link } from "react-router-dom";
@@ -27,10 +27,12 @@ export default function ReelCard({
   withVideo = false
 }: ReelCardProps) {
   const { user, likeContent, saveContent } = useAppContext();
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast: uiToast } = useToast();
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const reelCardRef = useRef<HTMLDivElement | null>(null);
 
   const isLiked = user.likedContent.includes(reel.id);
   const isSaved = user.savedContent.includes(reel.id);
@@ -54,6 +56,18 @@ export default function ReelCard({
       videoRef.current.muted = !videoRef.current.muted;
   };
 
+  const togglePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   const getCategoryEmoji = (category: string) => {
     switch (category) {
       case 'savings': return '💰';
@@ -64,6 +78,35 @@ export default function ReelCard({
       default: return '🌞';
     }
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (videoRef.current) {
+          if (entry.isIntersecting) {
+            if (isActive) {
+              videoRef.current.play();
+              setIsPlaying(true);
+            }
+          } else {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
+        }
+      },
+      { threshold: 0.5 } // Adjust threshold as needed
+    );
+
+    if (reelCardRef.current) {
+      observer.observe(reelCardRef.current);
+    }
+
+    return () => {
+      if (reelCardRef.current) {
+        observer.unobserve(reelCardRef.current);
+      }
+    };
+  }, [isActive]);
   
   const getCelebrityName = (category: string) => {
     return getCelebrityGuide(category).name;
@@ -87,17 +130,28 @@ export default function ReelCard({
         title: "Filmi Sitaron se Poocho",
         description: summary,
         duration: 6000,
+        style: {
+          background: "linear-gradient(to right, #FF7E5F, #FF6F20)",
+          color: "#fff",
+          borderRadius: "8px",
+          padding: "10px 20px",
+          marginTop: "20vh",
+          fontSize: "16px",
+          width: "90%",
+          margin: "20vh auto",
+
+        }
       });
       if (onCelebrate) onCelebrate("Filmi gyaan, 5 coin turant!");
     }, 1300);
   };
 
   return (
-    <div 
+    <div  ref={reelCardRef} 
       className={cn(`relative w-full max-w-[430px] mx-auto ${height} rounded-3xl shadow-2xl overflow-hidden border-4 border-white`,
         accentColor,
         isActive ? "z-10" : "opacity-70")}
-      style={{ boxShadow: "0px 0px 25px 0px rgba(253,230,138,0.8)", marginBottom: "100px", height: "80vh" }}
+      style={{ boxShadow: "0px 0px 25px 0px rgba(253,230,138,0.8)", marginBottom: "10vh", height: "80vh" }}
     >
       <div className="absolute top-0 left-0 right-0 px-6 py-5 z-20 bg-gradient-to-b from-black/80 to-transparent flex items-center justify-between">
         <span className="text-3xl font-extrabold tracking-wider text-white mr-2">
@@ -108,20 +162,38 @@ export default function ReelCard({
       
       <div className="h-full w-full relative">
         {withVideo && reel.videoUrl ? (
-          <video
-            ref={videoRef}
-            src={reel.videoUrl}
-            className="w-full h-full object-cover absolute inset-0"
-            muted={isMuted}
-            autoPlay={isActive}
-            loop
-            playsInline
-          />
+          <div className="w-full h-full relative">
+            <video
+              ref={videoRef}
+              src={reel.videoUrl}
+              className="w-full h-full object-cover absolute inset-0"
+              muted={isMuted}
+              autoPlay={isActive}
+              loop
+              playsInline
+            />
+            <div
+              className={cn(
+          "absolute inset-0 flex items-center justify-center transition-opacity",
+          isPlaying ? "opacity-0" : "opacity-100 hover:opacity-100"
+              )}
+              onClick={togglePlay}
+            >
+              <Button
+          size="icon"
+          className="rounded-full shadow-lg hover:scale-110 transition w-16 h-16 bg-black/50"
+              >
+          {isPlaying ? (
+            <Pause className="h-8 w-8 text-white" />
+          ) : (
+            <Play className="h-8 w-8 text-white" />
+          )}
+              </Button>
+            </div>
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-coin-purple/20 to-coin-pink/20">
-            <span className="text-[6rem]">
-              {getCategoryEmoji(reel.category)}
-            </span>
+            <span className="text-[6rem]">{getCategoryEmoji(reel.category)}</span>
           </div>
         )}
         
@@ -177,6 +249,13 @@ export default function ReelCard({
         >
           {isMuted ? <VolumeX className="h-6 w-6 text-white" /> : <Volume2 className="h-6 w-6 text-white" />}
         </Button>
+        {/* <Button
+          size="icon"
+          className="rounded-full shadow-lg hover:scale-110 transition w-12 h-12 bg-black/30"
+          onClick={togglePlay}
+        >
+          {isPlaying ? <Pause className="h-6 w-6 text-white" /> : <Play className="h-6 w-6 text-white" />}
+        </Button> */}
       </div>
       
       <div className="absolute left-0 right-0 bottom-4 flex items-center justify-center gap-3 z-20">

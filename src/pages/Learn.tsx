@@ -18,6 +18,7 @@ const Learn = () => {
     {
       id: 1,
       title: "बचत की आदतें",
+      category: "savings",
       translation: "Saving Habits",
       description: "अपनी दैनिक आय से बचत करने के तरीके जानें और आपातकालीन फंड बनाएं।",
       descTranslation: "Learn ways to save from your daily income and create emergency funds.",
@@ -29,6 +30,7 @@ const Learn = () => {
     {
       id: 2,
       title: "बजट बनाना",
+      category: "budgeting",
       translation: "Creating a Budget",
       description: "अपने आय और खर्च का ट्रैक रखने के लिए सरल बजट बनाना सीखें।",
       descTranslation: "Learn to create simple budgets to track your income and expenses.",
@@ -39,6 +41,7 @@ const Learn = () => {
     },
     {
       id: 3,
+      category: "loans",
       title: "उधार लेने के नियम",
       translation: "Rules of Borrowing",
       description: "जिम्मेदारी से कर्ज लेना और EMI के बारे में महत्वपूर्ण जानकारी।",
@@ -51,6 +54,7 @@ const Learn = () => {
     {
       id: 4,
       title: "डिजिटल वित्तीय सुरक्षा",
+      category: "fraud",
       translation: "Digital Financial Security",
       description: "ऑनलाइन लेनदेन में धोखाधड़ी से बचने के तरीके और सुरक्षा युक्तियाँ।",
       descTranslation: "Ways to avoid fraud in online transactions and security tips.",
@@ -62,6 +66,7 @@ const Learn = () => {
     {
       id: 5,
       title: "बीमा की बुनियादी बातें",
+      category: "insurance",
       translation: "Insurance Basics",
       description: "विभिन्न प्रकार के बीमा और आपके लिए सही बीमा चुनने का तरीका।",
       descTranslation: "Different types of insurance and how to choose the right one for you.",
@@ -99,7 +104,7 @@ const Learn = () => {
   const handleStartChapter = (chapterId: number) => {
     if (chapters.find(c => c.id === chapterId)?.unlocked) {
       toast.success(`अध्याय शुरू हो रहा है! (Chapter is loading!)`);
-      navigate(`/learn/chapter/${chapterId}`);
+      navigate(`/learn/chapter/${chapters.find(c => c.id === chapterId)?.category}`);
     } else {
       toast.error("यह अध्याय अभी लॉक है। पहले पिछले अध्याय पूरा करें। (This chapter is locked. Complete previous chapters first.)");
     }

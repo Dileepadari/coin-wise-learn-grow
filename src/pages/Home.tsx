@@ -12,7 +12,6 @@ import ModuleSuggestion from "@/components/learning/ModuleSuggestion";
 import { toast } from "sonner";
 import { Reel } from "@/types";
 import { motion } from "framer-motion";
-import { Character } from "@/components/ui/character-dialog";
 import { getMotivationalPhrase } from "@/utils/translate";
 import { getCelebrityGuide } from "@/lib/utils";
 
@@ -22,7 +21,10 @@ export default function Home() {
   const [showPrompt, setShowPrompt] = useState<'quiz' | 'game' | 'module' | null>(null);
   const [currentReel, setCurrentReel] = useState<Reel | null>(null);
   const [reelViewCount, setReelViewCount] = useState(0);
-  const [showCharacter, setShowCharacter] = useState(false);
+  const [floatingSuggestion, setFloatingSuggestion] = useState<{
+    type: 'quiz' | 'game' | 'module';
+    celebrity: { name: string; avatar: string };
+  } | null>(null);
   const reelsContainerRef = useRef<HTMLDivElement | null>(null);
   const isMobile = useIsMobile();
 
@@ -30,20 +32,20 @@ export default function Home() {
     setCurrentReel(reels[currentReelIndex]);
     setReelViewCount((prev) => prev + 1);
 
-    if (reelViewCount > 0 && reelViewCount % 2 === 0) {
+    if (reelViewCount > 0 && reelViewCount % 5 === 0) { // Reduced frequency
       const promptType = ['quiz', 'game', 'module'][Math.floor(Math.random() * 3)] as 'quiz' | 'game' | 'module';
-      setTimeout(() => setShowPrompt(promptType), 1000);
-    } else {
-      setShowPrompt(null);
-    }
+      const category = currentReel?.category || 'basics';
+      const celebrity = getCelebrityGuide(category);
 
-    if (Math.random() > 0.7) {
-      setTimeout(() => {
-        setShowCharacter(true);
-        setTimeout(() => setShowCharacter(false), 5000);
-      }, 2000);
+      setFloatingSuggestion({
+        type: promptType,
+        celebrity: {
+          name: celebrity.name,
+          avatar: celebrity.avatar || '🎬',
+        },
+      });
     } else {
-      setShowCharacter(false);
+      setFloatingSuggestion(null);
     }
   }, [currentReelIndex]);
 
@@ -54,12 +56,12 @@ export default function Home() {
     const scrollY = reelsContainerRef.current.scrollTop;
     const height = reelsContainerRef.current.clientHeight;
     for (let i = 0; i < children.length; i++) {
-      if ((children[i] as HTMLElement).offsetTop <= scrollY + height/2) {
+      if ((children[i] as HTMLElement).offsetTop <= scrollY + height / 2) {
         newIndex = i;
       }
     }
     setCurrentReelIndex(newIndex);
-  }
+  };
 
   const handlePreviousReel = () => {
     setCurrentReelIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -81,29 +83,38 @@ export default function Home() {
 
   const handleDismissPrompt = () => setShowPrompt(null);
 
-  const handleCelebrate = (message: string) => {
-    toast(message, {
-      icon: "🎉",
-      className: "bg-marigold text-white font-bold text-lg",
-    });
-  };
-
-  const getCharacterForCategory = () => {
-    const category = currentReel?.category || 'basics';
-    const celebrity = getCelebrityGuide(category);
-    
-    return {
-      name: celebrity.name,
-      avatar: celebrity.avatar || '👑',
-      dialog: getMotivationalPhrase(category, language),
-      emotion: category === 'investment' || category === 'fraud' ? 'thinking' as const : 'happy' as const
-    };
+  const handleFloatingSuggestionClick = () => {
+    if (floatingSuggestion) {
+      setShowPrompt(floatingSuggestion.type);
+      setFloatingSuggestion(null); // Hide the floating suggestion after clicking
+    }
   };
 
   return (
     <Layout>
       <div className="relative h-full">
-        <div 
+        {/* Floating Suggestion Widget */}
+        {floatingSuggestion && (
+          <motion.div
+            className="fixed top-4 right-4 z-50 flex items-center gap-4 p-4 bg-white shadow-lg rounded-full cursor-pointer"
+            onClick={handleFloatingSuggestionClick}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+          >
+            <img
+              src={floatingSuggestion.celebrity.avatar}
+              alt={floatingSuggestion.celebrity.name}
+              className="w-12 h-12 rounded-full"
+            />
+            <div>
+              <p className="font-bold">{floatingSuggestion.celebrity.name}</p>
+              <p>suggests you try a {floatingSuggestion.type}!</p>
+            </div>
+          </motion.div>
+        )}
+
+        <div
           className="h-[calc(100vh-5rem)] md:h-[calc(100vh-10rem)] overflow-y-scroll snap-y snap-mandatory no-scrollbar"
           ref={reelsContainerRef}
           onScroll={handleScroll}
@@ -114,10 +125,22 @@ export default function Home() {
               className="snap-start snap-always h-[calc(100vh-5rem)] flex items-center justify-center"
               style={{ minHeight: "500px" }}
             >
-              <ReelCard 
+              <ReelCard
                 reel={reel}
                 height="h-[90vh] md:h-[90vh]"
-                onCelebrate={handleCelebrate}
+                onCelebrate={(message) => toast(message, {
+                  icon: "🎉",
+                  position: "top-center", // Set the position to top center
+                    style: {
+                    animation: "fadeIn 0.5s ease-in, fadeOut 0.5s ease-out 2.5s", // Add fade-in and fade-out animation
+                    background: "linear-gradient(to right, #FF7E5F, #FF6B6B)", // Gradient background
+                    color: "#fff", // White text color
+                    borderRadius: "8px", // Rounded corners
+                    padding: "10px 20px", // Padding
+                    fontSize: "16px", // Font size
+                    fontWeight: "bold", // Bold text  
+                  },
+                })}
                 isActive={index === currentReelIndex}
                 accentColor={index % 2 === 0 ? "bg-gradient-to-br from-coin-orange to-coin-purple" : "bg-gradient-to-bl from-holi-yellow to-coin-pink"}
                 withVideo
@@ -125,12 +148,12 @@ export default function Home() {
             </div>
           ))}
         </div>
-        
+
         {!isMobile && (
           <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
             <motion.div whileTap={{ scale: 0.95 }}>
               <Button
-                variant="secondary" 
+                variant="secondary"
                 size="icon"
                 className="rounded-full bg-holi-yellow text-coin-dark shadow-xl border-2 border-white"
                 onClick={handlePreviousReel}
@@ -141,7 +164,7 @@ export default function Home() {
             </motion.div>
             <motion.div whileTap={{ scale: 0.95 }}>
               <Button
-                variant="secondary" 
+                variant="secondary"
                 size="icon"
                 className="rounded-full bg-coin-pink text-coin-dark shadow-xl border-2 border-white"
                 onClick={handleNextReel}
@@ -152,13 +175,7 @@ export default function Home() {
             </motion.div>
           </div>
         )}
-{/*         
-        <div className="absolute top-4 right-4">
-          <div className="text-sm font-bold text-holi-pink bg-white/90 px-5 py-2 rounded-full shadow ring-2 ring-marigold">
-            {currentReelIndex + 1}/{reels.length}
-          </div>
-        </div> */}
-        
+
         {showPrompt === 'quiz' && (
           <QuizPrompt onDismiss={handleDismissPrompt} category={currentReel?.category || 'basics'} />
         )}

@@ -18,38 +18,38 @@ export function getCelebrityGuide(category: string): Celebrity {
     case 'savings': 
       return { 
         name: 'Aishwarya Rai', 
-        image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=100&auto=format&fit=crop',
+        image: 'https://static.spotboye.com/uploads/Nandini_2024-8-3-6-4-54_thumbnail.jpg',
         quote: 'Khel khel mein bachat seekho!',
-        avatar: '💎'
+        avatar: 'https://static.spotboye.com/uploads/Nandini_2024-8-3-6-4-54_thumbnail.jpg'
       };
     case 'investment': 
       return { 
         name: 'Amitabh Bachchan', 
-        image: 'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=100&auto=format&fit=crop',
+        image: 'https://www.thestatesman.com/wp-content/uploads/2024/11/amitabh-bachchan-kaun-banega-crorepati-26-11-victims-mumbai-attack-kbc-jpg.webp',
         quote: 'Jab risk leta hai, tab paise badhta hai.',
-        avatar: '🎭'
+        avatar: 'https://www.thestatesman.com/wp-content/uploads/2024/11/amitabh-bachchan-kaun-banega-crorepati-26-11-victims-mumbai-attack-kbc-jpg.webp'
       };
     case 'fraud': 
       return { 
         name: 'Akshay Kumar', 
-        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=100&auto=format&fit=crop',
+        image: 'https://scontent.fmaa8-1.fna.fbcdn.net/v/t39.30808-6/444769833_1010145377148380_7285476419036918253_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=zvbXtkssQBoQ7kNvwGQVjtn&_nc_oc=AdlJtouzlz9TnNG_v4ZwQS8uw9gspAWVyfuR4ZlsPrmmcuRK3ZYI18j72iNYQwhdDgQ&_nc_zt=23&_nc_ht=scontent.fmaa8-1.fna&_nc_gid=fiKAjsGhN--2j7Z_xavBOw&oh=00_AfEFKjA2C3WElWulRG9IA6mI1wDXmu0rHZaxoYDwkB15gg&oe=681B7B2A',
         quote: 'Savdhan rahiye, satark rahiye!',
-        avatar: '🛡️'
+        avatar: 'https://scontent.fmaa8-1.fna.fbcdn.net/v/t39.30808-6/444769833_1010145377148380_7285476419036918253_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=zvbXtkssQBoQ7kNvwGQVjtn&_nc_oc=AdlJtouzlz9TnNG_v4ZwQS8uw9gspAWVyfuR4ZlsPrmmcuRK3ZYI18j72iNYQwhdDgQ&_nc_zt=23&_nc_ht=scontent.fmaa8-1.fna&_nc_gid=fiKAjsGhN--2j7Z_xavBOw&oh=00_AfEFKjA2C3WElWulRG9IA6mI1wDXmu0rHZaxoYDwkB15gg&oe=681B7B2A'
       };
     case 'borrowing': 
       return { 
         name: 'Deepika Padukone', 
-        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop',
+        image: 'https://i.redd.it/deepika-padukone-changed-haircolor-style-recently-with-v0-tq6p624dw13c1.jpg?width=1112&format=pjpg&auto=webp&s=ee9ec5c60ef3473799b27d21d59cb2e9e2904081',
         quote: 'Karz lena hai to samajhdari se!',
-        avatar: '💫'
+        avatar: 'https://i.redd.it/deepika-padukone-changed-haircolor-style-recently-with-v0-tq6p624dw13c1.jpg?width=1112&format=pjpg&auto=webp&s=ee9ec5c60ef3473799b27d21d59cb2e9e2904081'
       };
     case 'basics': 
     default:
       return { 
         name: 'Shahrukh Khan', 
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop',
+        image: 'https://pbs.twimg.com/profile_images/1577520405333831680/WZzaLU4q_400x400.jpg',
         quote: 'Khelo, seekho, aur jeeto!',
-        avatar: '👑'
+        avatar: 'https://pbs.twimg.com/profile_images/1577520405333831680/WZzaLU4q_400x400.jpg'
       };
   }
 }
