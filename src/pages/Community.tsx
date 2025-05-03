@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
-  Heart, MessageCircle, Share, Bookmark, Plus, Users, MoreVertical, Search
+  Heart, MessageCircle, Share, Bookmark, Plus, Users, MoreVertical, Search,
+  ArrowLeft
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -141,6 +142,10 @@ const Community = () => {
   const handleSearch = () => {
     navigate('/search');
   };
+
+  const handleback = () => {
+    navigate(-1);
+  };
   
   const getCategoryEmoji = (category: string) => {
     switch(category) {
@@ -156,6 +161,9 @@ const Community = () => {
     <Layout>
       <div className="container px-4 pt-4 pb-20 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" size="icon" onClick={handleback}>
+              <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h1 className="text-2xl font-bold">समुदाय (Community)</h1>
           <div className="flex gap-2">
             <Button variant="ghost" size="icon" onClick={handleSearch}>

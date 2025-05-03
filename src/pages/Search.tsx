@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search as SearchIcon, Book, ArrowRight, Gamepad, Users } from 'lucide-react';
+import { Search as SearchIcon, Book, ArrowRight, Gamepad, Users, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { modules } from '@/data/mockData';
@@ -126,6 +126,10 @@ const Search = () => {
         break;
     }
   };
+
+  const handleback = () => {
+    navigate(-1);
+  };
   
   const getCategoryEmoji = (category?: string) => {
     if (!category) return '📚';
@@ -154,6 +158,12 @@ const Search = () => {
   return (
     <Layout>
       <div className="container px-4 pt-2 pb-20 max-w-lg mx-auto">
+      <div className="relative flex items-center justify-between mb-4">
+        <Button variant="ghost" size="icon" onClick={handleback}>
+              <ArrowLeft className="h-5 w-5" />
+          </Button>
+        <h1 className="text-2xl font-bold text-primary">खोजें (Search)</h1>
+        </div>
         <div className="relative">
           <SearchIcon className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
           <Input

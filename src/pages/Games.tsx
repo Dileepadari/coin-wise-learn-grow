@@ -3,7 +3,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Target, PiggyBank, ShieldAlert, TrendingUp } from 'lucide-react';
+import { ArrowRight, Target, PiggyBank, ShieldAlert, TrendingUp, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 
@@ -96,12 +96,19 @@ const Games = () => {
     toast.success(`बधाई हो! ${reward} अंक मिले! (Congratulations! ${reward} points earned!)`);
   };
 
+  const handleback = () => {
+    navigate(-1);
+  };
+
   return (
     <Layout>
       
     <div className="pt-4 pb-24 px-4 bg-gradient-to-br from-background-purple via-background-soft to-background-yellow min-h-screen">
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-6">
+        <Button variant="ghost" size="icon" onClick={handleback}>
+              <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h1 className="text-2xl font-bold text-primary">खेल (Games)</h1>
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary px-3 py-1">
             <GamepadIcon className="w-4 h-4 mr-1" />

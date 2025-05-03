@@ -67,7 +67,7 @@ const App = () => (
             <Route path="/scam-game" element={<ScamDetectionGame />} />
             <Route path="/financial-sim" element={<FinancialSimulation />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/community/create-post" element={<CreatePost />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/notifications" element={<Notifications />} />

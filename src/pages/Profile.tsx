@@ -179,137 +179,150 @@ const Profile = () => {
           variants={fadeInUp}
           custom={1}
         >
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
-                <AnimatedIcon>
-                  <Sparkle className="h-5 w-5 mr-2 text-blue-500" />
-                </AnimatedIcon>
-                प्रगति और अंक
+              <AnimatedIcon>
+                <Sparkle className="h-5 w-5 mr-2 text-blue-500" />
+              </AnimatedIcon>
+              बैज और अंक
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 mb-4">
-                <motion.div 
-                  className="flex flex-col items-center justify-center text-center"
-                  whileHover={{ scale: 1.05 }}
+              <motion.div 
+                className="flex flex-col items-center justify-center text-center"
+                variants={bounceUpDown}
                 >
-                  <ProgressCircle 
-                    progress={xpProgress} 
-                    size={80} 
-                    label="XP" 
-                    className="mb-2"
-                    strokeWidth={10}
-                  />
-                  <Button 
-                    size="sm" 
-                    className="w-full mt-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
-                    onClick={handleLevelUp}
-                    disabled={xpProgress < 100}
-                  >
-                    <ArrowUp className="h-3.5 w-3.5 mr-1" />
-                    लेवल अप
-                  </Button>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {user.xp}/{xpForNextLevel} XP
-                  </p>
-                </motion.div>
-                
                 <motion.div 
-                  className="flex flex-col items-center justify-center text-center"
-                  variants={coinFlip}
+                  className="h-20 w-20 rounded-full border-2 border-primary/20 bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-2"
+                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
                 >
-                  <motion.div 
-                    className="h-20 w-20 rounded-full border-2 border-primary/20 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center mb-2"
-                    whileHover={{ rotate: 360, transition: { duration: 0.7 } }}
-                  >
-                    <motion.div className="flex flex-col">
-                      <Trophy className="h-5 w-5 text-amber-500 mx-auto" />
-                      <span className="text-lg font-bold">{user.points}</span>
-                    </motion.div>
+                  <motion.div className="flex flex-col">
+                  <BadgeIcon className="h-5 w-5 text-purple-500 mx-auto" />
+                  <span className="text-lg font-bold">{userBadges.length}</span>
                   </motion.div>
-                  <p className="text-xs">कुल अंक</p>
                 </motion.div>
-                
+                <p className="text-xs">अर्जित बैज</p>
+                </motion.div>
+              <motion.div 
+                className="flex flex-col items-center justify-center text-center"
+                variants={coinFlip}
+              >
                 <motion.div 
-                  className="flex flex-col items-center justify-center text-center"
-                  variants={bounceUpDown}
+                className="h-20 w-20 rounded-full border-2 border-primary/20 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center mb-2"
+                whileHover={{ rotate: 360, transition: { duration: 0.7 } }}
                 >
-                  <motion.div 
-                    className="h-20 w-20 rounded-full border-2 border-primary/20 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center mb-2"
-                    whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                  >
-                    <motion.div className="flex flex-col">
-                      <Rupee className="h-5 w-5 text-green-500 mx-auto" />
-                      <span className="text-lg font-bold">{user.coins}</span>
-                    </motion.div>
-                  </motion.div>
-                  <p className="text-xs">सिक्के</p>
+                <motion.div className="flex flex-col">
+                  <Trophy className="h-5 w-5 text-amber-500 mx-auto" />
+                  <span className="text-lg font-bold">{user.points}</span>
                 </motion.div>
+                </motion.div>
+                <p className="text-xs">कुल अंक</p>
+              </motion.div>
+              
+              <motion.div 
+                className="flex flex-col items-center justify-center text-center"
+                variants={bounceUpDown}
+              >
+                <motion.div 
+                className="h-20 w-20 rounded-full border-2 border-primary/20 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center mb-2"
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                >
+                <motion.div className="flex flex-col">
+                  <Rupee className="h-5 w-5 text-green-500 mx-auto" />
+                  <span className="text-lg font-bold">{user.coins}</span>
+                </motion.div>
+                </motion.div>
+                <p className="text-xs">सिक्के</p>
+              </motion.div>
+
               </div>
               
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">दैनिक स्ट्रीक</span>
-                  <motion.div whileHover={{ scale: 1.1 }}>
-                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                      <span className="mr-1">🔥</span> {user.streak || 0} दिन
-                    </Badge>
-                  </motion.div>
-                </div>
-                
-                <motion.div className="flex justify-between gap-1 mb-3">
-                  {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-                    <motion.div 
-                      key={day}
-                      className={`h-2 flex-1 rounded-full ${
-                        (user.streak || 0) >= day ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-gray-200'
-                      }`}
-                      initial={{ scaleY: 0 }}
-                      animate={{ scaleY: 1 }}
-                      transition={{ delay: day * 0.1 }}
-                    />
-                  ))}
-                </motion.div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">मॉड्यूल पूरे किए</span>
-                  <span className="text-sm font-medium">{user.completedModules?.length || 0}/12</span>
-                </div>
-                <motion.div 
-                  className="h-2 bg-gray-200 rounded-full overflow-hidden"
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <motion.div 
-                    className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(user.completedModules?.length || 0) * 100 / 12}%` }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                  />
-                </motion.div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">गेम्स खेले</span>
-                  <span className="text-sm font-medium">{user.completedGames?.length || 0}/4</span>
-                </div>
-                <motion.div 
-                  className="h-2 bg-gray-200 rounded-full overflow-hidden"
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <motion.div 
-                    className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(user.completedGames?.length || 0) * 100 / 4}%` }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                  />
+              <div className="flex justify-between items-center">
+                <span className="text-sm">दैनिक स्ट्रीक</span>
+                <motion.div whileHover={{ scale: 1.1 }}>
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                  <span className="mr-1">🔥</span> {user.streak || 0} दिन
+                </Badge>
                 </motion.div>
               </div>
+              
+              <motion.div className="flex justify-between gap-1 mb-3">
+                {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                <motion.div 
+                  key={day}
+                  className={`h-2 flex-1 rounded-full ${
+                  (user.streak || 0) >= day ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-gray-200'
+                  }`}
+                  initial={{ scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
+                  transition={{ delay: day * 0.1 }}
+                />
+                ))}
+              </motion.div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-sm">मॉड्यूल पूरे किए</span>
+                <span className="text-sm font-medium">{user.completedModules?.length || 0}/12</span>
+              </div>
+              <motion.div 
+                className="h-2 bg-gray-200 rounded-full overflow-hidden"
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div 
+                className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${(user.completedModules?.length || 0) * 100 / 12}%` }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                />
+              </motion.div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-sm">गेम्स खेले</span>
+                <span className="text-sm font-medium">{user.completedGames?.length || 0}/4</span>
+              </div>
+              <motion.div 
+                className="h-2 bg-gray-200 rounded-full overflow-hidden"
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div 
+                className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${(user.completedGames?.length || 0) * 100 / 4}%` }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                />
+              </motion.div>
+
+              <div className="flex flex-col items-center justify-center text-center mt-4">
+                <ProgressCircle 
+                progress={xpProgress} 
+                size={80} 
+                label="XP" 
+                className="mb-2"
+                strokeWidth={10}
+                />
+                <Button 
+                size="sm" 
+                className="w-full mt-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                onClick={handleLevelUp}
+                disabled={xpProgress < 100}
+                >
+                <ArrowUp className="h-3.5 w-3.5 mr-1" />
+                लेवल अप
+                </Button>
+                <p className="text-xs text-muted-foreground mt-1">
+                {user.xp}/{xpForNextLevel} XP
+                </p>
+              </div>
+              </div>
             </CardContent>
-          </Card>
+            </Card>
         </motion.div>
       </div>
       

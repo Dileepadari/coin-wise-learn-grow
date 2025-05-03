@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Book, ArrowRight, CheckCircle, Lock, Star, Award } from 'lucide-react';
+import { Book, ArrowRight, CheckCircle, Lock, Star, Award, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '../components/ui/progress';
 import { toast } from 'sonner';
@@ -111,11 +111,18 @@ const Learn = () => {
     setXp(prev => prev + 5);
   };
 
+  const handleback = () => {
+    navigate(-1);
+  };
+
   return (
     <Layout>
     <div className="pt-4 pb-24 px-4 bg-gradient-to-br from-background-soft via-background-purple to-background-yellow min-h-screen">
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" size="icon" onClick={handleback}>
+              <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             सीखें (Learn)
           </h1>
