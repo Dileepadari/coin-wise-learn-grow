@@ -12,7 +12,7 @@ import {
   Star, BadgePlus, BadgeCheck, ArrowUp,
   Calendar, Clock, History, Gift, Users,
   Wallet, BarChart2, Share2, FileText,
-  Sparkle, PartyPopper, Target, Smile, Rocket
+  Sparkle, PartyPopper, Target, Smile, Rocket, Settings, Lock, Globe, HelpCircle, LogOut,
 } from "lucide-react";
 import { LevelUp, GamepadIcon, BadgeIcon, Rupee, AnimatedIcon, Confetti } from "@/components/ui/custom-icons";
 import { useAppContext } from '@/context/AppContext';
@@ -478,6 +478,112 @@ const Profile = () => {
           </CardFooter>
         </Card>
       </motion.div>
+
+      <motion.div 
+    className="space-y-4 mt-6"
+    variants={fadeInUp}
+  >
+    <Card className="bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200">
+      <CardHeader className="pb-2">
+      <CardTitle className="text-lg flex items-center">
+        <Settings className="h-5 w-5 mr-2 text-gray-500" />
+        सेटिंग्स
+      </CardTitle>
+      </CardHeader>
+      <CardContent>
+      <div className="space-y-3">
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => navigate('/liked-content')}
+        >
+        <div className="flex items-center">
+          <Heart className="h-4 w-4 mr-2 text-rose-500" />
+          पसंदीदा सामग्री
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => navigate('/saved-content')}
+        >
+        <div className="flex items-center">
+          <Bookmark className="h-4 w-4 mr-2 text-blue-500" />
+          सहेजी गई सामग्री
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => navigate('/change-password')}
+        >
+        <div className="flex items-center">
+          <Lock className="h-4 w-4 mr-2 text-yellow-500" />
+          पासवर्ड बदलें
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => setIsLanguageModalOpen(true)}
+        >
+        <div className="flex items-center">
+          <Globe className="h-4 w-4 mr-2 text-blue-500" />
+          भाषा बदलें
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => navigate('/faq')}
+        >
+        <div className="flex items-center">
+          <HelpCircle className="h-4 w-4 mr-2 text-green-500" />
+          FAQ और सहायता
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => navigate('/terms')}
+        >
+        <div className="flex items-center">
+          <FileText className="h-4 w-4 mr-2 text-purple-500" />
+          नियम और शर्तें
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+        <Button 
+        variant="ghost" 
+        size="sm" 
+        className="w-full justify-between"
+        onClick={() => {
+          // Add logout logic here
+          toast.success('आप लॉगआउट हो गए हैं!');
+          navigate('/login');
+        }}
+        >
+        <div className="flex items-center">
+          <LogOut className="h-4 w-4 mr-2 text-red-500" />
+          लॉगआउट
+        </div>
+        <ArrowUp className="h-4 w-4 rotate-90 text-muted-foreground" />
+        </Button>
+      </div>
+      </CardContent>
+    </Card>
+  </motion.div>
     </>
   );
 

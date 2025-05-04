@@ -64,8 +64,8 @@ const App = () => (
             <Route path="/learn" element={<Learn />} />
             <Route path="/learn/chapter/:category" element={<ChapterView />} />
             <Route path="/learn/module/:moduleId" element={<ModuleView />} />
-            <Route path="/scam-game" element={<ScamDetectionGame />} />
-            <Route path="/financial-sim" element={<FinancialSimulation />} />
+            <Route path="/games/scam-game" element={<ScamDetectionGame />} />
+            <Route path="/games/financial-simulation" element={<FinancialSimulation />} />
             <Route path="/community" element={<Community />} />
             <Route path="/community/create-post" element={<CreatePost />} />
             <Route path="/messages" element={<Messages />} />

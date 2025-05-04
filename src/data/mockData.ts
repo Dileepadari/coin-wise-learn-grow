@@ -92,7 +92,6 @@ export const badges: Badge[] = [
     category: "savings"
   }
 ];
-
 export const modules: LearningModule[] = [
   {
     id: "module1",
@@ -101,8 +100,23 @@ export const modules: LearningModule[] = [
     category: "savings",
     difficulty: "beginner",
     content: [
-      { id: "content1", title: "बचत क्यों जरूरी है?", points: 10, type: "article", content: "बचत के महत्व को समझें।" },
-      { id: "content2", title: "बचत के तरीके", points: 15, type: "article", content: "बचत के विभिन्न तरीकों को जानें।" }
+      { 
+        id: "content1", 
+        title: "बचत क्यों जरूरी है?", 
+        points: 10, 
+        type: "article", 
+        videoUrl: "https://www.youtube.com/embed/iv_5xhorHUI",
+        content: "बचत के महत्व को समझें। बचत न केवल वित्तीय सुरक्षा प्रदान करती है, बल्कि यह आपको अप्रत्याशित खर्चों से निपटने में भी मदद करती है। यह आपके भविष्य को सुरक्षित करने का पहला कदम है। बचत की आदत डालने से आप अपने लक्ष्यों को आसानी से प्राप्त कर सकते हैं। यह आपको आत्मनिर्भर बनाता है और वित्तीय तनाव को कम करता है। बचत के बिना, आप आपातकालीन स्थितियों में फंस सकते हैं। इसलिए, बचत को अपनी प्राथमिकता बनाएं।", 
+        theoryContent: "बचत के महत्व और तरीकों को समझने के लिए इस मॉड्यूल को पढ़ें। यह आपको वित्तीय सुरक्षा और आत्मनिर्भरता प्राप्त करने में मदद करेगा।"
+      },
+      { 
+        id: "content2", 
+        title: "बचत के तरीके", 
+        points: 15, 
+        type: "article", 
+        content: "बचत के विभिन्न तरीकों को जानें। आप अपने खर्चों को ट्रैक करके बचत शुरू कर सकते हैं। बजट बनाना एक प्रभावी तरीका है। अनावश्यक खर्चों को कम करें और अपनी आय का एक हिस्सा बचत के लिए अलग रखें। बचत खाते का उपयोग करें और नियमित रूप से उसमें धन जमा करें। छोटी-छोटी बचतें समय के साथ बड़ी हो सकती हैं।" ,
+        storyContent: "रमेश एक छोटे से गाँव में रहता था। उसकी आय सीमित थी, लेकिन उसने बचत की आदत डाल ली। हर महीने वह अपनी आय का 10% बचत करता था। कुछ सालों बाद, उसने अपनी बचत से एक छोटा व्यवसाय शुरू किया। आज, रमेश एक सफल उद्यमी है। यह सब उसकी बचत की आदत के कारण संभव हुआ।",
+      }
     ],
     quizzes: [
       { 
@@ -112,13 +126,13 @@ export const modules: LearningModule[] = [
         question: "बचत का पहला कदम क्या है?", 
         points: 20, 
         options: ["बजट बनाना", "लक्ष्य तय करना", "खर्च कम करना", "बचत शुरू करना"], 
-        correctAnswer: 3, // Index of "बचत शुरू करना" in the options array
-        explanation: "बचत का पहला कदम बचत शुरू करना है।"
+        correctAnswer: 3, 
+        explanation: "बचत का पहला कदम बचत शुरू करना है। बचत की आदत डालने से आप अपने वित्तीय लक्ष्यों को आसानी से प्राप्त कर सकते हैं।",
       }
     ],
     totalPoints: 100,
     estimatedTime: "30 minutes",
-    thumbnail: "/images/savings.jpg"
+    thumbnail: "https://images.unsplash.com/photo-1556742042-4b7c60bcf9a0?q=80&w=200&auto=format&fit=crop",
   },
   {
     id: "module2",
@@ -127,8 +141,23 @@ export const modules: LearningModule[] = [
     category: "investment",
     difficulty: "beginner",
     content: [
-      { id: "content3", title: "निवेश क्या है?", points: 10, type: "article", content: "निवेश के बारे में जानें।" },
-      { id: "content4", title: "निवेश के फायदे", points: 15, type: "article", content: "निवेश के फायदों को समझें।" }
+      { 
+        id: "content3", 
+        title: "निवेश क्या है?", 
+        points: 10, 
+        type: "article", 
+        content: "निवेश के बारे में जानें। निवेश का मतलब है अपने धन को ऐसे साधनों में लगाना जो समय के साथ बढ़ सके। यह आपको वित्तीय स्वतंत्रता प्राप्त करने में मदद करता है। निवेश के माध्यम से आप अपने धन को बढ़ा सकते हैं और अपने भविष्य को सुरक्षित कर सकते हैं।",
+        storyContent: "सीमा ने अपनी पहली नौकरी से ही निवेश करना शुरू कर दिया। उसने म्यूचुअल फंड और शेयर बाजार में निवेश किया। कुछ सालों बाद, उसके निवेश ने उसे एक घर खरीदने में मदद की। यह सब उसकी समझदारी और सही निवेश के कारण संभव हुआ।",
+        videoUrl: "https://www.youtube.com/embed/fA9SWRoWyIk",
+        theoryContent: "निवेश के महत्व और इसके फायदों को समझने के लिए इस मॉड्यूल को पढ़ें। यह आपको अपने वित्तीय लक्ष्यों को प्राप्त करने में मदद करेगा।"
+      },
+      { 
+        id: "content4", 
+        title: "निवेश के फायदे", 
+        points: 15, 
+        type: "article", 
+        content: "निवेश के फायदों को समझें। यह आपको वित्तीय स्थिरता प्रदान करता है। निवेश से आप अपने लक्ष्यों को जल्दी प्राप्त कर सकते हैं। यह आपको मुद्रास्फीति के प्रभाव से बचाता है। सही निवेश से आप अपने धन को दोगुना कर सकते हैं।" 
+      }
     ],
     quizzes: [
       { 
@@ -138,171 +167,179 @@ export const modules: LearningModule[] = [
         question: "निवेश का मुख्य उद्देश्य क्या है?", 
         points: 20, 
         options: ["लाभ कमाना", "भविष्य सुरक्षित करना", "जोखिम उठाना", "सभी"], 
-        correctAnswer: 1, // Index of "भविष्य सुरक्षित करना" in the options array
-        explanation: "निवेश का मुख्य उद्देश्य भविष्य को सुरक्षित करना है।"
+        correctAnswer: 1, 
+        explanation: "निवेश का मुख्य उद्देश्य भविष्य को सुरक्षित करना है। यह आपको वित्तीय स्वतंत्रता प्राप्त करने में मदद करता है।"
       }
     ],
     totalPoints: 120,
     estimatedTime: "45 minutes",
-    thumbnail: "/images/investment.jpg"
+    thumbnail: "https://images.unsplash.com/photo-1565372918671-4b0b9c2c8f9a?q=80&w=200&auto=format&fit=crop",
   },
   {
     id: "module3",
-    name: "धोखे से बचें",
-    description: "सतर्क रहें, सुरक्षित रहें",
-    category: "fraud",
-    difficulty: "intermediate",
+    name: "बजट बनाना और प्रबंधन",
+    description: "अपने खर्चों को समझें और नियंत्रित करें",
+    category: "savings",
+    difficulty: "beginner",
     content: [
-      { id: "content5", title: "सामान्य धोखाधड़ी के प्रकार", points: 15, type: "article", content: "सामान्य धोखाधड़ी के प्रकारों को समझें।" },
-      { id: "content6", title: "धोखाधड़ी से बचने के उपाय", points: 20, type: "article", content: "धोखाधड़ी से बचने के उपायों को समझें।" }
-    ],
-    quizzes: [
-      { 
-        id: "quiz3", 
-        title: "धोखाधड़ी से बचाव", 
-        type: "quiz", 
-        question: "धोखाधड़ी से बचने का सबसे अच्छा तरीका क्या है?", 
-        points: 25, 
-        options: ["सतर्क रहें", "अनजान लिंक पर क्लिक करें", "अपनी जानकारी साझा करें", "सभी"], 
-        correctAnswer: 0, // Index of "सतर्क रहें" in the options array
-        explanation: "सतर्क रहना और अनजान स्रोतों से बचना सबसे अच्छा तरीका है।"
+      {
+        id: "content5",
+        title: "बजट क्या है और क्यों जरूरी है?",
+        points: 10,
+        type: "article",
+        videoUrl: "https://www.youtube.com/embed/7BMME2xTiAc",
+        content: "बजट बनाना वित्तीय प्रबंधन का पहला कदम है। यह आपको अपने आय और खर्चों की स्पष्ट तस्वीर देता है, जिससे आप अनावश्यक खर्चों को पहचानकर उन्हें नियंत्रित कर सकते हैं। बजट से आप अपने वित्तीय लक्ष्यों की योजना बना सकते हैं और आपातकालीन स्थितियों के लिए तैयार रह सकते हैं।...",
+        theoryContent: "इस लेख में बजट बनाने के महत्व और प्रक्रिया को विस्तार से समझाया गया है।"
+      },
+      {
+        id: "content6",
+        title: "बजट बनाने के चरण",
+        points: 15,
+        type: "article",
+        content: "बजट बनाने के लिए पहले अपनी आय और खर्चों की सूची बनाएं। फिर आवश्यक और अनावश्यक खर्चों को अलग करें। अनावश्यक खर्चों को कम करके बचत बढ़ाएं। मासिक बजट बनाएं और उसका पालन करें।...",
+        storyContent: "रीना ने बजट बनाकर अपने खर्चों को नियंत्रित किया और छह महीने में एक नई साइकिल खरीदी।"
       }
     ],
-    totalPoints: 150,
-    estimatedTime: "60 minutes",
-    thumbnail: "/images/fraud.jpg"
+    quizzes: [
+      {
+        id: "quiz3",
+        title: "बजट का महत्व",
+        type: "quiz",
+        question: "बजट बनाने का पहला कदम क्या है?",
+        points: 20,
+        options: ["बचत करना", "आय और खर्चों की सूची बनाना", "ऋण लेना", "निवेश करना"],
+        correctAnswer: 1,
+        explanation: "बजट बनाने का पहला कदम अपनी आय और खर्चों की सूची बनाना है।"
+      }
+    ],
+    totalPoints: 100,
+    estimatedTime: "30 minutes",
+    thumbnail: "https://images.unsplash.com/photo-1581090700227-1e8e8f1a5b3c?q=80&w=200&auto=format&fit=crop"
   },
   {
     id: "module4",
-    name: "बजट बनाना सीखें",
-    description: "सही बजट, सही योजना",
-    category: "basics",
+    name: "ऋण और उसका प्रबंधन",
+    description: "समझदारी से ऋण लें और चुकाएं",
+    category: "borrowing",
     difficulty: "beginner",
     content: [
-      { id: "content7", title: "बजट क्या है?", points: 10, type: "article", content: "बजट के बारे में जानें।" },
-      { id: "content8", title: "बजट बनाने के चरण", points: 15, type: "article", content: "बजट बनाने के चरणों को समझें।" }
-    ],
-    quizzes: [
-      { 
-        id: "quiz4", 
-        title: "बजट का महत्व", 
-        type: "quiz", 
-        question: "बजट का मुख्य उद्देश्य क्या है?", 
-        points: 20, 
-        options: ["खर्च कम करना", "बचत बढ़ाना", "लक्ष्य तय करना", "उपरोक्त सभी"], 
-        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
-        explanation: "बजट का मुख्य उद्देश्य सभी पहलुओं को संतुलित करना है।"
+      {
+        id: "content7",
+        title: "ऋण क्या है?",
+        points: 10,
+        type: "article",
+        videoUrl: "https://www.youtube.com/embed/LQ8R-aj6jvE",
+        content: "ऋण वह राशि है जो आप किसी से उधार लेते हैं और उसे ब्याज सहित चुकाते हैं। यह व्यक्तिगत, शिक्षा, गृह या वाहन ऋण हो सकता है। ऋण लेते समय उसकी शर्तों और ब्याज दरों को समझना आवश्यक है।...",
+        theoryContent: "इस लेख में विभिन्न प्रकार के ऋण और उनके प्रबंधन के तरीकों को समझाया गया है।"
+      },
+      {
+        id: "content8",
+        title: "ऋण प्रबंधन के तरीके",
+        points: 15,
+        type: "article",
+        content: "ऋण प्रबंधन के लिए समय पर भुगतान करें, अतिरिक्त भुगतान करने का प्रयास करें और अनावश्यक ऋण से बचें। बजट बनाकर ऋण चुकाने की योजना बनाएं।...",
+        storyContent: "अजय ने अपने शिक्षा ऋण को समय पर चुकाकर वित्तीय स्वतंत्रता प्राप्त की।"
       }
     ],
-    totalPoints: 80,
-    estimatedTime: "25 minutes",
-    thumbnail: "/images/budget.jpg"
+    quizzes: [
+      {
+        id: "quiz4",
+        title: "ऋण प्रबंधन",
+        type: "quiz",
+        question: "ऋण चुकाने का सबसे अच्छा तरीका क्या है?",
+        points: 20,
+        options: ["समय पर भुगतान", "ऋण को अनदेखा करना", "नई ऋण लेना", "ब्याज नहीं चुकाना"],
+        correctAnswer: 0,
+        explanation: "समय पर भुगतान करने से आप अतिरिक्त ब्याज से बच सकते हैं और क्रेडिट स्कोर अच्छा रहता है।"
+      }
+    ],
+    totalPoints: 100,
+    estimatedTime: "30 minutes",
+    thumbnail: "https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?q=80&w=200&auto=format&fit=crop"
   },
   {
     id: "module5",
-    name: "कर्ज से मुक्ति",
-    description: "समझदारी से कर्ज लें",
-    category: "borrowing",
-    difficulty: "intermediate",
+    name: "बीमा का महत्व",
+    description: "अपने भविष्य को सुरक्षित करें",
+    category: "investment",
+    difficulty: "beginner",
     content: [
-      { id: "content9", title: "कर्ज के प्रकार", points: 15, type: "article", content: "कर्ज के विभिन्न प्रकारों को समझें।" },
-      { id: "content10", title: "कर्ज चुकाने की रणनीतियाँ", points: 20, type: "article", content: "कर्ज चुकाने की रणनीतियों को समझें।" }
-    ],
-    quizzes: [
-      { 
-        id: "quiz5", 
-        title: "कर्ज लेने से पहले", 
-        type: "quiz", 
-        question: "कर्ज लेने से पहले क्या विचार करना चाहिए?", 
-        points: 25, 
-        options: ["ब्याज दर", "ऋण अवधि", "भुगतान क्षमता", "उपरोक्त सभी"], 
-        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
-        explanation: "कर्ज लेने से पहले सभी पहलुओं पर विचार करना चाहिए।"
+      {
+        id: "content9",
+        title: "बीमा क्या है?",
+        points: 10,
+        type: "article",
+        videoUrl: "https://www.youtube.com/embed/LQ8R-aj6jvE",
+        content: "बीमा एक वित्तीय सुरक्षा उपाय है जो आपको अप्रत्याशित घटनाओं से होने वाले नुकसान से बचाता है। यह जीवन, स्वास्थ्य, वाहन और संपत्ति बीमा हो सकता है।...",
+        theoryContent: "इस लेख में बीमा के विभिन्न प्रकार और उनके लाभों को समझाया गया है।"
+      },
+      {
+        id: "content10",
+        title: "सही बीमा कैसे चुनें?",
+        points: 15,
+        type: "article",
+        content: "बीमा चुनते समय अपनी आवश्यकताओं, प्रीमियम, कवरेज और बीमा कंपनी की प्रतिष्ठा पर ध्यान दें।...",
+        storyContent: "सुमन ने स्वास्थ्य बीमा लेकर अस्पताल के खर्चों से बचाव किया।"
       }
     ],
-    totalPoints: 130,
-    estimatedTime: "50 minutes",
-    thumbnail: "/images/borrowing.jpg"
+    quizzes: [
+      {
+        id: "quiz5",
+        title: "बीमा का चयन",
+        type: "quiz",
+        question: "बीमा चुनते समय सबसे महत्वपूर्ण बात क्या है?",
+        points: 20,
+        options: ["प्रीमियम की राशि", "कवरेज की सीमा", "बीमा कंपनी की प्रतिष्ठा", "उपरोक्त सभी"],
+        correctAnswer: 3,
+        explanation: "बीमा चुनते समय प्रीमियम, कवरेज और कंपनी की प्रतिष्ठा सभी महत्वपूर्ण हैं।"
+      }
+    ],
+    totalPoints: 100,
+    estimatedTime: "30 minutes",
+    thumbnail: "https://images.unsplash.com/photo-1588776814546-ec7d2c5d1c9c?q=80&w=200&auto=format&fit=crop"
   },
   {
     id: "module6",
-    name: "वित्तीय योजना",
-    description: "भविष्य की तैयारी",
-    category: "savings",
-    difficulty: "advanced",
-    content: [
-      { id: "content11", title: "वित्तीय योजना का महत्व", points: 20, type: "article", content: "वित्तीय योजना के महत्व को समझें।" },
-      { id: "content12", title: "लक्ष्य निर्धारण", points: 25, type: "article", content: "लक्ष्य निर्धारण के महत्व को समझें।" }
-    ],
-    quizzes: [
-      { 
-        id: "quiz6", 
-        title: "वित्तीय योजना का पहला कदम", 
-        type: "quiz", 
-        question: "वित्तीय योजना का पहला कदम क्या है?", 
-        points: 30, 
-        options: ["लक्ष्य तय करना", "बजट बनाना", "निवेश करना", "खर्च कम करना"], 
-        correctAnswer: 0, // Index of "लक्ष्य तय करना" in the options array
-        explanation: "वित्तीय योजना का पहला कदम लक्ष्य तय करना है।"
-      }
-    ],
-    totalPoints: 180,
-    estimatedTime: "75 minutes",
-    thumbnail: "/images/planning.jpg"
-  },
-  {
-    id: "module7",
-    name: "UPI का ज्ञान",
-    description: "UPI से सुरक्षित लेनदेन",
+    name: "कर योजना और प्रबंधन",
+    description: "अपने करों को समझें और बचत करें",
     category: "basics",
     difficulty: "beginner",
     content: [
-      { id: "content13", title: "UPI क्या है?", points: 10, type: "article", content: "UPI के बारे में जानें।" },
-      { id: "content14", title: "UPI का उपयोग कैसे करें?", points: 15, type: "article", content: "UPI का उपयोग करने के चरणों को समझें।" }
-    ],
-    quizzes: [
-      { 
-        id: "quiz7", 
-        title: "UPI सुरक्षा", 
-        type: "quiz", 
-        question: "UPI पिन को सुरक्षित रखने का सबसे अच्छा तरीका क्या है?", 
-        points: 20, 
-        options: ["किसी को न बताएं", "कागज पर लिखें", "दोस्तों को साझा करें", "सार्वजनिक स्थान पर रखें"], 
-        correctAnswer: 0, // Index of "किसी को न बताएं" in the options array
-        explanation: "UPI पिन को कभी भी किसी के साथ साझा नहीं करना चाहिए।"
+      {
+        id: "content11",
+        title: "कर क्या है?",
+        points: 10,
+        type: "article",
+        videoUrl: "https://www.youtube.com/embed/LQ8R-aj6jvE",
+        content: "कर सरकार द्वारा नागरिकों से वसूला जाने वाला शुल्क है जो सार्वजनिक सेवाओं के लिए उपयोग होता है। आयकर, वस्तु एवं सेवा कर (GST) आदि इसके उदाहरण हैं।...",
+        theoryContent: "इस लेख में विभिन्न प्रकार के कर और उनकी गणना के तरीके को समझाया गया है।"
+      },
+      {
+        id: "content12",
+        title: "कर योजना कैसे करें?",
+        points: 15,
+        type: "article",
+        content: "कर योजना के लिए आय और खर्चों की सही जानकारी रखें, कर छूट और कटौतियों का लाभ उठाएं, और समय पर रिटर्न दाखिल करें।...",
+        storyContent: "राहुल ने कर योजना करके 20,000 रुपये की बचत की।"
       }
     ],
-    totalPoints: 90,
-    estimatedTime: "35 minutes",
-    thumbnail: "/images/upi.jpg"
-  },
-  {
-    id: "module8",
-    name: "बीमा का महत्व",
-    description: "सही बीमा, सही सुरक्षा",
-    category: "basics",
-    difficulty: "intermediate",
-    content: [
-      { id: "content15", title: "बीमा क्यों आवश्यक है?", points: 15, type: "article", content: "बीमा के महत्व को समझें।" },
-      { id: "content16", title: "बीमा के प्रकार", points: 20, type: "article", content: "बीमा के विभिन्न प्रकारों को समझें।" }
-    ],
     quizzes: [
-      { 
-        id: "quiz8", 
-        title: "बीमा का महत्व", 
+      {
+        id: "quiz6",
+        title: "कर योजना",
         type: "quiz",
-        question: "बीमा चुनते समय किन बातों का ध्यान रखना चाहिए?", 
-        points: 25, 
-        options: ["बीमा की लागत", "कवर की गई बीमारियाँ", "कंपनी की प्रतिष्ठा", "उपरोक्त सभी"],
-        correctAnswer: 3, // Index of "उपरोक्त सभी" in the options array
-        explanation: "बीमा चुनते समय सभी पहलुओं पर विचार करना चाहिए।"
+        question: "कर योजना का मुख्य उद्देश्य क्या है?",
+        points: 20,
+        options: ["अधिक कर देना", "कम कर देना", "कानूनी तरीके से कर बचाना", "कर नहीं देना"],
+        correctAnswer: 2,
+        explanation: "कर योजना का उद्देश्य कानूनी तरीके से कर बचाना है।"
       }
     ],
-    totalPoints: 140,
-    estimatedTime: "55 minutes",
-    thumbnail: "/images/insurance.jpg"
+    totalPoints: 100,
+    estimatedTime: "30 minutes",
+    thumbnail: "https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?q=80&w=200&auto=format&fit=crop"
   }
-];
+  ];
 
 export const reels: Reel[] = [
   {
@@ -314,7 +351,7 @@ export const reels: Reel[] = [
     saves: 423,
     moduleId: "module1",
     category: "savings",
-    videoUrl: "https://pouch.jumpshare.com/preview/fn3eArSNWhmScZ2PGCpNH0BrMnuOXUsbHJqgyi9UU8WlAXaLUYtXGHmN9j7BKL2fQwxS3J2WOA9lZkooPcoLFNMfLQ1t1xNr9uy2Oq0xeE3ShkH-sMTGiK5hl52q14psfLsWc6bEwJveCVYwBzn7Om6yjbN-I2pg_cnoHs_AmgI.mp4",
+    videoUrl: "/videos/save.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1579621970795-87facc2f976d?q=80&w=200&auto=format&fit=crop",
     author: "Money Master",
     comments: 89,
@@ -332,7 +369,7 @@ export const reels: Reel[] = [
     saves: 723,
     moduleId: "module5",
     category: "fraud",
-    videoUrl: "https://pouch.jumpshare.com/preview/c4HBzf4Nx27PUETw_ybmxmt1880JVpmqT82Cith2sMyQsVT-XBCJD1a0nOX_5WyeETIjTuQKNMN_Gpj2kepx073LUwtZakbggDDuCwFDVwWEv9cJRZzMlC9Fu6-PHsj5moQ7yztZ_WfOR4hLbH7XOW6yjbN-I2pg_cnoHs_AmgI.mp4",
+    videoUrl: "/videos/scam.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1606188074044-fcd750f6996a?q=80&w=200&auto=format&fit=crop",
     author: "Scam Alert",
     comments: 231,
@@ -350,7 +387,7 @@ export const reels: Reel[] = [
     saves: 312,
     moduleId: "module3",
     category: "investment",
-    videoUrl: "https://pouch.jumpshare.com/preview/BJCu_sevso0vQ9MwQvGkMgevXEhpuAXovAGNZTSh_aTtu7wADdMcK53NzPzM1ZVmWzxmr79WXWzZkXFc8SyfvCM4SyL5oCp4RA2ovpOpjeuYa2CQPRFPjWq4HzcEDmFe1IdtF05qGNbrJA2z-n3xim6yjbN-I2pg_cnoHs_AmgI.mp4",
+    videoUrl: "/videos/buy_emi.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1606189934846-a527add8a77b?q=80&w=200&auto=format&fit=crop",
     author: "Investment Guru",
     comments: 67,
@@ -368,7 +405,7 @@ export const reels: Reel[] = [
     saves: 432,
     moduleId: "module4",
     category: "basics",
-    videoUrl: "https://pouch.jumpshare.com/preview/cbi6Uh86W0xiwtmpIivqVT8OJ0QbjGShPAofKqHluhr9Gd0eqB3lUovccJBAsI-zbmsMPVXJESsqhJRzzAVgUtuv7LOdeBbeUEjS1ROrl2BCFoqtgE4RBKjA2AYIHI4nF7e1BcQxWCB5RdDJq60o_G6yjbN-I2pg_cnoHs_AmgI.mp4",
+    videoUrl: "/videos/UPI.mp4",
     thumbnailUrl: "https://images.unsplash.com/photo-1612810806563-4cb8265db55f?q=80&w=200&auto=format&fit=crop",
     author: "Digital Safety",
     comments: 112,

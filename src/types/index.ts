@@ -47,6 +47,9 @@ export interface LearningContent {
   content: string;
   mediaUrl?: string;
   points: number;
+  videoUrl?: string;
+  theoryContent?: string;
+  storyContent?: string;
 }
 
 export interface Quiz {

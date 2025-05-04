@@ -114,7 +114,7 @@ export default function ModuleView() {
       );
       
       // Navigate back to module list
-      navigate(`/learn/chapter/${module.category}`);
+      navigate("/learn/chapter/" + module.category);
     }
   };
   
@@ -123,7 +123,7 @@ export default function ModuleView() {
       setCurrentContentIndex(prev => prev - 1);
       window.scrollTo(0, 0);
     } else {
-      navigate(`/learn/chapter/${module.category}`);
+      navigate("/learn/chapter/" + module.category);
     }
   };
 
@@ -198,7 +198,7 @@ export default function ModuleView() {
               <ModuleContentView 
                 content={currentContent} 
                 onComplete={() => handleContentComplete(currentContent.id)}
-                // moduleCategory={module.category}
+                moduleCategory={module.category}
                 completed={isContentCompleted}
               />
             )}

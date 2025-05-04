@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle, ShieldAlert, MessageSquare, Trophy, Star, User } from "lucide-react";
+import { AlertCircle, CheckCircle, ShieldAlert, MessageSquare, Trophy, Star, User, ArrowLeft } from "lucide-react";
 import { scamExamples } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { useAppContext } from "@/context/AppContext";
@@ -25,7 +24,9 @@ export default function ScamDetectionGame() {
   const [showCharacterDialog, setShowCharacterDialog] = useState(false);
   const [characterMessage, setCharacterMessage] = useState("");
   const [showMentor, setShowMentor] = useState(true);
+  const [rewardCollected, setRewardCollected] = useState(false); // Ensure rewards are added only once
   const celebrityMentor = getCelebrityGuide('fraud');
+  const maximumScore = scamExamples.length * 10; // Calculate the maximum possible score
 
   useEffect(() => {
     if (showMentor) {
@@ -41,21 +42,21 @@ export default function ScamDetectionGame() {
 
   const handleAnswer = (isScam: boolean) => {
     if (answered) return;
-    
+
     setSelectedAnswer(isScam);
     setAnswered(true);
-    
+
     const currentScam = scamExamples[currentQuestion];
     const isCorrect = isScam === currentScam.isScam;
-    
+
     if (isCorrect) {
       const streakBonus = streak >= 3 ? 5 : 0;
       const newScore = score + 10 + streakBonus;
       setScore(newScore);
       setStreak(streak + 1);
-      
+
       setCharacterMessage(`Bilkul sahi! ${currentScam.explanation} ${streakBonus ? `+${streakBonus} streak bonus!` : ''}`);
-      
+
       toast({
         title: "Ekdum correct!",
         description: currentScam.explanation + (streakBonus ? ` +${streakBonus} streak bonus!` : ''),
@@ -64,14 +65,14 @@ export default function ScamDetectionGame() {
     } else {
       setStreak(0);
       setCharacterMessage(`Arre yaar! Galat ho gaya. ${currentScam.explanation}`);
-      
+
       toast({
         title: "Oops! Galat jawab",
         description: currentScam.explanation,
         variant: "destructive",
       });
     }
-    
+
     setShowCharacterDialog(true);
     setTimeout(() => setShowCharacterDialog(false), 4000);
   };
@@ -79,19 +80,22 @@ export default function ScamDetectionGame() {
   const nextQuestion = () => {
     setAnswered(false);
     setSelectedAnswer(null);
-    
+
     if (currentQuestion < scamExamples.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setGameOver(true);
-      
-      const finalReward = Math.floor(score / 10);
-      addCoins(finalReward);
-      
-      setTimeout(() => {
-        setCharacterMessage(`Kamaal kar diya! Aapne ${finalReward} coins jeete hain apne gyaan se!`);
-        setShowCharacterDialog(true);
-      }, 1000);
+
+      if (!rewardCollected) {
+        const finalReward = Math.floor(score / 10);
+        addCoins(finalReward);
+        setRewardCollected(true);
+
+        setTimeout(() => {
+          setCharacterMessage(`Kamaal kar diya! Aapne ${finalReward} coins jeete hain apne gyaan se!`);
+          setShowCharacterDialog(true);
+        }, 1000);
+      }
     }
   };
 
@@ -102,6 +106,7 @@ export default function ScamDetectionGame() {
     setAnswered(false);
     setSelectedAnswer(null);
     setStreak(0);
+    setRewardCollected(false); // Reset reward collection
   };
 
   const currentScam = scamExamples[currentQuestion];
@@ -119,13 +124,15 @@ export default function ScamDetectionGame() {
   return (
     <Layout>
       <div className="container px-4 pb-20 relative">
-        <div className="py-4">
+        <div className="py-4 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-coin-purple to-coin-pink bg-clip-text text-transparent">Scam Detection Challenge</h1>
-          <p className="text-muted-foreground">Jhol-jhaal se kaise bache, wo seekho!</p>
         </div>
-        
+
         <div className="relative">
-          {showMentor && (
+          {/* {showMentor && (
             <div className="absolute right-0 top-0 z-10">
               <div className="relative">
                 <GameCharacter 
@@ -141,14 +148,14 @@ export default function ScamDetectionGame() {
                 />
               </div>
             </div>
-          )}
-          
+          )} */}
+
           <div className="flex justify-between items-center mb-4">
             <Badge variant="outline" className="flex gap-1 bg-gradient-to-r from-coin-yellow/30 to-coin-pink/30 border-0">
               <Trophy className="h-4 w-4 text-coin-yellow" />
               Score: {score}
             </Badge>
-            
+
             <div className="flex gap-2">
               {streak >= 3 && (
                 <motion.div 
@@ -160,13 +167,13 @@ export default function ScamDetectionGame() {
                   Streak: {streak}
                 </motion.div>
               )}
-              
+
               <Badge variant="outline" className="bg-gradient-to-r from-holi-blue/30 to-holi-green/30 border-0">
                 Q. {currentQuestion + 1}/{scamExamples.length}
               </Badge>
             </div>
           </div>
-          
+
           {!gameOver ? (
             <AnimatePresence mode="wait">
               <motion.div
@@ -234,14 +241,14 @@ export default function ScamDetectionGame() {
               <div className="text-center py-8 rounded-xl bg-gradient-to-br from-white to-holi-yellow/30 shadow-md">
                 <ShieldAlert className="h-16 w-16 mx-auto text-coin-purple mb-4" />
                 <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-coin-purple to-coin-pink bg-clip-text text-transparent">Game Khatam!</h2>
-                <p className="mb-4">Aapne {score} mein se {scamExamples.length * 10} points score kiye</p>
+                <p className="mb-4">Aapne {score} mein se {maximumScore} points score kiye</p>
                 
                 <div className="p-4 bg-gradient-to-r from-white to-coin-yellow/20 rounded-md mb-6 mx-4">
                   <h3 className="font-medium mb-2">Aapka Performance</h3>
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     <div className="bg-white p-3 rounded-xl shadow-sm">
                       <div className="text-muted-foreground">Accuracy</div>
-                      <div className="font-medium">{Math.round(score / (scamExamples.length * 10) * 100)}%</div>
+                      <div className="font-medium">{Math.round((score / maximumScore) * 100)}%</div>
                     </div>
                     <div className="bg-white p-3 rounded-xl shadow-sm">
                       <div className="text-muted-foreground">Best Streak</div>

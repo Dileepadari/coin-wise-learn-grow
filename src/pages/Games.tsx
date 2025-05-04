@@ -3,7 +3,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Target, PiggyBank, ShieldAlert, TrendingUp, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Target, PiggyBank, ShieldAlert, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 
@@ -21,6 +21,14 @@ const GamepadIcon = ({ className }: { className?: string }) => (
 
 const Games = () => {
   const [points, setPoints] = useState(120);
+  const [collectedRewards, setCollectedRewards] = useState<string[]>([]);
+  const [completedTasks, setCompletedTasks] = useState<string[]>(['financial-simulation']); // Track completed tasks
+  const [dailyTasks, setDailyTasks] = useState({
+    "financial-simulation": "10 दिनों तक बजट बनाकर चलें",
+    "budgeting": "अपनी आय का 20% बचाएं",
+    "scam-game": "5 संदिग्ध लेनदेन की पहचान करें",
+    "investment": "एक नया निवेश पोर्टफोलियो बनाएं"
+  }); // Track current daily tasks
   const navigate = useNavigate();
 
   const games = [
@@ -32,10 +40,8 @@ const Games = () => {
       descTranslation: "Simulate your daily financial decisions and see their effects.",
       icon: <PiggyBank className="h-8 w-8 text-white" />,
       color: "from-primary to-accent",
-      progress: 25,
+      progress: 30,
       new: false,
-      dailyTask: "10 दिनों तक बजट बनाकर चलें",
-      dailyTaskTranslation: "Follow a budget for 10 days",
       reward: 50
     },
     {
@@ -48,12 +54,11 @@ const Games = () => {
       color: "from-secondary to-amber-500",
       progress: 0,
       new: true,
-      dailyTask: "अपनी आय का 20% बचाएं",
-      dailyTaskTranslation: "Save 20% of your income",
-      reward: 75
+      reward: 75,
+      comingSoon: true // Mark as coming soon
     },
     {
-      id: "scam-detection",
+      id: "scam-game",
       title: "धोखा डिटेक्टर",
       translation: "Fraud Detector",
       description: "वित्तीय धोखाधड़ी की पहचान करना सीखें और अपने पैसे को सुरक्षित रखें।",
@@ -62,8 +67,6 @@ const Games = () => {
       color: "from-red-500 to-orange-500",
       progress: 40,
       new: false,
-      dailyTask: "5 संदिग्ध लेनदेन की पहचान करें",
-      dailyTaskTranslation: "Identify 5 suspicious transactions",
       reward: 60
     },
     {
@@ -76,9 +79,8 @@ const Games = () => {
       color: "from-green-500 to-teal-500",
       progress: 10,
       new: false,
-      dailyTask: "एक नया निवेश पोर्टफोलियो बनाएं",
-      dailyTaskTranslation: "Create a new investment portfolio",
-      reward: 100
+      reward: 100,
+      comingSoon: true // Mark as coming soon
     },
   ];
 
@@ -91,126 +93,170 @@ const Games = () => {
     }
   };
 
-  const handleCollectReward = (reward: number) => {
-    setPoints(prev => prev + reward);
-    toast.success(`बधाई हो! ${reward} अंक मिले! (Congratulations! ${reward} points earned!)`);
+  const handleCollectReward = (gameId: string, reward: number) => {
+    if (!collectedRewards.includes(gameId)) {
+      setPoints(prev => prev + reward);
+      setCollectedRewards(prev => [...prev, gameId]);
+      toast.success(`बधाई हो! ${reward} अंक मिले! (Congratulations! ${reward} points earned!)`);
+
+      // Change the daily task after reward collection
+      const newTask = `नया कार्य ${Math.floor(Math.random() * 100)}% पूरा करें`;
+      setDailyTasks(prev => ({
+        ...prev,
+        [gameId]: newTask
+      }));
+    } else {
+      toast.error("आपने पहले ही यह पुरस्कार ले लिया है। (You have already collected this reward.)");
+    }
   };
 
-  const handleback = () => {
+  const handleTaskCompletion = (gameId: string) => {
+    if (!completedTasks.includes(gameId)) {
+      setCompletedTasks(prev => [...prev, gameId]);
+      toast.success("कार्य पूरा हुआ! (Task completed!)");
+    }
+  };
+
+  const handleBack = () => {
     navigate(-1);
   };
 
   return (
     <Layout>
-      
-    <div className="pt-4 pb-24 px-4 bg-gradient-to-br from-background-purple via-background-soft to-background-yellow min-h-screen">
-      <div className="max-w-lg mx-auto">
-        <div className="flex items-center justify-between mb-6">
-        {/* <Button variant="ghost" size="icon" onClick={handleback}>
+      <div className="pt-4 pb-24 px-4 bg-gradient-to-br from-background-purple via-background-soft to-background-yellow min-h-screen">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            {/* <Button variant="ghost" size="icon" onClick={handleBack}>
               <ArrowLeft className="h-5 w-5" />
-          </Button> */}
-          <h1 className="text-2xl font-bold text-primary">खेल (Games)</h1>
-          <Badge variant="outline" className="bg-primary/10 text-primary border-primary px-3 py-1">
-            <GamepadIcon className="w-4 h-4 mr-1" />
-            <span>{points} अंक (Points)</span>
-          </Badge>
-        </div>
+            </Button> */}
+            <h1 className="text-2xl font-bold text-primary">खेल (Games)</h1>
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary px-3 py-1">
+              <GamepadIcon className="w-4 h-4 mr-1" />
+              <span>{points} अंक (Points)</span>
+            </Badge>
+          </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 mb-6 shadow-sm border border-primary/20">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Target className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-medium">दैनिक लक्ष्य (Daily Goals)</h3>
-              <p className="text-sm text-muted-foreground">अपने वित्तीय लक्ष्यों को पूरा करें और पुरस्कार प्राप्त करें!</p>
-              <p className="text-xs text-muted-foreground">(Complete your financial goals and receive rewards!)</p>
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 mb-6 shadow-sm border border-primary/20">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <Target className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-medium">दैनिक लक्ष्य (Daily Goals)</h3>
+                <p className="text-sm text-muted-foreground">अपने वित्तीय लक्ष्यों को पूरा करें और पुरस्कार प्राप्त करें!</p>
+                <p className="text-xs text-muted-foreground">(Complete your financial goals and receive rewards!)</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          {games.map((game) => (
-            <Card key={game.id} className="overflow-hidden border-2 border-primary/10 shadow-md hover-scale">
-              <div className={`bg-gradient-to-r ${game.color} p-4 relative`}>
-                <div className="flex justify-between items-start">
-                  <div className="rounded-full bg-white/20 p-2">
-                    {game.icon}
-                  </div>
-                  {game.new && (
-                    <Badge className="bg-accent hover:bg-accent text-white">
-                      नया (New)
-                    </Badge>
-                  )}
-                </div>
-                <h2 className="text-xl font-bold text-white mt-3">
-                  {game.title}
-                </h2>
-                <p className="text-white/80 text-sm">
-                  {game.translation}
-                </p>
-                
-                <div className="mt-2 bg-white/20 h-2 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-white rounded-full" 
-                    style={{ width: `${game.progress}%` }}
-                  ></div>
-                </div>
-                <p className="text-white/80 text-xs mt-1">
-                  {game.progress}% पूरा (completed)
-                </p>
-              </div>
-
-              <CardContent className="p-4">
-                <p className="text-sm mb-4">
-                  {game.description}
-                  <br />
-                  <span className="text-xs text-muted-foreground">
-                    {game.descTranslation}
-                  </span>
-                </p>
-
-                <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3 mb-4">
+          <div className="grid grid-cols-1 gap-6">
+            {games.map((game) => (
+              <Card key={game.id} className="overflow-hidden border-2 border-primary/10 shadow-md hover-scale">
+                <div className={`bg-gradient-to-r ${game.color} p-4 relative`}>
                   <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-medium text-secondary">
-                        आज का टास्क (Today's Task)
-                      </p>
-                      <p className="text-xs mt-1">
-                        {game.dailyTask}
-                        <br />
-                        <span className="text-xs text-muted-foreground">
-                          {game.dailyTaskTranslation}
-                        </span>
-                      </p>
+                    <div className="rounded-full bg-white/20 p-2">
+                      {game.icon}
                     </div>
-                    <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary">
-                      +{game.reward}
-                    </Badge>
+                    {game.new && (
+                      <Badge className="bg-accent hover:bg-accent text-white">
+                        नया (New)
+                      </Badge>
+                    )}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 text-secondary border-secondary hover:bg-secondary/5 w-full text-xs"
-                    onClick={() => handleCollectReward(game.reward)}
-                  >
-                    पुरस्कार प्राप्त करें (Collect Reward)
-                  </Button>
+                  <h2 className="text-xl font-bold text-white mt-3">
+                    {game.title}
+                  </h2>
+                  <p className="text-white/80 text-sm">
+                    {game.translation}
+                  </p>
+                  
+                  <div className="mt-2 bg-white/20 h-2 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-white rounded-full" 
+                      style={{ width: `${game.progress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-white/80 text-xs mt-1">
+                    {game.progress}% पूरा (completed)
+                  </p>
                 </div>
 
-                <Button 
-                  className="w-full bg-primary hover:bg-primary-600"
-                  onClick={() => handleStartGame(game.id)}
-                >
-                  <span>शुरू करें (Start)</span>
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className="p-4">
+                  <p className="text-sm mb-4">
+                    {game.description}
+                    <br />
+                    <span className="text-xs text-muted-foreground">
+                      {game.descTranslation}
+                    </span>
+                  </p>
+
+                  <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3 mb-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-secondary">
+                          आज का टास्क (Today's Task)
+                        </p>
+                        <p className="text-xs mt-1">
+                          {dailyTasks[game.id]}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary">
+                        +{game.reward}
+                      </Badge>
+                    </div>
+                    {game.comingSoon ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 text-gray-400 border-gray-300 cursor-not-allowed w-full text-xs"
+                        disabled
+                      >
+                        जल्द आ रहा है (Coming Soon)
+                      </Button>
+                    ) : collectedRewards.includes(game.id) ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 text-gray-400 border-gray-300 cursor-not-allowed w-full text-xs"
+                        disabled
+                      >
+                        कल वापस आएं (Come Back Tomorrow)
+                      </Button>
+                    ) : completedTasks.includes(game.id) ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 text-secondary border-secondary hover:bg-secondary/5 w-full text-xs"
+                        onClick={() => handleCollectReward(game.id, game.reward)}
+                      >
+                        पुरस्कार प्राप्त करें (Collect Reward)
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 text-gray-400 border-gray-300 cursor-not-allowed w-full text-xs"
+                        disabled
+                      >
+                        कार्य पूरा करें (Complete the Task)
+                      </Button>
+                    )}
+                  </div>
+
+                  <Button 
+                    className={`w-full ${game.comingSoon ? 'bg-gray-300 cursor-not-allowed' : 'bg-primary hover:bg-primary-600'}`}
+                    onClick={() => !game.comingSoon && handleStartGame(game.id)}
+                    disabled={game.comingSoon}
+                  >
+                    <span>{game.comingSoon ? 'जल्द आ रहा है (Coming Soon)' : 'शुरू करें (Start)'}</span>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
     </Layout>
   );
 };

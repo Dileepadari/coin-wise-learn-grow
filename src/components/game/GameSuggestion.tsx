@@ -21,27 +21,27 @@ export default function GameSuggestion({ onDismiss, category }: GameSuggestionPr
     fraud: {
       title: "Scam Alert Challenge",
       description: "Test your scam detection skills in this interactive challenge. Can you spot all the financial traps?",
-      route: "/scam-game"
+      route: "/games/scam-game"
     },
     savings: {
       title: "Budget Master",
       description: "Create a budget and face unexpected challenges while trying to stick to it.",
-      route: "/financial-sim"
+      route: "/games/financial-simulation"
     },
     investment: {
       title: "Market Guru",
       description: "Invest virtual money in stocks and mutual funds to learn investment principles.",
-      route: "/financial-sim"
+      route: "/games/financial-simulation"
     },
     basics: {
       title: "Financial Life Simulator",
       description: "Make financial decisions and see how they affect your virtual life over time.",
-      route: "/financial-sim"
+      route: "/games/financial-simulation"
     },
     borrowing: {
       title: "Loan Smart",
       description: "Learn about different loan options and how to borrow wisely through this game.",
-      route: "/financial-sim"
+      route: "/games/financial-simulation"
     }
   };
   
