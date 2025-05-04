@@ -61,6 +61,38 @@ interface ShopItem {
   effect: string;
 }
 
+const locationsMap = {
+  home: { x: 20, y: 70, name: "Home", icon: <HomeIcon className="h-6 w-6 text-blue-500" /> },
+  bank: { x: 50, y: 30, name: "City Bank", icon: <BuildingIcon className="h-6 w-6 text-green-500" /> },
+  store: { x: 70, y: 60, name: "Grocery Store", icon: <ShoppingBag className="h-6 w-6 text-red-500" /> },
+  work: { x: 40, y: 50, name: "Office", icon: <BriefcaseIcon className="h-6 w-6 text-amber-500" /> },
+  market: { x: 60, y: 20, name: "Financial Market", icon: <TrendingUp className="h-6 w-6 text-purple-500" /> }
+};
+
+const MapVisualization = ({ currentLocation }: { currentLocation: GameLocation }) => (
+  <div className="relative w-full h-64 bg-gradient-to-br from-green-200 to-blue-200 rounded-lg shadow-md overflow-hidden">
+    <div className="absolute inset-0">
+      {Object.entries(locationsMap).map(([key, loc]) => (
+        <div
+          key={key}
+          className={`absolute flex flex-col items-center justify-center ${
+            currentLocation === key ? "animate-pulse" : ""
+          }`}
+          style={{ top: `${loc.y}%`, left: `${loc.x}%` }}
+        >
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+            {loc.icon}
+          </div>
+          <span className="text-xs mt-1 text-gray-700">{loc.name}</span>
+        </div>
+      ))}
+    </div>
+    <div className="absolute bottom-2 left-2 bg-white px-3 py-1 rounded-md shadow text-xs text-gray-700">
+      <span>📍 Current Location: {locationsMap[currentLocation].name}</span>
+    </div>
+  </div>
+);
+
 export default function FinancialSimulation() {
   const navigate = useNavigate();
   const { user, addCoins } = useAppContext();
@@ -197,11 +229,11 @@ export default function FinancialSimulation() {
   };
 
   const characters = [
-    { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank', position: { x: 70, y: 50 }, avatar: '👩‍💼' },
-    { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work', position: { x: 70, y: 30 }, avatar: '👨‍💼' },
-    { id: 'shopkeeper', name: 'Amit', role: 'Store Owner', location: 'store', position: { x: 75, y: 40 }, avatar: '👨‍🏫' },
-    { id: 'investor', name: 'Priya', role: 'Investment Advisor', location: 'market', position: { x: 65, y: 60 }, avatar: '👩‍💻' },
-    { id: 'roommate', name: 'Rahul', role: 'Your Roommate', location: 'home', position: { x: 40, y: 50 }, avatar: '👨' }
+    { id: 'banker', name: 'Neha', role: 'Bank Manager', location: 'bank', position: { x: 73, y: 58 }, avatar: '👩‍💼' },
+    { id: 'boss', name: 'Vikram', role: 'Your Boss', location: 'work', position: { x: 73, y: 58 }, avatar: '👨‍💼' },
+    { id: 'shopkeeper', name: 'Amit', role: 'Store Owner', location: 'store', position:  { x: 73, y: 58 }, avatar: '👨‍🏫' },
+    { id: 'investor', name: 'Priya', role: 'Investment Advisor', location: 'market', position:  { x: 71, y: 55 }, avatar: '👩‍💻' },
+    { id: 'roommate', name: 'Rahul', role: 'Your Roommate', location: 'home', position: { x: 70, y: 58 }, avatar: '👨' }
   ];
   
   const characterDialogs: Record<string, string[]> = {
@@ -538,17 +570,17 @@ export default function FinancialSimulation() {
         </div>
         
         <Card className="mb-6 overflow-hidden">
-          <CardHeader className="bg-muted/30">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Map className="h-5 w-5 mr-2 text-primary" />
-                <CardTitle>Financial City Map</CardTitle>
+                <Map className="h-5 w-5 mr-2 text-white" />
+                <CardTitle className="text-lg font-bold">Financial City Map</CardTitle>
               </div>
               <div className="flex gap-2">
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 bg-white/20 text-white border-white hover:bg-white/30"
                   onClick={() => setShowShop(true)}
                 >
                   <StoreIcon className="h-4 w-4" />
@@ -557,7 +589,7 @@ export default function FinancialSimulation() {
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 bg-white/20 text-white border-white hover:bg-white/30"
                   onClick={handleNextDay}
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -567,99 +599,20 @@ export default function FinancialSimulation() {
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="bg-muted aspect-video rounded-lg relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
-                  <Button 
-                    variant={currentLocation === 'home' ? "default" : "outline"}
-                    className="h-24 flex-col gap-1"
-                    onClick={() => handleLocationChange('home')}
-                  >
-                    <HomeIcon className="h-8 w-8" />
-                    <span>Home</span>
-                  </Button>
-                  
-                  <Button 
-                    variant={currentLocation === 'bank' ? "default" : "outline"}
-                    className="h-24 flex-col gap-1"
-                    onClick={() => handleLocationChange('bank')}
-                  >
-                    <BuildingIcon className="h-8 w-8" />
-                    <span>Bank</span>
-                  </Button>
-                  
-                  <Button 
-                    variant={currentLocation === 'store' ? "default" : "outline"}
-                    className="h-24 flex-col gap-1"
-                    onClick={() => handleLocationChange('store')}
-                  >
-                    <StoreIcon className="h-8 w-8" />
-                    <span>Store</span>
-                  </Button>
-                  
-                  <Button 
-                    variant={currentLocation === 'work' ? "default" : "outline"}
-                    className="h-24 flex-col gap-1"
-                    onClick={() => handleLocationChange('work')}
-                  >
-                    <BriefcaseIcon className="h-8 w-8" />
-                    <span>Work</span>
-                  </Button>
-                  
-                  <Button 
-                    variant={currentLocation === 'market' ? "default" : "outline"}
-                    className="h-24 flex-col gap-1"
-                    onClick={() => handleLocationChange('market')}
-                  >
-                    <TrendingUp className="h-8 w-8" />
-                    <span>Market</span>
-                  </Button>
-                  
-                  <div className="h-24 flex items-center justify-center">
-                    <UserIcon className="h-16 w-16 text-primary" />
-                  </div>
-                </div>
-              </div>
-              
-              <AnimatePresence>
-                {characters
-                  .filter(c => c.location === currentLocation)
-                  .map(character => (
-                    <motion.div
-                      key={character.id}
-                      className="absolute"
-                      style={{ 
-                        top: `${character.position.y}%`, 
-                        left: `${character.position.x}%` 
-                      }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                      onClick={() => handleCharacterInteraction(character.id)}
-                    >
-                      <div className="cursor-pointer flex flex-col items-center">
-                        <div className="text-3xl">{character.avatar}</div>
-                        <div className="text-xs font-medium mt-1">{character.name}</div>
-                        <div className="text-xs text-muted-foreground">{character.role}</div>
-                      </div>
-                    </motion.div>
-                  ))}
-              </AnimatePresence>
-            </div>
-            
-            <div className="mt-4 p-4 border rounded-md">
+            <MapVisualization currentLocation={currentLocation} />
+            <div className="mt-4 p-4 border rounded-md bg-gradient-to-br from-white to-blue-50 shadow-md">
               <div className="flex items-center mb-2">
                 {locations[currentLocation].icon}
                 <h2 className="text-xl font-bold ml-2">{locations[currentLocation].name}</h2>
               </div>
               <p className="text-muted-foreground mb-4">{locations[currentLocation].description}</p>
               
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {locations[currentLocation].actions.map((action, index) => (
                   <Button 
                     key={index} 
                     variant="outline"
+                    className="transition-transform transform hover:scale-105"
                     onClick={() => handleAction(action)}
                   >
                     {action}
@@ -669,32 +622,63 @@ export default function FinancialSimulation() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="mb-6">
+          <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-t-lg">
+            <CardTitle className="flex items-center">
+              <Pencil className="h-5 w-5 mr-2" />
+              Navigate Locations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4 mt-3">
+              {Object.entries(locations).map(([key, loc]) => (
+                <Button
+                  key={key}
+                  variant={currentLocation === key ? "default" : "outline"}
+                  className={`h-24 flex-col gap-1 transition-transform transform ${
+                    currentLocation === key ? "scale-105" : "hover:scale-105"
+                  }`}
+                  onClick={() => handleLocationChange(key as GameLocation)}
+                >
+                  {loc.icon}
+                    <span className="text-sm font-medium w-15 block">{loc.name}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
         
         <Card className="mb-6">
-          <CardHeader>
+          <CardHeader className="bg-gradient-to-r from-green-500 to-teal-500 text-white p-4 rounded-t-lg">
             <CardTitle className="flex items-center">
               <UserIcon className="h-5 w-5 mr-2" />
               Your Skills
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mt-3">
               {skills.map(skill => (
-                <div key={skill.name} className="bg-muted/30 p-3 rounded-md">
+                <motion.div 
+                  key={skill.name} 
+                  className="bg-gradient-to-br from-green-100 to-teal-100 p-3 rounded-md shadow-md"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <div className="flex justify-between items-center mb-1">
                     <div className="font-medium text-sm">{skill.name}</div>
-                    <div className="text-xs bg-background px-2 py-1 rounded-full">
+                    <div className="text-xs bg-white px-2 py-1 rounded-full">
                       Level {skill.level}/{skill.maxLevel}
                     </div>
                   </div>
-                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-white h-2 rounded-full overflow-hidden">
                     <div 
-                      className="bg-primary h-full rounded-full"
+                      className="bg-green-500 h-full rounded-full"
                       style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
                     ></div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">{skill.description}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </CardContent>

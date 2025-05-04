@@ -141,8 +141,8 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-blue-gradient p-4 bg-festival-pattern">
       <motion.div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-coin-orange relative">
-          <div className="px-8 pt-8 pb-2 bg-orange-gradient">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-coin-purple relative">
+          <div className="px-8 pt-8 pb-2 bg-purple-gradient">
             <motion.div className="text-center mb-4">
               <h2 className="text-2xl font-bold text-white">
                 {translate('login', language)}
@@ -151,6 +151,18 @@ const Login = () => {
                 {isOtpLogin
                   ? 'OTP के साथ लॉगिन करें'
                   : 'अपने खाते तक पहुंचने के लिए लॉगिन करें'}
+              </p>
+            </motion.div>
+            <motion.div
+              className="mt-4 bg-white/10 p-4 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <p className="text-sm text-white font-medium">
+                🌟 <span className="font-bold">आपका भविष्य आपके हाथ में है!</span> 
+                वित्तीय ज्ञान से अपने सपनों को साकार करें। आज ही शुरुआत करें और 
+                <span className="text-yellow-300"> अपने परिवार के लिए बेहतर कल बनाएं।</span>
               </p>
             </motion.div>
           </div>
