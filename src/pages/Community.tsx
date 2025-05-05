@@ -24,7 +24,7 @@ const posts = [
     },
     content: 'मैंने पिछले 6 महीने में हर दिन ₹50 बचाए और अब मैंने अपने बच्चों के लिए एक छोटा सा इमरजेंसी फंड बना लिया है। छोटी बचत, बड़ा सुख!',
     translation: 'I saved ₹50 every day for the past 6 months and now I have created a small emergency fund for my children. Small savings, big happiness!',
-    image: 'https://www.ukibc.com/wp-content/uploads/2015/08/money-india.jpg',
+    image: 'https://cdn.zeebiz.com/sites/default/files/styles/zeebiz_850x478/public/2019/04/17/82981-rupee-ians-50.jpg',
     likes: 45,
     comments: 12,
     timestamp: '2 घंटे पहले',
