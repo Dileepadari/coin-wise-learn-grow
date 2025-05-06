@@ -152,7 +152,7 @@ export default function ReelCard({
       className={cn(`relative w-full max-w-[430px] mx-auto ${height} rounded-3xl shadow-2xl overflow-hidden border-4 border-white`,
         accentColor,
         isActive ? "z-10" : "opacity-70")}
-      style={{ boxShadow: "0px 0px 25px 0px rgba(253,230,138,0.8)", marginBottom: "100px", height: "80vh" }}
+      style={{ boxShadow: "0px 0px 25px 0px rgba(253,230,138,0.8)", marginBottom: "100px", height: "70vh" }}
     >
         {!isVideoLoaded && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
